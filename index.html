@@ -1,142 +1,130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PricePulse — Right Price, Right Choice</title>
-  <meta name="description" content="Compare prices across top shopping platforms and find the right deal." />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Compare prices, discover better deals and shop smarter with PricePulse.">
+  <link rel="icon" href="logo-icon.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="site-header">
-    <div class="container nav">
-      <a class="brand" href="#">
-        <span class="brand-mark">P</span>
-        <span class="brand-text">Price<span>Pulse</span></span>
-      </a>
-      <nav>
-        <a href="#compare">Compare</a>
-        <a href="#deals">Deals</a>
-        <a href="#alerts">Price Alerts</a>
-      </nav>
+    <div class="top container">
+      <a class="brand" href="#home"><img src="logo-full.png" alt="PricePulse — Right Price, Right Choice"></a>
+      <form class="header-search" id="headerSearch">
+        <input id="headerSearchInput" type="search" placeholder="Search for products, brands or categories...">
+        <button aria-label="Search">⌕</button>
+      </form>
+      <div class="header-actions">
+        <button>♡ <span>Wishlist</span></button>
+        <button>♙ <span>Sign In</span></button>
+        <button>🛒 <span>Cart</span></button>
+      </div>
+    </div>
+
+    <div class="category-nav-wrap">
+      <div class="container category-nav">
+        <button class="all-cat">☰ &nbsp; All Categories</button>
+        <a href="#categories">Mobiles</a><a href="#categories">Laptops</a><a href="#categories">Electronics</a>
+        <a href="#categories">Home & Kitchen</a><a href="#categories">Fashion</a><a href="#categories">Appliances</a>
+        <a href="#categories">Beauty</a><a href="#categories">More⌄</a>
+        <button class="deals-btn">🔥 Deals</button>
+      </div>
     </div>
   </header>
 
-  <main>
+  <main id="home">
     <section class="hero">
       <div class="container hero-grid">
-        <div>
-          <p class="eyebrow">SMART SHOPPING STARTS HERE</p>
-          <h1>Find the right price.<br/>Make the right choice.</h1>
-          <p class="sub">Compare prices across multiple stores, spot better deals, and shop with confidence.</p>
-
-          <div class="search-box">
-            <input id="searchInput" type="text" placeholder="Search products, e.g. iPhone, shoes, laptop..." />
-            <button id="searchBtn">Compare Prices</button>
-          </div>
-
-          <div class="trust-row">
-            <span>✓ Multiple stores</span>
-            <span>✓ Easy comparison</span>
-            <span>✓ Price alerts</span>
+        <div class="hero-copy">
+          <p class="kicker">COMPARE&nbsp;&nbsp;•&nbsp;&nbsp;SAVE&nbsp;&nbsp;•&nbsp;&nbsp;SHOP SMART</p>
+          <h1>Right Price<br><span>Right Choice</span></h1>
+          <p class="lead">Compare prices from top online stores, find the best deals and make smarter buying decisions with PricePulse.</p>
+          <button class="primary" data-scroll="#deals">Search Best Deals <b>→</b></button>
+          <div class="benefits">
+            <div><b>◇</b><span><strong>Compare Prices</strong><small>Across top stores</small></span></div>
+            <div><b>♢</b><span><strong>Trusted Deals</strong><small>Only genuine links</small></span></div>
+            <div><b>ϟ</b><span><strong>Save Time</strong><small>Find the best, faster</small></span></div>
           </div>
         </div>
-
-        <div class="hero-card">
-          <div class="pulse-line"></div>
-          <div class="hero-stat">
-            <span>Best price found</span>
-            <strong>₹69,999</strong>
-            <small>across 4 stores</small>
-          </div>
+        <div class="hero-art">
+          <img src="hero-products.png" alt="Shopping products">
         </div>
       </div>
     </section>
 
-    <section id="compare" class="section">
+    <section class="categories" id="categories">
       <div class="container">
         <div class="section-head">
-          <div>
-            <p class="eyebrow">PRICE COMPARISON</p>
-            <h2>One product. Multiple stores.</h2>
-          </div>
-          <p>Sample layout — live affiliate/API data can be connected later.</p>
+          <h2>Popular Categories</h2>
+          <button id="viewAll">View All →</button>
         </div>
-
-        <div class="product-card">
-          <div class="product-info">
-            <div class="product-image">📱</div>
-            <div>
-              <span class="pill">Popular</span>
-              <h3>Smartphone 256GB</h3>
-              <p>Demo product for PricePulse MVP</p>
-            </div>
-          </div>
-
-          <div class="price-list">
-            <div class="price-row best">
-              <div><strong>Store A</strong><span>Best Price</span></div>
-              <div class="price">₹69,999</div>
-              <button>View Deal</button>
-            </div>
-            <div class="price-row">
-              <div><strong>Store B</strong><span>In stock</span></div>
-              <div class="price">₹71,499</div>
-              <button>View Deal</button>
-            </div>
-            <div class="price-row">
-              <div><strong>Store C</strong><span>In stock</span></div>
-              <div class="price">₹72,999</div>
-              <button>View Deal</button>
-            </div>
-          </div>
+        <div class="category-grid">
+          <button class="category-card" data-q="Mobiles"><img src="mobiles.png" alt=""><span>Mobiles</span></button>
+          <button class="category-card" data-q="Laptops"><img src="laptops.png" alt=""><span>Laptops</span></button>
+          <button class="category-card" data-q="Electronics"><img src="electronics.png" alt=""><span>Electronics</span></button>
+          <button class="category-card" data-q="Home & Kitchen"><img src="kitchen.png" alt=""><span>Home & Kitchen</span></button>
+          <button class="category-card" data-q="Fashion"><img src="fashion.png" alt=""><span>Fashion</span></button>
+          <button class="category-card" data-q="Appliances"><img src="appliances.png" alt=""><span>Appliances</span></button>
+          <button class="category-card" data-q="Beauty"><img src="beauty.png" alt=""><span>Beauty</span></button>
+          <button class="category-card" data-q="Smart Watches"><img src="watches.png" alt=""><span>Smart Watches</span></button>
         </div>
       </div>
     </section>
 
-    <section id="deals" class="section muted">
+    <section class="deals" id="deals">
       <div class="container">
         <div class="section-head">
-          <div>
-            <p class="eyebrow">WHY PRICEPULSE</p>
-            <h2>Built for smarter decisions.</h2>
-          </div>
+          <div><p class="mini">SMART PICKS</p><h2>Popular Deals</h2></div>
+          <div class="tabs"><button class="active">All</button><button>Mobiles</button><button>Laptops</button><button>Fashion</button></div>
         </div>
+        <div class="deal-grid" id="dealGrid">
+          <article class="deal-card" data-name="Smartphone Pro">
+            <span class="badge">12% OFF</span><button class="heart">♡</button>
+            <div class="deal-img">📱</div><h3>Smartphone Pro 256GB</h3>
+            <p>Compare across 4 stores</p><strong>₹69,999</strong><small> Best demo price</small>
+            <button class="compare">Compare Offers</button>
+          </article>
+          <article class="deal-card" data-name="UltraBook Air">
+            <span class="badge">18% OFF</span><button class="heart">♡</button>
+            <div class="deal-img">💻</div><h3>UltraBook Air 13</h3>
+            <p>Compare across 3 stores</p><strong>₹82,490</strong><small> Best demo price</small>
+            <button class="compare">Compare Offers</button>
+          </article>
+          <article class="deal-card" data-name="NoiseCancel Headphones">
+            <span class="badge">20% OFF</span><button class="heart">♡</button>
+            <div class="deal-img">🎧</div><h3>NoiseCancel Headphones</h3>
+            <p>Compare across 5 stores</p><strong>₹11,999</strong><small> Best demo price</small>
+            <button class="compare">Compare Offers</button>
+          </article>
+          <article class="deal-card" data-name="Air Fryer 6L">
+            <span class="badge">15% OFF</span><button class="heart">♡</button>
+            <div class="deal-img">🍟</div><h3>Air Fryer 6L</h3>
+            <p>Compare across 3 stores</p><strong>₹7,649</strong><small> Best demo price</small>
+            <button class="compare">Compare Offers</button>
+          </article>
+        </div>
+      </div>
+    </section>
 
-        <div class="feature-grid">
-          <article>
-            <div class="icon">↔</div>
-            <h3>Compare Prices</h3>
-            <p>See multiple sellers in one clean view.</p>
-          </article>
-          <article>
-            <div class="icon">↘</div>
-            <h3>Track Price Drops</h3>
-            <p>Know when a product becomes cheaper.</p>
-          </article>
-          <article id="alerts">
-            <div class="icon">🔔</div>
-            <h3>Price Alerts</h3>
-            <p>Get notified when your target price is reached.</p>
-          </article>
-        </div>
+    <section class="cta">
+      <div class="container cta-card">
+        <div><p class="mini light">PRICEPULSE</p><h2>One search. Multiple stores.</h2><p>Live marketplace APIs and affiliate links will be connected in the next phase.</p></div>
+        <button class="primary" data-scroll="#home">Start Comparing →</button>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="container footer-wrap">
-      <div>
-        <div class="brand footer-brand">
-          <span class="brand-mark">P</span>
-          <span class="brand-text">Price<span>Pulse</span></span>
-        </div>
-        <p>Right Price, Right Choice.</p>
-      </div>
-      <small>© 2026 PricePulse. Demo MVP.</small>
+    <div class="container footer-grid">
+      <div><img class="footer-logo" src="logo-full.png" alt="PricePulse"><p>Helping you find better prices across top online stores.</p></div>
+      <div><h4>Quick Links</h4><a href="#categories">Categories</a><a href="#deals">Deals</a><a href="#home">Home</a></div>
+      <div><h4>Follow Us</h4><p>Shop Smart. Save More.<br>With PricePulse.</p></div>
     </div>
   </footer>
 
+  <div class="toast" id="toast"></div>
   <script src="script.js"></script>
 </body>
 </html>
