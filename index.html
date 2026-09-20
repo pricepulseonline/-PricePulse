@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PricePulse — Right Price, Right Choice</title>
+  <meta name="description" content="Compare prices across top shopping platforms and find the right deal." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#">
+        <span class="brand-mark">P</span>
+        <span class="brand-text">Price<span>Pulse</span></span>
+      </a>
+      <nav>
+        <a href="#compare">Compare</a>
+        <a href="#deals">Deals</a>
+        <a href="#alerts">Price Alerts</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">SMART SHOPPING STARTS HERE</p>
+          <h1>Find the right price.<br/>Make the right choice.</h1>
+          <p class="sub">Compare prices across multiple stores, spot better deals, and shop with confidence.</p>
+
+          <div class="search-box">
+            <input id="searchInput" type="text" placeholder="Search products, e.g. iPhone, shoes, laptop..." />
+            <button id="searchBtn">Compare Prices</button>
+          </div>
+
+          <div class="trust-row">
+            <span>✓ Multiple stores</span>
+            <span>✓ Easy comparison</span>
+            <span>✓ Price alerts</span>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="pulse-line"></div>
+          <div class="hero-stat">
+            <span>Best price found</span>
+            <strong>₹69,999</strong>
+            <small>across 4 stores</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="compare" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">PRICE COMPARISON</p>
+            <h2>One product. Multiple stores.</h2>
+          </div>
+          <p>Sample layout — live affiliate/API data can be connected later.</p>
+        </div>
+
+        <div class="product-card">
+          <div class="product-info">
+            <div class="product-image">📱</div>
+            <div>
+              <span class="pill">Popular</span>
+              <h3>Smartphone 256GB</h3>
+              <p>Demo product for PricePulse MVP</p>
+            </div>
+          </div>
+
+          <div class="price-list">
+            <div class="price-row best">
+              <div><strong>Store A</strong><span>Best Price</span></div>
+              <div class="price">₹69,999</div>
+              <button>View Deal</button>
+            </div>
+            <div class="price-row">
+              <div><strong>Store B</strong><span>In stock</span></div>
+              <div class="price">₹71,499</div>
+              <button>View Deal</button>
+            </div>
+            <div class="price-row">
+              <div><strong>Store C</strong><span>In stock</span></div>
+              <div class="price">₹72,999</div>
+              <button>View Deal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="deals" class="section muted">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">WHY PRICEPULSE</p>
+            <h2>Built for smarter decisions.</h2>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <article>
+            <div class="icon">↔</div>
+            <h3>Compare Prices</h3>
+            <p>See multiple sellers in one clean view.</p>
+          </article>
+          <article>
+            <div class="icon">↘</div>
+            <h3>Track Price Drops</h3>
+            <p>Know when a product becomes cheaper.</p>
+          </article>
+          <article id="alerts">
+            <div class="icon">🔔</div>
+            <h3>Price Alerts</h3>
+            <p>Get notified when your target price is reached.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-wrap">
+      <div>
+        <div class="brand footer-brand">
+          <span class="brand-mark">P</span>
+          <span class="brand-text">Price<span>Pulse</span></span>
+        </div>
+        <p>Right Price, Right Choice.</p>
+      </div>
+      <small>© 2026 PricePulse. Demo MVP.</small>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
