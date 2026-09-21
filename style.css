@@ -306,6 +306,7 @@
   .brand-copy strong{
   font-size: 31px !important;
   letter-spacing: .01em !important;
+  }
 }
 
 /* Mobile keeps touch targets clean; hover effects do not create layout jumps */
