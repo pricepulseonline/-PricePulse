@@ -10,6 +10,8 @@ const toast=$("#toast");
 let tt;
 let currentUser=null;
 let currentProfile=null;
+let otpResendTimer=null;
+const OAUTH_PENDING_KEY="pp_google_oauth_pending";
 
 function showToast(message){
   if(!toast) return;
@@ -130,6 +132,7 @@ function openModal(html,wide=false){
   document.body.style.overflow="hidden";
 }
 function closeModal(){
+  clearOtpResendTimer();
   modal.hidden=true;
   modalPanel?.classList.remove("modal-wide");
   document.body.style.overflow="";
@@ -214,7 +217,54 @@ function setBusy(button,busy,busyText="Please wait…"){
   button.textContent=busy?busyText:button.dataset.originalText;
 }
 
+function clearOtpResendTimer(){
+  if(otpResendTimer){
+    clearInterval(otpResendTimer);
+    otpResendTimer=null;
+  }
+}
+
+async function sendEmailOtp(email){
+  return supabaseClient.auth.signInWithOtp({
+    email,
+    options:{shouldCreateUser:true}
+  });
+}
+
+function startOtpResendCooldown(email,seconds=30){
+  clearOtpResendTimer();
+  const btn=$("#resendOtpBtn");
+  if(!btn) return;
+  let remaining=seconds;
+  const paint=()=>{
+    if(!$("#resendOtpBtn")) return clearOtpResendTimer();
+    if(remaining>0){
+      btn.disabled=true;
+      btn.textContent=`Resend OTP in ${remaining}s`;
+    }else{
+      btn.disabled=false;
+      btn.textContent="Resend OTP";
+      clearOtpResendTimer();
+    }
+  };
+  paint();
+  otpResendTimer=setInterval(()=>{remaining-=1;paint();},1000);
+}
+
+function oauthErrorFromUrl(){
+  const search=new URLSearchParams(window.location.search);
+  const hash=new URLSearchParams(window.location.hash.replace(/^#/,""));
+  return search.get("error_description")||search.get("error")||hash.get("error_description")||hash.get("error")||"";
+}
+
+function cleanOAuthUrl(){
+  if(window.location.search || window.location.hash){
+    history.replaceState({},document.title,window.location.pathname||"/");
+  }
+}
+
 function renderAuthStart(prefill=""){
+  clearOtpResendTimer();
   openModal(authFrame(`
     <button class="auth-google" id="googleAuthBtn" type="button"><span class="google-mark">G</span><span>Continue with Google</span></button>
     <div class="auth-divider"><span>or</span></div>
@@ -230,11 +280,16 @@ function renderAuthStart(prefill=""){
     const btn=$("#googleAuthBtn");
     btn.disabled=true;
     setAuthStatus("Opening Google sign-in…");
+    sessionStorage.setItem(OAUTH_PENDING_KEY,"1");
     const {error}=await supabaseClient.auth.signInWithOAuth({
       provider:"google",
-      options:{redirectTo:"https://price-pulse.in"}
+      options:{
+        redirectTo:"https://price-pulse.in",
+        queryParams:{prompt:"select_account"}
+      }
     });
     if(error){
+      sessionStorage.removeItem(OAUTH_PENDING_KEY);
       btn.disabled=false;
       setAuthStatus(error.message||"Could not start Google sign-in.",true);
     }
@@ -248,7 +303,7 @@ function renderAuthStart(prefill=""){
     if(!email) return;
     setAuthStatus("");
     setBusy(btn,true,"Sending OTP…");
-    const {error}=await supabaseClient.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+    const {error}=await sendEmailOtp(email);
     if(error){
       setBusy(btn,false);
       setAuthStatus(error.message||"Could not send OTP.",true);
@@ -260,6 +315,7 @@ function renderAuthStart(prefill=""){
 }
 
 function renderOtpStep(email){
+  clearOtpResendTimer();
   openModal(authFrame(`
     <button class="auth-back" id="authBackBtn" type="button">← Back</button>
     <div class="auth-step-copy"><h3>Enter email OTP</h3><p>We sent a 6-digit code to <strong>${escapeHTML(email)}</strong>.</p></div>
@@ -267,10 +323,30 @@ function renderOtpStep(email){
       <label class="auth-field"><span>6-digit OTP</span><input id="authOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required></label>
       <button class="auth-primary" id="verifyOtpBtn" type="submit">Verify & Continue →</button>
     </form>
+    <div class="otp-resend-row"><span>Didn't receive the code?</span><button class="auth-resend" id="resendOtpBtn" type="button">Resend OTP</button></div>
     <p class="auth-fineprint">Enter the code from your email to continue.</p>
     <p class="auth-status" id="authStatus" aria-live="polite"></p>`));
 
   $("#authBackBtn")?.addEventListener("click",()=>renderAuthStart(email));
+  $("#resendOtpBtn")?.addEventListener("click",async()=>{
+    if(!supabaseClient){setAuthStatus("Sign-in service could not load. Refresh and try again.",true);return;}
+    const btn=$("#resendOtpBtn");
+    if(!btn || btn.disabled) return;
+    btn.disabled=true;
+    btn.textContent="Sending…";
+    setAuthStatus("");
+    const {error}=await sendEmailOtp(email);
+    if(error){
+      btn.disabled=false;
+      btn.textContent="Resend OTP";
+      setAuthStatus(error.message||"Could not resend OTP.",true);
+      return;
+    }
+    setAuthStatus("A new 6-digit OTP was sent.");
+    showToast("New OTP sent");
+    startOtpResendCooldown(email,30);
+  });
+  startOtpResendCooldown(email,30);
   $("#otpVerifyForm")?.addEventListener("submit",async e=>{
     e.preventDefault();
     const token=$("#authOtp")?.value.trim();
@@ -415,30 +491,78 @@ $("#signInBtn")?.addEventListener("click",()=>{
   else renderAccountPanel();
 });
 
+async function syncAuthSession(session,{fromOAuth=false}={}){
+  currentUser=session?.user||null;
+  currentProfile=currentUser?await loadProfile(currentUser.id):null;
+  updateAccountHeader();
+
+  if(fromOAuth && currentUser){
+    sessionStorage.removeItem(OAUTH_PENDING_KEY);
+    cleanOAuthUrl();
+    if(currentProfile && profileComplete(currentProfile)){
+      closeModal();
+      showToast("Signed in with Google");
+    }else{
+      renderProfileForm(currentUser.email||"",currentProfile);
+    }
+  }
+}
+
 async function initAuth(){
   if(!supabaseClient){updateAccountHeader();return;}
+
+  const pendingGoogle=sessionStorage.getItem(OAUTH_PENDING_KEY)==="1";
+  const oauthError=oauthErrorFromUrl();
+
   try{
     const {data,error}=await supabaseClient.auth.getSession();
     if(error) throw error;
-    currentUser=data?.session?.user||null;
-    currentProfile=currentUser?await loadProfile(currentUser.id):null;
-    updateAccountHeader();
+    await syncAuthSession(data?.session||null,{fromOAuth:pendingGoogle && Boolean(data?.session?.user)});
   }catch(err){
     console.error("Auth init failed",err);
     currentUser=null;
     currentProfile=null;
     updateAccountHeader();
   }
-  supabaseClient.auth.onAuthStateChange(async(event,session)=>{
-    currentUser=session?.user||null;
-    currentProfile=currentUser?await loadProfile(currentUser.id):null;
-    updateAccountHeader();
-    if(event==="SIGNED_OUT"){
-      currentUser=null;
-      currentProfile=null;
-      updateAccountHeader();
-    }
+
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    setTimeout(async()=>{
+      try{
+        const fromOAuth=sessionStorage.getItem(OAUTH_PENDING_KEY)==="1" && event==="SIGNED_IN";
+        await syncAuthSession(session,{fromOAuth});
+        if(event==="SIGNED_OUT"){
+          currentUser=null;
+          currentProfile=null;
+          updateAccountHeader();
+        }
+      }catch(err){
+        console.error("Auth state sync failed",err);
+      }
+    },0);
   });
+
+  if(pendingGoogle && !currentUser){
+    setTimeout(async()=>{
+      if(currentUser || sessionStorage.getItem(OAUTH_PENDING_KEY)!=="1") return;
+      try{
+        const {data}=await supabaseClient.auth.getSession();
+        if(data?.session?.user){
+          await syncAuthSession(data.session,{fromOAuth:true});
+          return;
+        }
+      }catch(err){
+        console.error("OAuth retry failed",err);
+      }
+      sessionStorage.removeItem(OAUTH_PENDING_KEY);
+      renderAuthStart();
+      setTimeout(()=>setAuthStatus(oauthError||"Google sign-in did not complete. Please try again.",true),0);
+      cleanOAuthUrl();
+    },1800);
+  }else if(oauthError){
+    renderAuthStart();
+    setTimeout(()=>setAuthStatus(oauthError,true),0);
+    cleanOAuthUrl();
+  }
 }
 initAuth();
 

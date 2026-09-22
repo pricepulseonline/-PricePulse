@@ -1508,3 +1508,10 @@ body.categories-open .category-nav [data-cat].nav-selected::after{
     grid-template-columns:1fr;
   }
 }
+
+/* PricePulse V18 — OTP resend control only */
+.otp-resend-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px;color:#71808a;font-size:11.5px}
+.auth-resend{border:0;background:transparent;color:#078f68;font:inherit;font-weight:850;padding:4px 0;cursor:pointer}
+.auth-resend:hover:not(:disabled){text-decoration:underline;text-underline-offset:4px}
+.auth-resend:disabled{color:#98a4ab;cursor:default;text-decoration:none}
+@media(max-width:520px){.otp-resend-row{align-items:flex-start;flex-direction:column;gap:4px}}
