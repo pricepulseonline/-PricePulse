@@ -101,26 +101,130 @@ $$(".deal-tabs button").forEach(btn=>{
   });
 });
 
-/* Wishlist stays local for now; account sync is a later step. */
-const saved=new Set(JSON.parse(localStorage.getItem("pp_wish")||"[]"));
+/* Wishlist: guest local storage + authenticated Supabase sync. */
+const LEGACY_WISHLIST_KEY="pp_wish";
+const GUEST_WISHLIST_KEY="pp_wish_guest";
+const WISHLIST_TABLE="wishlist_items";
+
+function readWishlistKey(key){
+  try{return new Set(JSON.parse(localStorage.getItem(key)||"[]"));}
+  catch{return new Set();}
+}
+
+if(localStorage.getItem(LEGACY_WISHLIST_KEY) && !localStorage.getItem(GUEST_WISHLIST_KEY)){
+  localStorage.setItem(GUEST_WISHLIST_KEY,localStorage.getItem(LEGACY_WISHLIST_KEY));
+  localStorage.removeItem(LEGACY_WISHLIST_KEY);
+}
+
+const saved=readWishlistKey(GUEST_WISHLIST_KEY);
+
+function accountWishlistCacheKey(userId){
+  return `pp_wish_user_${userId}`;
+}
+
+function setSavedItems(items){
+  saved.clear();
+  for(const id of items||[]) if(id) saved.add(String(id));
+  syncWishlist();
+}
+
+function persistCurrentWishlist(){
+  const key=currentUser?accountWishlistCacheKey(currentUser.id):GUEST_WISHLIST_KEY;
+  localStorage.setItem(key,JSON.stringify([...saved]));
+}
+
 function syncWishlist(){
   $$(".heart").forEach(btn=>{
     const on=saved.has(btn.dataset.id);
     btn.classList.toggle("saved",on);
-    btn.textContent=on?"♥":"♡";
+    btn.setAttribute("aria-pressed",String(on));
+    btn.setAttribute("aria-label",on?"Remove from wishlist":"Add to wishlist");
+    btn.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.35 10.55 19.03C5.4 14.36 2 11.27 2 7.5 2 4.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.42 22 7.5c0 3.77-3.4 6.86-8.55 11.54L12 20.35Z"/></svg>`;
   });
   if($("#wishCount")) $("#wishCount").textContent=saved.size;
+  $("#wishlistTop")?.classList.toggle("has-items",saved.size>0);
 }
-$$(".heart").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    if(saved.has(btn.dataset.id)) saved.delete(btn.dataset.id); else saved.add(btn.dataset.id);
-    localStorage.setItem("pp_wish",JSON.stringify([...saved]));
-    syncWishlist();
-    showToast(saved.has(btn.dataset.id)?"Added to wishlist":"Removed from wishlist");
-  });
-});
-syncWishlist();
 
+async function syncWishlistForUser(user){
+  if(!user || !supabaseClient){
+    setSavedItems(readWishlistKey(GUEST_WISHLIST_KEY));
+    return;
+  }
+
+  const guestItems=[...readWishlistKey(GUEST_WISHLIST_KEY)];
+  const cachedItems=[...readWishlistKey(accountWishlistCacheKey(user.id))];
+  const {data,error}=await supabaseClient
+    .from(WISHLIST_TABLE)
+    .select("product_id")
+    .eq("user_id",user.id);
+
+  if(error){
+    console.warn("Wishlist sync unavailable",error);
+    setSavedItems(cachedItems.length?cachedItems:guestItems);
+    return;
+  }
+
+  const merged=new Set([...(data||[]).map(row=>row.product_id),...guestItems]);
+  if(guestItems.length){
+    const rows=guestItems.map(product_id=>({user_id:user.id,product_id}));
+    const {error:mergeError}=await supabaseClient
+      .from(WISHLIST_TABLE)
+      .upsert(rows,{onConflict:"user_id,product_id"});
+    if(mergeError) console.warn("Guest wishlist merge failed",mergeError);
+    else localStorage.removeItem(GUEST_WISHLIST_KEY);
+  }
+
+  setSavedItems(merged);
+  persistCurrentWishlist();
+}
+
+function activateGuestWishlist(){
+  setSavedItems(readWishlistKey(GUEST_WISHLIST_KEY));
+}
+
+async function toggleWishlistItem(btn){
+  const id=btn?.dataset.id;
+  if(!id) return;
+  const wasSaved=saved.has(id);
+  const willSave=!wasSaved;
+
+  if(willSave) saved.add(id); else saved.delete(id);
+  persistCurrentWishlist();
+  syncWishlist();
+  btn.classList.add("heart-pop","syncing");
+  setTimeout(()=>btn.classList.remove("heart-pop"),280);
+
+  if(currentUser && supabaseClient){
+    let error=null;
+    if(willSave){
+      ({error}=await supabaseClient
+        .from(WISHLIST_TABLE)
+        .upsert({user_id:currentUser.id,product_id:id},{onConflict:"user_id,product_id"}));
+    }else{
+      ({error}=await supabaseClient
+        .from(WISHLIST_TABLE)
+        .delete()
+        .eq("user_id",currentUser.id)
+        .eq("product_id",id));
+    }
+
+    if(error){
+      console.error("Wishlist update failed",error);
+      if(wasSaved) saved.add(id); else saved.delete(id);
+      persistCurrentWishlist();
+      syncWishlist();
+      showToast("Wishlist could not sync. Please try again.");
+      btn.classList.remove("syncing");
+      return;
+    }
+  }
+
+  btn.classList.remove("syncing");
+  showToast(willSave?"Added to wishlist":"Removed from wishlist");
+}
+
+$$(".heart").forEach(btn=>btn.addEventListener("click",()=>toggleWishlistItem(btn)));
+syncWishlist();
 /* Modal */
 const modal=$("#modal");
 const modalBody=$("#modalBody");
@@ -170,7 +274,10 @@ function updateAccountHeader(){
   const label=$("#signInBtn span:last-child");
   if(!label) return;
   /* Logged-out/incomplete accounts keep Sign In. Completed profiles get a friendly first-name greeting. */
-  if(currentUser && profileComplete(currentProfile)){
+  const accountButton=$("#signInBtn");
+  const authenticated=Boolean(currentUser && profileComplete(currentProfile));
+  accountButton?.classList.toggle("is-authenticated",authenticated);
+  if(authenticated){
     const firstName=String(currentProfile.full_name||"").trim().split(/\s+/)[0]||"Account";
     label.textContent=`Hi, ${firstName}`;
   }else{
@@ -231,7 +338,7 @@ async function sendEmailOtp(email){
   });
 }
 
-function startOtpResendCooldown(email,seconds=30){
+function startOtpResendCooldown(email,seconds=60){
   clearOtpResendTimer();
   const btn=$("#resendOtpBtn");
   if(!btn) return;
@@ -266,7 +373,7 @@ function cleanOAuthUrl(){
 function renderAuthStart(prefill=""){
   clearOtpResendTimer();
   openModal(authFrame(`
-    <button class="auth-google" id="googleAuthBtn" type="button"><span class="google-mark">G</span><span>Continue with Google</span></button>
+    <button class="auth-google" id="googleAuthBtn" type="button"><span class="google-mark" aria-hidden="true"><svg viewBox="0 0 18 18" focusable="false"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.716v2.258h2.909c1.703-1.568 2.684-3.88 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.468-.806 5.956-2.18l-2.91-2.258c-.806.54-1.835.86-3.046.86-2.344 0-4.328-1.584-5.037-3.712H.956v2.332A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.963 10.71A5.42 5.42 0 0 1 3.681 9c0-.593.102-1.17.282-1.71V4.958H.956A9 9 0 0 0 0 9c0 1.45.347 2.82.956 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.579c1.322 0 2.508.454 3.442 1.346l2.582-2.582C13.464.891 11.426 0 9 0A9 9 0 0 0 .956 4.958l3.007 2.332C4.672 5.162 6.656 3.579 9 3.579z"/></svg></span><span>Continue with Google</span></button>
     <div class="auth-divider"><span>or</span></div>
     <form class="auth-form" id="otpRequestForm">
       <label class="auth-field"><span>Email address</span><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" value="${escapeHTML(prefill)}" required></label>
@@ -344,9 +451,9 @@ function renderOtpStep(email){
     }
     setAuthStatus("A new 6-digit OTP was sent.");
     showToast("New OTP sent");
-    startOtpResendCooldown(email,30);
+    startOtpResendCooldown(email,60);
   });
-  startOtpResendCooldown(email,30);
+  startOtpResendCooldown(email,60);
   $("#otpVerifyForm")?.addEventListener("submit",async e=>{
     e.preventDefault();
     const token=$("#authOtp")?.value.trim();
@@ -495,6 +602,8 @@ async function syncAuthSession(session,{fromOAuth=false}={}){
   currentUser=session?.user||null;
   currentProfile=currentUser?await loadProfile(currentUser.id):null;
   updateAccountHeader();
+  if(currentUser) await syncWishlistForUser(currentUser);
+  else activateGuestWishlist();
 
   if(fromOAuth && currentUser){
     sessionStorage.removeItem(OAUTH_PENDING_KEY);
@@ -534,6 +643,7 @@ async function initAuth(){
           currentUser=null;
           currentProfile=null;
           updateAccountHeader();
+          activateGuestWishlist();
         }
       }catch(err){
         console.error("Auth state sync failed",err);
@@ -576,7 +686,7 @@ const infoContent={
     <p><a class="contact-email" href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>`},
   privacy:{title:"Privacy Policy",body:`
     <p>When you use account features, PricePulse may process profile information such as your name, email address, mobile number, city, state, country and PIN code. Account authentication and profile storage are provided through Supabase.</p>
-    <p>Wishlist information is currently stored in your browser. Optional price/deal alerts are only enabled when you choose the alert option.</p>
+    <p>Wishlist information is stored in your browser while signed out and synced to your PricePulse account when you are signed in. Optional price/deal alerts are only enabled when you choose the alert option.</p>
     <p>We do not collect payment-card details because purchases are completed on merchant websites.</p>
     <p>Privacy questions: <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>`},
   terms:{title:"Terms of Use",body:`

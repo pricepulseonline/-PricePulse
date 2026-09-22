@@ -1,8 +1,12 @@
-# PricePulse V18
+# PricePulse V19
 
-Targeted update only:
-- Google/Supabase OAuth callback/session handling hardened for live login on https://price-pulse.in
-- 30-second Resend OTP control added to the email OTP verification step
-- New favicon-v18.png uses the approved PricePulse ₹P mark on a deep navy/blue background
+Only the approved changes were made:
+- Supabase account wishlist sync (guest wishlist merges into the signed-in account)
+- Premium animated wishlist heart and account icon styling
+- Multicolor Google G icon in the Google sign-in button
+- Resend OTP cooldown changed from 30 seconds to 60 seconds
+- Privacy text updated only to accurately describe wishlist storage/sync
 
-The V17 layout/design and all existing profile, autofill, OTP verification, wishlist, category/deal and legal content are otherwise preserved.
+Before deploying, run `supabase-wishlist.sql` once in Supabase SQL Editor.
+
+No other layout, auth flow, product content, category layout, footer behavior, profile fields, favicon, or Google OAuth settings were changed.
