@@ -260,9 +260,109 @@ $$(".compare-btn").forEach(btn=>{
   });
 });
 
-$("#wishlistTop")?.addEventListener("click",()=>{
-  const names=$$(".heart.saved").map(btn=>btn.closest(".deal-card").querySelector("h3").textContent);
-  openModal(`<h2>Wishlist</h2>${names.length?`<p>${names.map(escapeHTML).join("<br>")}</p>`:"<p>Your wishlist is empty.</p>"}`);
+function getWishlistProduct(id){
+  const heart=$(`.heart[data-id="${CSS.escape(String(id))}"]`);
+  const card=heart?.closest(".deal-card");
+  if(!card) return null;
+  return {
+    id:String(id),
+    name:card.querySelector("h3")?.textContent?.trim()||"Saved product",
+    image:card.querySelector(".product-media img")?.getAttribute("src")||"",
+    price:card.querySelector(".price")?.textContent?.trim()||"",
+    stores:card.querySelector(".store-count")?.textContent?.trim()||"",
+    discount:card.querySelector(".discount")?.textContent?.trim()||"",
+    compareProduct:card.querySelector(".compare-btn")?.dataset.product||"",
+    comparePrice:card.querySelector(".compare-btn")?.dataset.price||""
+  };
+}
+
+function wishlistModalHTML(){
+  const products=[...saved].map(getWishlistProduct).filter(Boolean);
+  if(!products.length){
+    return `
+      <div class="wishlist-modal-head">
+        <div><p class="wishlist-kicker">SAVED ITEMS</p><h2>Wishlist</h2></div>
+        <span class="wishlist-modal-count">0 items</span>
+      </div>
+      <div class="wishlist-empty">
+        <span class="wishlist-empty-heart" aria-hidden="true">♡</span>
+        <h3>Your wishlist is empty</h3>
+        <p>Tap the heart on any product to save it here.</p>
+        <button class="primary wishlist-browse-btn" type="button" data-wishlist-action="browse">Browse Deals →</button>
+      </div>`;
+  }
+
+  return `
+    <div class="wishlist-modal-head">
+      <div><p class="wishlist-kicker">SAVED ITEMS</p><h2>Wishlist</h2></div>
+      <span class="wishlist-modal-count">${products.length} ${products.length===1?"item":"items"}</span>
+    </div>
+    <div class="wishlist-modal-list">
+      ${products.map(product=>`
+        <article class="wishlist-item" data-wishlist-id="${escapeHTML(product.id)}">
+          <div class="wishlist-item-media">
+            <img src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}">
+          </div>
+          <div class="wishlist-item-info">
+            <div class="wishlist-item-title-row">
+              <div>
+                ${product.discount?`<span class="wishlist-discount">${escapeHTML(product.discount)}</span>`:""}
+                <h3>${escapeHTML(product.name)}</h3>
+              </div>
+              <button class="wishlist-remove-icon" type="button" data-wishlist-action="remove" data-id="${escapeHTML(product.id)}" aria-label="Remove ${escapeHTML(product.name)} from wishlist">×</button>
+            </div>
+            <p class="wishlist-store-count">${escapeHTML(product.stores)}</p>
+            <div class="wishlist-item-bottom">
+              <strong>${escapeHTML(product.price)}</strong>
+              <div class="wishlist-item-actions">
+                <button class="wishlist-remove-btn" type="button" data-wishlist-action="remove" data-id="${escapeHTML(product.id)}">Remove</button>
+                <button class="wishlist-compare-btn" type="button" data-wishlist-action="compare" data-product="${escapeHTML(product.compareProduct||product.name)}" data-price="${escapeHTML(product.comparePrice||product.price)}">Compare Offers</button>
+              </div>
+            </div>
+          </div>
+        </article>`).join("")}
+    </div>`;
+}
+
+function openWishlistModal(){
+  openModal(wishlistModalHTML(),true);
+}
+
+$("#wishlistTop")?.addEventListener("click",openWishlistModal);
+
+modalBody?.addEventListener("click",async e=>{
+  const actionButton=e.target.closest("[data-wishlist-action]");
+  if(!actionButton) return;
+  const action=actionButton.dataset.wishlistAction;
+
+  if(action==="browse"){
+    closeModal();
+    go("#deals");
+    return;
+  }
+
+  if(action==="remove"){
+    const id=actionButton.dataset.id;
+    const heart=$(`.heart[data-id="${CSS.escape(String(id||""))}"]`);
+    if(heart && saved.has(String(id))){
+      await toggleWishlistItem(heart);
+      if(modal && !modal.hidden) openWishlistModal();
+    }
+    return;
+  }
+
+  if(action==="compare"){
+    const product=actionButton.dataset.product||"Saved product";
+    const price=actionButton.dataset.price||"";
+    openModal(`
+      <h2>${escapeHTML(product)}</h2>
+      <p>This is a working demo comparison panel. Live marketplace feeds will replace these placeholders after affiliate/API connections are added.</p>
+      <div class="offer-list">
+        <div class="offer-row"><strong>Store A</strong><small>Demo listing • ${escapeHTML(price)}</small></div>
+        <div class="offer-row"><strong>Store B</strong><small>Live price connection coming next</small></div>
+        <div class="offer-row"><strong>Store C</strong><small>Live price connection coming next</small></div>
+      </div>`);
+  }
 });
 
 /* ---------- Authentication ---------- */
@@ -473,6 +573,7 @@ function renderOtpStep(email){
     currentUser=data?.user||data?.session?.user||null;
     currentProfile=currentUser?await loadProfile(currentUser.id):null;
     updateAccountHeader();
+    if(currentUser) await syncWishlistForUser(currentUser);
     if(currentProfile && profileComplete(currentProfile)){
       closeModal();
       showToast("Signed in successfully");
@@ -587,6 +688,7 @@ function renderAccountPanel(){
     currentUser=null;
     currentProfile=null;
     updateAccountHeader();
+    activateGuestWishlist();
     closeModal();
     showToast("Signed out");
   });
@@ -686,7 +788,7 @@ const infoContent={
     <p><a class="contact-email" href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>`},
   privacy:{title:"Privacy Policy",body:`
     <p>When you use account features, PricePulse may process profile information such as your name, email address, mobile number, city, state, country and PIN code. Account authentication and profile storage are provided through Supabase.</p>
-    <p>Wishlist information is stored in your browser while signed out and synced to your PricePulse account when you are signed in. Optional price/deal alerts are only enabled when you choose the alert option.</p>
+    <p>Wishlist information is currently stored in your browser. Optional price/deal alerts are only enabled when you choose the alert option.</p>
     <p>We do not collect payment-card details because purchases are completed on merchant websites.</p>
     <p>Privacy questions: <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>`},
   terms:{title:"Terms of Use",body:`
