@@ -1,12 +1,11 @@
-# PricePulse V19
+PricePulse V22 — Amazon Compare Offers popup fix
 
-Only the approved changes were made:
-- Supabase account wishlist sync (guest wishlist merges into the signed-in account)
-- Premium animated wishlist heart and account icon styling
-- Multicolor Google G icon in the Google sign-in button
-- Resend OTP cooldown changed from 30 seconds to 60 seconds
-- Privacy text updated only to accurately describe wishlist storage/sync
+Changes from V21:
+- boAt Rockerz Plus 450 ANC Compare Offers popup now shows a real Amazon India offer.
+- View on Amazon opens the supplied affiliate link in a new tab.
+- The same Amazon offer works when Compare Offers is opened from Wishlist.
+- Other demo products remain unchanged.
+- Auth, Supabase wishlist sync, profile, favicon, layout and existing design are preserved.
 
-Before deploying, run `supabase-wishlist.sql` once in Supabase SQL Editor.
-
-No other layout, auth flow, product content, category layout, footer behavior, profile fields, favicon, or Google OAuth settings were changed.
+Amazon affiliate link configured:
+https://link.amazon/B09rE8I28

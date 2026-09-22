@@ -1704,3 +1704,18 @@ body.categories-open .category-nav [data-cat].nav-selected::after{
   .wishlist-remove-btn,.wishlist-compare-btn{flex:1;padding:0 9px}
   .wishlist-store-count{margin-bottom:8px}
 }
+
+
+/* ===== V22 REAL AMAZON OFFER POPUP ===== */
+.comparison-kicker{margin:0 0 6px;color:#078f68;font-size:11px;font-weight:900;letter-spacing:.16em}
+.comparison-head h2{margin:0 0 8px}
+.comparison-head>p:last-child{margin:0 0 18px;color:#61707c;line-height:1.55}
+.offer-row-live{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;background:#fff}
+.offer-store-copy{min-width:0}
+.offer-store-copy strong{display:block;font-size:16px;margin-top:5px}
+.offer-store-badge{display:inline-flex;align-items:center;border-radius:999px;background:#fff0df;color:#b45309;padding:5px 8px;font-size:10px;font-weight:900;letter-spacing:.08em}
+.offer-shop-btn{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;border-radius:10px;background:#071f2b;color:#fff;text-decoration:none;padding:11px 14px;font-weight:850;transition:transform .18s ease,background .18s ease}
+.offer-shop-btn:hover{background:#0b2d3b;transform:translateY(-1px)}
+.offer-row-coming{background:#f8fafb}
+.offer-affiliate-note{margin:12px 2px 0;color:#7d8994;font-size:12px;line-height:1.45}
+@media(max-width:560px){.offer-row-live{align-items:stretch;flex-direction:column}.offer-shop-btn{width:100%}}

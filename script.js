@@ -247,16 +247,48 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && modal && !modal.hidden) closeModal();
 });
 
+function comparisonModalHTML(product,price,amazonUrl=""){
+  if(amazonUrl){
+    return `
+      <div class="comparison-head">
+        <p class="comparison-kicker">LIVE RETAILER OFFER</p>
+        <h2>${escapeHTML(product)}</h2>
+        <p>Amazon India is currently connected for this product. Check the latest price and availability on Amazon before buying.</p>
+      </div>
+      <div class="offer-list">
+        <div class="offer-row offer-row-live">
+          <div class="offer-store-copy">
+            <span class="offer-store-badge">AMAZON</span>
+            <strong>Amazon India</strong>
+            <small>Latest price & availability on Amazon.in</small>
+          </div>
+          <a class="offer-shop-btn" href="${escapeHTML(amazonUrl)}" target="_blank" rel="sponsored noopener noreferrer">View on Amazon →</a>
+        </div>
+        <div class="offer-row offer-row-coming">
+          <strong>More stores coming soon</strong>
+          <small>Additional retailer connections will appear here as they are enabled.</small>
+        </div>
+      </div>
+      <p class="offer-affiliate-note">Affiliate link • Price and availability may change on Amazon.</p>`;
+  }
+
+  return `
+    <h2>${escapeHTML(product)}</h2>
+    <p>This is a working demo comparison panel. Live marketplace feeds will replace these placeholders after affiliate/API connections are added.</p>
+    <div class="offer-list">
+      <div class="offer-row"><strong>Store A</strong><small>Demo listing • ${escapeHTML(price)}</small></div>
+      <div class="offer-row"><strong>Store B</strong><small>Live price connection coming next</small></div>
+      <div class="offer-row"><strong>Store C</strong><small>Live price connection coming next</small></div>
+    </div>`;
+}
+
 $$(".compare-btn").forEach(btn=>{
   btn.addEventListener("click",()=>{
-    openModal(`
-      <h2>${escapeHTML(btn.dataset.product)}</h2>
-      <p>This is a working demo comparison panel. Live marketplace feeds will replace these placeholders after affiliate/API connections are added.</p>
-      <div class="offer-list">
-        <div class="offer-row"><strong>Store A</strong><small>Demo listing • ${escapeHTML(btn.dataset.price)}</small></div>
-        <div class="offer-row"><strong>Store B</strong><small>Live price connection coming next</small></div>
-        <div class="offer-row"><strong>Store C</strong><small>Live price connection coming next</small></div>
-      </div>`);
+    openModal(comparisonModalHTML(
+      btn.dataset.product||"Product",
+      btn.dataset.price||"",
+      btn.dataset.amazonUrl||""
+    ));
   });
 });
 
@@ -272,7 +304,8 @@ function getWishlistProduct(id){
     stores:card.querySelector(".store-count")?.textContent?.trim()||"",
     discount:card.querySelector(".discount")?.textContent?.trim()||"",
     compareProduct:card.querySelector(".compare-btn")?.dataset.product||"",
-    comparePrice:card.querySelector(".compare-btn")?.dataset.price||""
+    comparePrice:card.querySelector(".compare-btn")?.dataset.price||"",
+    amazonUrl:card.querySelector(".compare-btn")?.dataset.amazonUrl||""
   };
 }
 
@@ -316,7 +349,7 @@ function wishlistModalHTML(){
               <strong>${escapeHTML(product.price)}</strong>
               <div class="wishlist-item-actions">
                 <button class="wishlist-remove-btn" type="button" data-wishlist-action="remove" data-id="${escapeHTML(product.id)}">Remove</button>
-                <button class="wishlist-compare-btn" type="button" data-wishlist-action="compare" data-product="${escapeHTML(product.compareProduct||product.name)}" data-price="${escapeHTML(product.comparePrice||product.price)}">Compare Offers</button>
+                <button class="wishlist-compare-btn" type="button" data-wishlist-action="compare" data-product="${escapeHTML(product.compareProduct||product.name)}" data-price="${escapeHTML(product.comparePrice||product.price)}" data-amazon-url="${escapeHTML(product.amazonUrl||"")}">Compare Offers</button>
               </div>
             </div>
           </div>
@@ -354,14 +387,8 @@ modalBody?.addEventListener("click",async e=>{
   if(action==="compare"){
     const product=actionButton.dataset.product||"Saved product";
     const price=actionButton.dataset.price||"";
-    openModal(`
-      <h2>${escapeHTML(product)}</h2>
-      <p>This is a working demo comparison panel. Live marketplace feeds will replace these placeholders after affiliate/API connections are added.</p>
-      <div class="offer-list">
-        <div class="offer-row"><strong>Store A</strong><small>Demo listing • ${escapeHTML(price)}</small></div>
-        <div class="offer-row"><strong>Store B</strong><small>Live price connection coming next</small></div>
-        <div class="offer-row"><strong>Store C</strong><small>Live price connection coming next</small></div>
-      </div>`);
+    const amazonUrl=actionButton.dataset.amazonUrl||"";
+    openModal(comparisonModalHTML(product,price,amazonUrl));
   }
 });
 
