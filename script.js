@@ -247,15 +247,17 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && modal && !modal.hidden) closeModal();
 });
 
-function comparisonModalHTML(product,price,amazonUrl=""){
-  if(amazonUrl){
+function comparisonModalHTML(product,price,amazonUrl="",flipkartUrl="",thirdStore="",thirdUrl=""){
+  if(amazonUrl || flipkartUrl || thirdUrl){
+    const retailerCount=[amazonUrl,flipkartUrl,thirdUrl].filter(Boolean).length;
     return `
       <div class="comparison-head">
-        <p class="comparison-kicker">LIVE RETAILER OFFER</p>
+        <p class="comparison-kicker">COMPARE RETAILER OFFERS</p>
         <h2>${escapeHTML(product)}</h2>
-        <p>Amazon India is currently connected for this product. Check the latest price and availability on Amazon before buying.</p>
+        <p>${retailerCount>1?"Compare the available retailer options below.":"Check the available retailer offer below."} Prices and availability are confirmed on the retailer site.</p>
       </div>
       <div class="offer-list">
+        ${amazonUrl?`
         <div class="offer-row offer-row-live">
           <div class="offer-store-copy">
             <span class="offer-store-badge">AMAZON</span>
@@ -263,23 +265,32 @@ function comparisonModalHTML(product,price,amazonUrl=""){
             <small>Latest price & availability on Amazon.in</small>
           </div>
           <a class="offer-shop-btn" href="${escapeHTML(amazonUrl)}" target="_blank" rel="sponsored noopener noreferrer">View on Amazon →</a>
-        </div>
-        <div class="offer-row offer-row-coming">
-          <strong>More stores coming soon</strong>
-          <small>Additional retailer connections will appear here as they are enabled.</small>
-        </div>
+        </div>`:""}
+        ${flipkartUrl?`
+        <div class="offer-row offer-row-live">
+          <div class="offer-store-copy">
+            <span class="offer-store-badge">FLIPKART</span>
+            <strong>Flipkart</strong>
+            <small>Latest price & availability on Flipkart</small>
+          </div>
+          <a class="offer-shop-btn" href="${escapeHTML(flipkartUrl)}" target="_blank" rel="sponsored noopener noreferrer">View on Flipkart →</a>
+        </div>`:""}
+        ${thirdUrl?`
+        <div class="offer-row offer-row-live">
+          <div class="offer-store-copy">
+            <span class="offer-store-badge">${escapeHTML(String(thirdStore||"STORE").toUpperCase())}</span>
+            <strong>${escapeHTML(thirdStore||"Retailer")}</strong>
+            <small>Latest price & availability on ${escapeHTML(thirdStore||"retailer")}</small>
+          </div>
+          <a class="offer-shop-btn" href="${escapeHTML(thirdUrl)}" target="_blank" rel="sponsored noopener noreferrer">View on ${escapeHTML(thirdStore||"Store")} →</a>
+        </div>`:""}
       </div>
-      <p class="offer-affiliate-note">Affiliate link • Price and availability may change on Amazon.</p>`;
+      <p class="offer-affiliate-note">Retailer links may be affiliate links • Prices and availability can change.</p>`;
   }
 
   return `
     <h2>${escapeHTML(product)}</h2>
-    <p>This is a working demo comparison panel. Live marketplace feeds will replace these placeholders after affiliate/API connections are added.</p>
-    <div class="offer-list">
-      <div class="offer-row"><strong>Store A</strong><small>Demo listing • ${escapeHTML(price)}</small></div>
-      <div class="offer-row"><strong>Store B</strong><small>Live price connection coming next</small></div>
-      <div class="offer-row"><strong>Store C</strong><small>Live price connection coming next</small></div>
-    </div>`;
+    <p>Retailer links are not available for this product yet.</p>`;
 }
 
 $$(".compare-btn").forEach(btn=>{
@@ -287,7 +298,10 @@ $$(".compare-btn").forEach(btn=>{
     openModal(comparisonModalHTML(
       btn.dataset.product||"Product",
       btn.dataset.price||"",
-      btn.dataset.amazonUrl||""
+      btn.dataset.amazonUrl||"",
+      btn.dataset.flipkartUrl||"",
+      btn.dataset.thirdStore||"",
+      btn.dataset.thirdUrl||""
     ));
   });
 });
@@ -305,7 +319,10 @@ function getWishlistProduct(id){
     discount:card.querySelector(".discount")?.textContent?.trim()||"",
     compareProduct:card.querySelector(".compare-btn")?.dataset.product||"",
     comparePrice:card.querySelector(".compare-btn")?.dataset.price||"",
-    amazonUrl:card.querySelector(".compare-btn")?.dataset.amazonUrl||""
+    amazonUrl:card.querySelector(".compare-btn")?.dataset.amazonUrl||"",
+    flipkartUrl:card.querySelector(".compare-btn")?.dataset.flipkartUrl||"",
+    thirdStore:card.querySelector(".compare-btn")?.dataset.thirdStore||"",
+    thirdUrl:card.querySelector(".compare-btn")?.dataset.thirdUrl||""
   };
 }
 
@@ -349,7 +366,7 @@ function wishlistModalHTML(){
               <strong>${escapeHTML(product.price)}</strong>
               <div class="wishlist-item-actions">
                 <button class="wishlist-remove-btn" type="button" data-wishlist-action="remove" data-id="${escapeHTML(product.id)}">Remove</button>
-                <button class="wishlist-compare-btn" type="button" data-wishlist-action="compare" data-product="${escapeHTML(product.compareProduct||product.name)}" data-price="${escapeHTML(product.comparePrice||product.price)}" data-amazon-url="${escapeHTML(product.amazonUrl||"")}">Compare Offers</button>
+                <button class="wishlist-compare-btn" type="button" data-wishlist-action="compare" data-product="${escapeHTML(product.compareProduct||product.name)}" data-price="${escapeHTML(product.comparePrice||product.price)}" data-amazon-url="${escapeHTML(product.amazonUrl||"")}" data-flipkart-url="${escapeHTML(product.flipkartUrl||"")}" data-third-store="${escapeHTML(product.thirdStore||"")}" data-third-url="${escapeHTML(product.thirdUrl||"")}">Compare Offers</button>
               </div>
             </div>
           </div>
@@ -388,7 +405,10 @@ modalBody?.addEventListener("click",async e=>{
     const product=actionButton.dataset.product||"Saved product";
     const price=actionButton.dataset.price||"";
     const amazonUrl=actionButton.dataset.amazonUrl||"";
-    openModal(comparisonModalHTML(product,price,amazonUrl));
+    const flipkartUrl=actionButton.dataset.flipkartUrl||"";
+    const thirdStore=actionButton.dataset.thirdStore||"";
+    const thirdUrl=actionButton.dataset.thirdUrl||"";
+    openModal(comparisonModalHTML(product,price,amazonUrl,flipkartUrl,thirdStore,thirdUrl));
   }
 });
 

@@ -6,3 +6,12 @@ Changes from V22:
 - Compare Offers and Wishlist Compare Offers both open the live Amazon offer panel.
 - Existing boAt Rockerz Plus 450 ANC Amazon integration remains unchanged.
 - Auth, Supabase wishlist sync, profile, favicon, layout and other products are unchanged.
+
+
+## V31 three-store comparison
+- All 8 products now show three retailer options.
+- Amazon links remain unchanged.
+- Flipkart links remain unchanged.
+- Croma is the third store for OnePlus Nord 6, Dell 15, boAt Rockerz Plus 450 ANC and Philips NA120/00.
+- Myntra is the third store for PUMA Smashic Comfort, NutriPro 500W, Dot & Key Vitamin C+E Sunscreen and boAt Storm Call 3.
+- Wishlist comparison also carries all three retailer links.
