@@ -1,0 +1,1 @@
+V62: Flipkart logo vertical alignment refined only. Moved the yellow bag icon upward inside flipkart-wordmark.svg so the wordmark sits more centrally relative to the bag, creating a more original Flipkart logo feel on Home cards, comparison popup and Best Price. Cache-busting version updated to v=62. No changes to prices, affiliate links, layout, buttons, or other functionality.

@@ -1,0 +1,187 @@
+/* PricePulse V78.8.159 — complete Plus PAGE navy-theme alignment.
+   Loaded AFTER V158. Scope to #ppPlusPage only: no global website changes.
+   Preserve the approved V156.9 hero geometry, 3D design, sheen, CTA and all functionality.
+   Green is reserved for actionable purchase CTAs and genuine positive member statuses. */
+
+/* Match PricePulse's original navy rather than mint-tinted backgrounds. */
+#ppPlusPage.pp-rd{
+  --ppx-navy:#0b2438;
+  --ppx-navy-2:#142f49;
+  --ppx-gold:#dcb76d;
+  --ppx-ice:#f3f6fb;
+  --ppx-border:#dbe4ee;
+  background:linear-gradient(180deg,#f4f7fb,#eef2f8);
+  color:#112b40;
+}
+#ppPlusPage .pp-rd-hero,
+#ppPlusPage .pp-rd-premium-card{
+  /* Approved V158 navy backgrounds remain unchanged. */
+}
+#ppPlusPage .pp-rd-section-head h2,
+#ppPlusPage .pp-rd-tracker h2{color:#102b43}
+#ppPlusPage .pp-rd-section-head p{color:#64788a}
+#ppPlusPage .pp-rd-overline{color:#98702b}
+
+/* 1 — Four Ways: cool-white premium navy cards, never a mint wash. */
+#ppPlusPage .pp-rd-benefit{
+  background:linear-gradient(147deg,#fff 0%,#fafcff 51%,#edf3fb 100%);
+  border-color:#d7e2ef;
+  box-shadow:0 17px 34px rgba(13,40,70,.085),0 3px 9px rgba(11,36,68,.035),inset 0 1px #fff;
+}
+#ppPlusPage .pp-rd-benefit::before{
+  background:linear-gradient(90deg,#ba8a38,#f3d796 48%,#193e63);
+}
+#ppPlusPage .pp-rd-benefit::after{
+  background:radial-gradient(circle,rgba(219,181,99,.13),transparent 70%);
+}
+#ppPlusPage .pp-rd-benefit:hover{
+  border-color:#d3ad62;
+  box-shadow:0 22px 42px rgba(12,35,64,.14),0 5px 13px rgba(12,36,61,.05);
+}
+#ppPlusPage .pp-rd-feature-stat strong,
+#ppPlusPage .pp-rd-benefit h3{color:#0d2b47}
+#ppPlusPage .pp-rd-benefit p{color:#526d83}
+#ppPlusPage .pp-rd-icon{
+  background:linear-gradient(145deg,#163958,#081d32);
+  border-color:rgba(240,211,147,.27);
+  color:#f1ce84;
+  box-shadow:0 8px 18px rgba(13,38,75,.22),inset 0 1px rgba(255,255,255,.17);
+}
+#ppPlusPage .pp-rd-benefit-foot{
+  background:linear-gradient(90deg,#f0f4fb,#e9eff9);
+  border-color:#d6e2ef;
+  color:#1a456b;
+}
+
+/* 2 — Free vs Plus: truly NAVY premium plan, neutral-cool Free card. */
+#ppPlusPage .pp-rd-plan.is-free{
+  background:linear-gradient(145deg,#fff,#f2f6fc);
+  border-color:#d6e0ee;
+}
+#ppPlusPage .pp-rd-plan.is-plus{
+  background:
+    radial-gradient(circle at 93% 5%,rgba(234,191,105,.13),transparent 43%),
+    radial-gradient(circle at 6% 98%,rgba(49,98,159,.17),transparent 41%),
+    linear-gradient(145deg,#183d5c 0%,#0e2c46 52%,#071c30 100%);
+  border-color:#dfb76a;
+  box-shadow:0 23px 47px rgba(10,34,65,.24),inset 0 1px rgba(255,241,208,.19);
+}
+#ppPlusPage .pp-rd-plan.is-plus li{color:#eaf2fb}
+#ppPlusPage .pp-rd-plan.is-plus li svg{color:#f0cb79}
+#ppPlusPage .pp-rd-plan.is-plus>p,
+#ppPlusPage .pp-rd-plan.is-plus .pp-rd-plan-price small{color:#c3d5e6}
+#ppPlusPage .pp-rd-plan.is-free li svg{color:#1b517b}
+#ppPlusPage .pp-rd-free-btn{
+  background:#eaf0f8;
+  border-color:#d6e0ee;
+  color:#224363;
+}
+#ppPlusPage .pp-rd-free-btn:hover{background:#e0eaf6}
+#ppPlusPage .pp-rd-full-compare{background:#fff;border-color:#d8e2ee}
+#ppPlusPage .pp-rd-full-compare summary{color:#173a58}
+#ppPlusPage .pp-pg-cell.pp-pg-th{background:#eaf0f8;color:#163d61}
+#ppPlusPage .pp-pg-cell.pp-pg-plus:not(.pp-pg-th){background:#fff9ec;color:#77551f}
+#ppPlusPage .pp-pg-cell.pp-pg-th.pp-pg-plus{background:#f3dfb4;color:#604213}
+#ppPlusPage .pp-pg-cell.pp-pg-plus.is-yes{color:#1e507c}
+#ppPlusPage .pp-pg-cell.is-yes{color:#1e507c}
+
+/* 3 — Tracker: Navy-backed premium panel, light math cards with gold reward accents. */
+#ppPlusPage .pp-rd-tracker{
+  background:
+    radial-gradient(circle at 11% 4%,rgba(226,184,108,.14),transparent 38%),
+    linear-gradient(124deg,#173b59 0%,#0d2a45 65%,#09213a 100%);
+  border-color:#c9ac70;
+  box-shadow:0 20px 39px rgba(11,38,67,.16),inset 0 1px rgba(255,255,255,.12);
+}
+#ppPlusPage .pp-rd-tracker::before{
+  background:linear-gradient(#e9c574,#f7e2ab 49%,#315b87);
+}
+#ppPlusPage .pp-rd-tracker h2{color:#fff}
+#ppPlusPage .pp-rd-tracker .pp-rd-overline{color:#f2d38c}
+#ppPlusPage .pp-rd-tracker>div>p{color:#d5e2f1}
+#ppPlusPage .pp-rd-track-link{
+  color:#f5d48b;
+  border-color:rgba(233,200,135,.38);
+  background:rgba(235,202,138,.09);
+  box-shadow:inset 0 1px rgba(255,255,255,.10);
+}
+#ppPlusPage .pp-rd-track-link:hover{background:rgba(235,202,138,.16)}
+#ppPlusPage .pp-rd-tracker-math{
+  background:#f9fbff;
+  border-color:#b7c9e2;
+  box-shadow:0 15px 30px rgba(5,21,42,.22),inset 0 1px #fff;
+}
+#ppPlusPage .pp-rd-track-stat{
+  background:#edf2f9;
+  border-color:#d5e0ed;
+}
+#ppPlusPage .pp-rd-track-stat.is-potential{
+  background:#fff6e2;
+  border-color:#ead5aa;
+}
+#ppPlusPage .pp-rd-track-stat b{color:#0b2b49}
+#ppPlusPage .pp-rd-track-stat.is-potential b{color:#916219}
+#ppPlusPage .pp-rd-track-stat small,
+#ppPlusPage .pp-rd-track-stat>span{color:#61778b}
+#ppPlusPage .pp-rd-track-progress-bar{
+  background:repeating-linear-gradient(90deg,#dbe4f1 0,#dbe4f1 13px,#f2f6fd 13px,#f2f6fd 16px);
+  border-color:#d3dfec;
+}
+#ppPlusPage .pp-rd-track-progress-label{color:#335a7d}
+#ppPlusPage .pp-rd-tracker-math>p{color:#61768b;border-top-color:#e5ecf4}
+
+/* 4 — FAQ cool blue-white instead of green-white. */
+#ppPlusPage .pp-rd-faq details{
+  background:linear-gradient(115deg,#fff,#f5f8fd);
+  border-color:#d8e2ef;
+  box-shadow:0 7px 20px rgba(12,39,72,.05);
+}
+#ppPlusPage .pp-rd-faq details:hover{border-color:#c5d5e7}
+#ppPlusPage .pp-rd-faq details[open]{border-color:#d7b87f;box-shadow:0 12px 24px rgba(13,39,66,.08)}
+#ppPlusPage .pp-rd-faq summary{color:#163c5b}
+#ppPlusPage .pp-rd-faq details[open] summary{
+  background:linear-gradient(90deg,#fff6e5,#f9fbff);
+}
+#ppPlusPage .pp-rd-faq details p{color:#546b80}
+
+/* 5 — Final CTA matches the Hero and the Plus plan; no teal-green gradient. */
+#ppPlusPage .pp-rd-final{
+  background:
+    radial-gradient(ellipse at 74% 9%,rgba(229,189,109,.16),transparent 39%),
+    radial-gradient(ellipse at 12% 93%,rgba(52,100,161,.17),transparent 44%),
+    linear-gradient(123deg,#092035,#163c59 60%,#0b2138);
+  box-shadow:0 25px 51px rgba(9,34,63,.19),inset 0 1px rgba(255,255,255,.13);
+}
+#ppPlusPage .pp-rd-final p{color:#d8e5f1}
+#ppPlusPage .pp-rd-final small{color:#b9cedf}
+
+/* The existing cream/gold first-view strip keeps its approved shape and dimensions.
+   Only the unrelated emerald text accents become navy to match the full page. */
+#ppPlusPage .pp-rd-eq-col.is-green strong{color:#17496f}
+
+/* After purchase: match the same navy membership experience, not green-tinted panels. */
+#ppPlusPage .pp-rd-welcome{
+  background:
+    radial-gradient(circle at 50% 17%,rgba(229,181,89,.21),transparent 37%),
+    linear-gradient(158deg,#081b2d 0%,#123551 62%,#092039 100%);
+}
+#ppPlusPage .pp-rd-member-pass{
+  background:
+    radial-gradient(circle at 85% 8%,rgba(238,199,115,.15),transparent 47%),
+    linear-gradient(140deg,#183a55,#0a2036 60%,#102b47);
+}
+#ppPlusPage .pp-rd-member-description,
+#ppPlusPage .pp-rd-member-links button{color:#dce8f4}
+#ppPlusPage .pp-rd-member-brand small,
+#ppPlusPage .pp-rd-member-pass-footer small{color:#c3d5e6}
+#ppPlusPage .pp-rd-member-terms{color:#a7c0d7}
+/* Semantically positive ACTIVE indicator and the site’s emerald purchase CTA remain green. */
+
+/* Precise contrast: tracker right-hand explanation must stay dark on its light card,
+   and potential reward amounts should never inherit the old emerald styling. */
+#ppPlusPage .pp-rd-tracker .pp-rd-tracker-math > p{
+  color:#5c7084;
+}
+#ppPlusPage .pp-rd-tracker .pp-rd-tracker-math > .pp-rd-track-stat.is-potential b{
+  color:#926319;
+}

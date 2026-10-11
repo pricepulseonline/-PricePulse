@@ -1,17 +1,18 @@
-# PricePulse V23
+# PricePulse V78.8.136
 
-Changes from V22:
-- Connected PHILIPS Air Fryer NA120/00 4.2L to Amazon India affiliate short link.
-- Air fryer card now uses Amazon badge and “Check latest price” instead of a demo price.
-- Compare Offers and Wishlist Compare Offers both open the live Amazon offer panel.
-- Existing boAt Rockerz Plus 450 ANC Amazon integration remains unchanged.
-- Auth, Supabase wishlist sync, profile, favicon, layout and other products are unchanged.
+Wallet referral/reward engine checkpoint built on locked V78.8.135.
+
+- ₹100 referrer + ₹100 friend.
+- Pending until purchase confirmed + return window clear + affiliate commission confirmed.
+- 50% commission funding pool, staged unlock: 10% / 25% / 50% / 75% / 100%.
+- Self-referral and duplicate-referrer protection.
+- Admin end-to-end test console with reversal testing.
+- Local testing works before SQL; final backend draft is `supabase-wallet-rewards-v136.sql` and should be run only after approval.
 
 
-## V31 three-store comparison
-- All 8 products now show three retailer options.
-- Amazon links remain unchanged.
-- Flipkart links remain unchanged.
-- Croma is the third store for OnePlus Nord 6, Dell 15, boAt Rockerz Plus 450 ANC and Philips NA120/00.
-- Myntra is the third store for PUMA Smashic Comfort, NutriPro 500W, Dot & Key Vitamin C+E Sunscreen and boAt Storm Call 3.
-- Wishlist comparison also carries all three retailer links.
+## V78.8.138 — My Vouchers + Admin Manual Voucher Issue
+- Preserves approved V78.8.137 referral, reward, redeem and history behavior.
+- Adds Wallet > My Vouchers with Active / Used / Expired / Test-only states and Copy Code.
+- Adds Admin Manual Voucher Issuance for authorized real retailer/provider codes while API integration is pending.
+- Adds local testing for issue + mark used + open user wallet.
+- `supabase-wallet-rewards-v138.sql` is draft-only until final approval.

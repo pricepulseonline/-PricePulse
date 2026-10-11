@@ -1,0 +1,1224 @@
+[
+ {
+  "id": 1,
+  "category": "Mobiles",
+  "name": "Apple iPhone 17",
+  "variant": "256GB",
+  "brand": "Apple",
+  "price": "76,999 (sale) · list 98,900",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/l/iphone-17-256gb-0auz00a.html"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/P261226/261226/apple-iphone-17-256gb-storage-black"
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/collection/iphone-17"
+   }
+  ],
+  "why": "Counterpoint India #2 model, Q2 2026; Big Billion Days headline deal"
+ },
+ {
+  "id": 2,
+  "category": "Mobiles",
+  "name": "Apple iPhone 16",
+  "variant": "128GB",
+  "brand": "Apple",
+  "price": "71,999 (sale) · list 86,900",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/apple-iphone-16-128-gb-black-m0xrrm-8590265"
+   },
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/l/iphone-16-128gb-0ahz00a.html"
+   }
+  ],
+  "why": "Counterpoint India #3 model, Q2 2026; Great Indian Festival headline deal"
+ },
+ {
+  "id": 3,
+  "category": "Mobiles",
+  "name": "Samsung Galaxy S25 5G",
+  "variant": "12GB / 256GB",
+  "brand": "Samsung",
+  "price": "~60,000 (sale) · list 79,999",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/samsung-galaxy-s25-5g-256-gb-12-gb-ram-navy-mobile-phone-m6ao1k-8852481"
+   }
+  ],
+  "why": "Drives Samsung's Q2 2026 growth (Counterpoint); festive deal"
+ },
+ {
+  "id": 4,
+  "category": "Mobiles",
+  "name": "OPPO A6x 5G",
+  "variant": "4GB / 128GB",
+  "brand": "OPPO",
+  "price": "~19,000",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/oppo-a6x-5g-128-gb-4-gb-ram-olive-green-mobile-phone-mio7ey-9660362"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/P248729/248732/oppo-a6x-5g-4gb-ram-128gb-storage-olive-green"
+   }
+  ],
+  "why": "Counterpoint India #1 best-selling phone, Q2 2026"
+ },
+ {
+  "id": 5,
+  "category": "Mobiles",
+  "name": "vivo Y31 5G",
+  "variant": "6GB / 128GB",
+  "brand": "vivo",
+  "price": "~21,000",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/vivo-y31-5g-128-gb-6-gb-ram-nova-green-mobile-phone-mrkkzk-10306332"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/P245144/245148/vivo-y31-5g-6gb-ram-128gb-storage-diamond-green"
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   }
+  ],
+  "why": "Counterpoint India #5 model; vivo is India's #1 phone brand"
+ },
+ {
+  "id": 6,
+  "category": "Mobiles",
+  "name": "Samsung Galaxy A17 5G",
+  "variant": "6GB / 128GB",
+  "brand": "Samsung",
+  "price": "~21,000",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/samsung-galaxy-a17-5g-128-gb-6-gb-ram-black-mobile-phone-without-travel-adaptor-mizy4x-9677871"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/P255937/255939/samsung-galaxy-a17-5g-6-128gb-6-7-inch-super-amoled-display-50mp-triple-camera-5000mah-battery-exynos-1330-processor-ip54-water-dust-resistance-android-15-one-ui-7-0-2026-model-black"
+   }
+  ],
+  "why": "Samsung volume driver in ₹15–20k segment (Counterpoint)"
+ },
+ {
+  "id": 7,
+  "category": "Mobiles",
+  "name": "Nothing Phone (4a)",
+  "variant": "8GB / 128GB",
+  "brand": "Nothing",
+  "price": "~31,999",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/nothing-phone-4a-5g-8gb-ram-128gb-black-/p/321826"
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/sections/nothing-phone-4a-series"
+   }
+  ],
+  "why": "Nothing up 105% year on year, Q2 2026 (Counterpoint)"
+ },
+ {
+  "id": 8,
+  "category": "Mobiles",
+  "name": "OnePlus Nord CE6",
+  "variant": "8GB / 128GB",
+  "brand": "OnePlus",
+  "price": "~33,999 (sale)",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/oneplus-nord-ce6-5g-128-gb-8-gb-ram-pitch-black-mobile-phone-mov48v-10057354"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/P257164/257164/oneplus-nord-ce6-5g-8gb-ram-128gb-storage-snapdragon-7s-gen-4-8000mah-battery-50mp-camera-pitch-black"
+   }
+  ],
+  "why": "Headline mid-range deal in Great Indian Festival 2026"
+ },
+ {
+  "id": 9,
+  "category": "Mobiles",
+  "name": "Redmi A7 Pro 5G",
+  "variant": "4GB / 64GB",
+  "brand": "Xiaomi",
+  "price": "~14,499 (sale)",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/redmi-a7-pro-5g-64-gb-4-gb-ram-black-mobile-phone-mr4ul4-10258017"
+   }
+  ],
+  "why": "Xiaomi volume driver, Q2 2026 (Counterpoint)"
+ },
+ {
+  "id": 10,
+  "category": "Mobiles",
+  "name": "realme P4 Lite 5G",
+  "variant": "4GB / 64GB",
+  "brand": "realme",
+  "price": "~12,999",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/realme-p4-lite-5g-64-gb-4-gb-ram-mosaic-green-mobile-phone-mn8rz4-9994535"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/P256129/256129/realme-p4-lite-5g-4gb-ram-64gb-storage-dimensity-6300-7000mah-battery-13mp-camera-mosaic-blue"
+   }
+  ],
+  "why": "realme #1 in ₹10–15k on Flipkart, H1 2026"
+ },
+ {
+  "id": 11,
+  "category": "Laptops",
+  "name": "Apple MacBook Neo 13\"",
+  "variant": "A18 Pro · 8GB · 256GB SSD",
+  "brand": "Apple",
+  "price": "~67,990 (sale)",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Vijay Sales",
+    "url": null
+   }
+  ],
+  "why": "Amazon India #1 best-selling laptop, Aug 2026"
+ },
+ {
+  "id": 12,
+  "category": "Laptops",
+  "name": "ASUS Vivobook 16 (X1605VA-MB1627WS)",
+  "variant": "i5-13420H · 16GB · 512GB SSD",
+  "brand": "ASUS",
+  "price": "~70,000–79,000",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Amazon India #3 best-selling laptop series, Aug 2026"
+ },
+ {
+  "id": 13,
+  "category": "Laptops",
+  "name": "Dell Inspiron 15 3530",
+  "variant": "i5-1334U · 16GB · 512GB SSD",
+  "brand": "Dell",
+  "price": "~69,990",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/dell-inspiron-15-3530-notebook-laptop-intel-core-i5-1334u16-gb512-gb-ssdwindows-11ms-officefull-hd-3962-cm-156-inch-platinum-silver-m6ja49-8860653"
+   }
+  ],
+  "why": "Amazon India #4 best-selling laptop series, Aug 2026"
+ },
+ {
+  "id": 14,
+  "category": "Laptops",
+  "name": "HP 15 (15-fd0682TU)",
+  "variant": "Core 5 120U · 16GB · 512GB SSD",
+  "brand": "HP",
+  "price": "~72,990",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/hp-15-15-fd0682tu-standard-laptop-intel-core-5-120u-processor16-gb512-gb-ssdintel-iris-xe-graphicswindows-11-homems-office-home-2024full-hd-396-cm-156-inch-natural-silver-mmosc7-9984564"
+   },
+   {
+    "store": "Vijay Sales",
+    "url": "https://www.vijaysales.com/p/259146/hp-thin-and-light-laptop-intel-core-5-16gb-ram-512gb-ssd-15-6-inch-39-62-cm-fhd-display-intel-graphics-windows-11-ms-office-15-fd0682tu"
+   }
+  ],
+  "why": "Amazon India #5 best-selling laptop series, Aug 2026"
+ },
+ {
+  "id": 15,
+  "category": "Laptops",
+  "name": "Apple MacBook Air 13\" (M5)",
+  "variant": "M5 · 16GB · 512GB SSD",
+  "brand": "Apple",
+  "price": "~1,39,990",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   }
+  ],
+  "why": "Amazon India #6 best-selling laptop, Aug 2026"
+ },
+ {
+  "id": 16,
+  "category": "Electronics",
+  "name": "boAt Airdopes 141 Gen 2",
+  "variant": "Active Black · BT 5.4",
+  "brand": "boAt",
+  "price": "~799",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": "https://www.flipkart.com/boat-airdopes-141-gen-2-bluetooth/p/itm441116d221f76"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   }
+  ],
+  "why": "boAt #1 in Indian wearables (IDC Q2 2026: 29.2%)"
+ },
+ {
+  "id": 17,
+  "category": "Electronics",
+  "name": "OnePlus Nord Buds 4",
+  "variant": "Black · 52dB ANC",
+  "brand": "OnePlus",
+  "price": "~3,099",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Myntra",
+    "url": null
+   }
+  ],
+  "why": "New 2026 model; OPPO group #2 in wearables (IDC)"
+ },
+ {
+  "id": 18,
+  "category": "Electronics",
+  "name": "Apple AirPods 4 (ANC)",
+  "variant": "White · USB-C",
+  "brand": "Apple",
+  "price": "~17,900",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/apple-airpods-4-active-noise-cancellation-with-adaptive-audio-and-transparency-mode-voice-isolation-hey-siri-and-siri-interactions-up-to-5-hours-of-listening-time-on-a-single-charge-up-to-4-hours-with-active-noise-cancellation-enabled-m0wgab-8584788"
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Premium earbuds revenue up 7% (Counterpoint Q1 2026)"
+ },
+ {
+  "id": 19,
+  "category": "Electronics",
+  "name": "realme Buds T310",
+  "variant": "Vibrant Black · 46dB ANC",
+  "brand": "realme",
+  "price": "~2,000",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/realme-buds-t310-tws-bluetooth-earbuds-with-124-mm-dynamic-bass-driver-40-hrs-total-playback-fast-charge-10-min-charge-for-5-hrs-playback-vibrant-black-lz7054-8057607"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Popular budget ANC earbuds"
+ },
+ {
+  "id": 20,
+  "category": "Electronics",
+  "name": "Sony WH-CH520",
+  "variant": "Black · on-ear wireless",
+  "brand": "Sony",
+  "price": "~4,490",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Long-running best-selling Sony wireless headphones"
+ },
+ {
+  "id": 21,
+  "category": "Electronics",
+  "name": "OnePlus Bullets Wireless Z3",
+  "variant": "Neckband · Black",
+  "brand": "OnePlus",
+  "price": "~1,399",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   }
+  ],
+  "why": "2026 neckband revival; new colour at ₹1,399"
+ },
+ {
+  "id": 22,
+  "category": "Watches",
+  "name": "Noise ColorFit Pulse 4",
+  "variant": "1.85\" AMOLED · Jet Black",
+  "brand": "Noise",
+  "price": "~2,499",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Myntra",
+    "url": null
+   }
+  ],
+  "why": "Noise #1 in smartwatches (IDC Q2 2026: 19.4%)"
+ },
+ {
+  "id": 23,
+  "category": "Watches",
+  "name": "boAt Lunar Vista",
+  "variant": "1.52\" · BT calling · Black",
+  "brand": "boAt",
+  "price": "~1,599",
+  "stores": [
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "boAt #2 in smartwatches (IDC 15.2%); Croma top pick under ₹4,000"
+ },
+ {
+  "id": 24,
+  "category": "Watches",
+  "name": "Apple Watch SE 3",
+  "variant": "GPS 40mm · Midnight",
+  "brand": "Apple",
+  "price": "~23,800",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/apple-watch-se-3-gps-40-mm-midnight-aluminium-case-with-midnight-sport-band-sm-mfdxri-9380162"
+   },
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/apple-watch-se-3-gps-with-midnight-sport-band-s-m-40mm-retina-ltpo-oled-display-midnight-aluminium-case-/p/317404"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Premium smartwatches up 94.8% (IDC Q2 2026)"
+ },
+ {
+  "id": 25,
+  "category": "Electronics",
+  "name": "JBL Go 4",
+  "variant": "Black",
+  "brand": "JBL",
+  "price": "~3,499",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/jbl-go-4-wireless-ultra-portable-bluetooth-speaker-with-jbl-pro-sound-7-hours-of-playtime-waterproof-dustproof-bluetooth-53-multiconnection-with-auracast-and-jbl-portable-app-black-lxyo23-7718585"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   }
+  ],
+  "why": "JBL's best-known small speaker"
+ },
+ {
+  "id": 26,
+  "category": "Electronics",
+  "name": "JBL Flip 7",
+  "variant": "Black · IP68",
+  "brand": "JBL",
+  "price": "~12,999",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/jbl-flip-7-portable-waterproof-and-drop-proof-speaker-bold-pro-sound-with-ai-sound-boost-16-hrs-of-playtime-and-pushlock-system-with-interchangeable-accessories-black-mf5e9m-9352808"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   }
+  ],
+  "why": "Current JBL mid-range speaker; big festive discount"
+ },
+ {
+  "id": 27,
+  "category": "Electronics",
+  "name": "Samsung 32\" HD Smart TV",
+  "variant": "UA32T4380AKXXL",
+  "brand": "Samsung",
+  "price": "~13,500",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": null
+   }
+  ],
+  "why": "Long-time top 32-inch seller; in Croma's best 32\" TVs 2026"
+ },
+ {
+  "id": 28,
+  "category": "Electronics",
+  "name": "Xiaomi X Pro 43\" 4K QLED Google TV",
+  "variant": "L43MB-APIN (2025)",
+  "brand": "Xiaomi",
+  "price": "~32,000",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/xiaomi-x-pro-series-109-cm-43-inch-4k-ultra-hd-qled-smart-google-tv-with-google-voice-assistant-2025-model-/p/315469"
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Xiaomi leads India smart TVs; in Croma's best 43\" TVs 2026"
+ },
+ {
+  "id": 29,
+  "category": "Electronics",
+  "name": "Sony Bravia 2 II 55\" 4K Google TV",
+  "variant": "K-55S25BM2",
+  "brand": "Sony",
+  "price": "~67,000",
+  "stores": [
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/sony-bravia-2-ii-139-7-cm-55-inch-4k-ultra-hd-led-smart-google-tv-with-google-assistant-2025-model-/p/316615"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Popular 55-inch pick on festive TV lists"
+ },
+ {
+  "id": 30,
+  "category": "Home & Kitchen",
+  "name": "Philips Air Fryer 4.2L",
+  "variant": "NA120/00 · 1500W",
+  "brand": "Philips",
+  "price": "~7,500",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/phillips-42-l-air-fryer-1500-w-na12000-mfpe2u-9426572"
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   }
+  ],
+  "why": "Amazon '10K+ bought last month'; already on PricePulse"
+ },
+ {
+  "id": 31,
+  "category": "Home & Kitchen",
+  "name": "Prestige Iris Mixer Grinder",
+  "variant": "750W · 3 jars",
+  "brand": "Prestige",
+  "price": "~3,300",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "JioMart",
+    "url": null
+   }
+  ],
+  "why": "Long-running Amazon kitchen bestseller"
+ },
+ {
+  "id": 32,
+  "category": "Home & Kitchen",
+  "name": "Pigeon Amaze Plus Electric Kettle",
+  "variant": "1.5L · 1500W (14289)",
+  "brand": "Pigeon",
+  "price": "~650",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": "https://croma.com/pigeon-1500-watt-1-5-litre-electric-kettle-with-auto-shut-off-silver-/p/227018"
+   }
+  ],
+  "why": "Top-volume budget kettle; huge review count"
+ },
+ {
+  "id": 33,
+  "category": "Home & Kitchen",
+  "name": "Prestige PIC 20 Neo Induction",
+  "variant": "1600W (41134)",
+  "brand": "Prestige",
+  "price": "~2,300",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": "https://croma.com/prestige-pic-20-neo-1600w-induction-cooktop-with-8-preset-menus/p/307751"
+   }
+  ],
+  "why": "India's best-known induction cooktop line"
+ },
+ {
+  "id": 34,
+  "category": "Home & Kitchen",
+  "name": "Atomberg Renesa BLDC Fan",
+  "variant": "1200mm · 5-star · remote",
+  "brand": "Atomberg",
+  "price": "~3,300",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": "https://croma.com/atomberg-renesa-120cm-3-blade-ceiling-fan-5-star-bee-rated-with-remote-control-ivory-/p/265712"
+   }
+  ],
+  "why": "Best-selling BLDC ceiling fan"
+ },
+ {
+  "id": 35,
+  "category": "Home & Kitchen",
+  "name": "Philips Steam Iron",
+  "variant": "GC1905/21 · 1440W",
+  "brand": "Philips",
+  "price": "~1,500",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": "https://www.flipkart.com/philips-gc1905-1440-w-steam-iron/p/itm0fd9e06933416"
+   },
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/philips-iron-steam-gc1905-01/p/170449"
+   }
+  ],
+  "why": "Perennial top steam iron on Amazon and Flipkart"
+ },
+ {
+  "id": 36,
+  "category": "Home & Kitchen",
+  "name": "Kent Grand Plus RO Purifier",
+  "variant": "9L · RO+UV+UF+TDS",
+  "brand": "Kent",
+  "price": "~12,500",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/kent-zww-series-grand-9-litres-ro-uv-uf-tds-water-purifier"
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Top pick in 2026 water purifier roundups"
+ },
+ {
+  "id": 37,
+  "category": "Home & Kitchen",
+  "name": "Hawkins Contura Black Pressure Cooker",
+  "variant": "3.5L · CB35",
+  "brand": "Hawkins",
+  "price": "~2,300",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": "https://dl.flipkart.com/dl/hawkins-contura-black-cb35-3-5-l-pressure-cooker/p/itm75811c77fdcb9"
+   },
+   {
+    "store": "JioMart",
+    "url": null
+   }
+  ],
+  "why": "Evergreen cookware bestseller"
+ },
+ {
+  "id": 38,
+  "category": "Appliances",
+  "name": "LG 1.5 Ton 5 Star AI Convertible Split AC",
+  "variant": "US-Q19YNZE1",
+  "brand": "LG",
+  "price": "~46,000",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": null
+   }
+  ],
+  "why": "In 2026 top 1.5-ton lists; LG leads AC search interest"
+ },
+ {
+  "id": 39,
+  "category": "Appliances",
+  "name": "Samsung 236L 3 Star Double Door Fridge",
+  "variant": "RT28C3733S8/HL",
+  "brand": "Samsung",
+  "price": "~27,000",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/samsung-236-l-3-star-double-door-refrigerator-elegant-inox-rt28c3733s8hl-lu2cbr-7537417"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "In Croma's 2026 under-₹30K fridge list"
+ },
+ {
+  "id": 40,
+  "category": "Appliances",
+  "name": "Whirlpool 192L 3 Star Single Door Fridge",
+  "variant": "215 IMPRO ROY 3S",
+  "brand": "Whirlpool",
+  "price": "~17,700",
+  "stores": [
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   }
+  ],
+  "why": "In Croma's 2026 under-₹30K list"
+ },
+ {
+  "id": 41,
+  "category": "Appliances",
+  "name": "Samsung 7kg 5 Star Front Load Washer",
+  "variant": "WW70T4020CX/TL",
+  "brand": "Samsung",
+  "price": "~30,000",
+  "stores": [
+   {
+    "store": "Croma",
+    "url": "https://www.croma.com/samsung-7-kg-5-star-inverter-fully-automatic-front-load-washing-machine-ww70t4020cx-tl-diamond-drum-inox-/p/233534"
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/samsung-7-kg-front-loading-fully-automatic-washing-machine-with-hygiene-steam-cycle-t-series-ww70t4020cxtl"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Very popular entry front loader; Croma rating 4.7"
+ },
+ {
+  "id": 42,
+  "category": "Appliances",
+  "name": "Samsung 28L Convection Microwave",
+  "variant": "MC28A5013AK/TL",
+  "brand": "Samsung",
+  "price": "~14,000",
+  "stores": [
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/samsung-28-litre-convection-microwave-oven-with-curd-anytime-mc28a5013aktl-l4zn59"
+   },
+   {
+    "store": "Flipkart",
+    "url": "https://flipkart.com/samsung-28-l-convection-grill-microwave-oven/p/itmf5c4ad553ee4c"
+   },
+   {
+    "store": "Amazon",
+    "url": null
+   }
+  ],
+  "why": "Top-selling convection microwave"
+ },
+ {
+  "id": 43,
+  "category": "Appliances",
+  "name": "AO Smith 15L Storage Geyser",
+  "variant": "HSE-VAS-X-015",
+  "brand": "A. O. Smith",
+  "price": "~9,500",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Croma",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": null
+   }
+  ],
+  "why": "Best 15L water heater picks; October demand rising"
+ },
+ {
+  "id": 44,
+  "category": "Beauty",
+  "name": "The Derma Co Hyaluronic Sunscreen SPF 50",
+  "variant": "50 g",
+  "brand": "The Derma Co",
+  "price": "₹235–615 (big gap)",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Nykaa",
+    "url": "https://www.nykaa.com/the-derma-co-1-hyaluronic-sunscreen-aqua-ultra-light-gel-with-spf-50-pa-for-broad-spectrum/p/2777158"
+   },
+   {
+    "store": "Purplle",
+    "url": null
+   }
+  ],
+  "why": "Most-rated sunscreen on Amazon (41k ratings)"
+ },
+ {
+  "id": 45,
+  "category": "Beauty",
+  "name": "Minimalist 10% Niacinamide Serum",
+  "variant": "30 ml",
+  "brand": "Minimalist",
+  "price": "~549–599",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Nykaa",
+    "url": "https://www.nykaaman.com/minimalist-10percent-niacinamide-face-serum-with-matmarine-zinc-for-reducing-oil-blemishes/p/15020675"
+   },
+   {
+    "store": "Purplle",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Best-known Indian face serum"
+ },
+ {
+  "id": 46,
+  "category": "Beauty",
+  "name": "Cetaphil Gentle Skin Cleanser",
+  "variant": "125 ml",
+  "brand": "Cetaphil",
+  "price": "~380–450",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Nykaa",
+    "url": null
+   },
+   {
+    "store": "Purplle",
+    "url": "https://www.purplle.com/product/cetaphil-gentle-skin-cleanserdry-to-normalsensitive-skin-125-ml-face-wash-for-dry-and-sensitive-skin"
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   }
+  ],
+  "why": "Long-running face wash bestseller"
+ },
+ {
+  "id": 47,
+  "category": "Beauty",
+  "name": "Philips BT3302/15 Beard Trimmer",
+  "variant": "BT3302/15",
+  "brand": "Philips",
+  "price": "~1,300–1,500",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Reliance Digital",
+    "url": "https://www.reliancedigital.in/product/philips-bread-cordless-trimmer-bt330215-lz9poi-8059721"
+   }
+  ],
+  "why": "Philips' most-tracked mass trimmer"
+ },
+ {
+  "id": 48,
+  "category": "Fashion",
+  "name": "Puma Smashic Comfort Sneakers",
+  "variant": "White · UK 9",
+  "brand": "Puma",
+  "price": "~1,570–1,710",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Nykaa",
+    "url": "https://www.nykaaman.com/puma-smashic-unisex-white-sneakers/p/9750191"
+   },
+   {
+    "store": "Myntra",
+    "url": null
+   },
+   {
+    "store": "AJIO",
+    "url": null
+   }
+  ],
+  "why": "Puma's top Amazon sneaker (Sept 2026); already on PricePulse"
+ },
+ {
+  "id": 49,
+  "category": "Fashion",
+  "name": "Campus OXYFIT (N) Walking Shoes",
+  "variant": "BLK/D.Gry · UK 9",
+  "brand": "Campus",
+  "price": "~650–700",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Myntra",
+    "url": null
+   },
+   {
+    "store": "AJIO",
+    "url": null
+   }
+  ],
+  "why": "Campus #1 Amazon bestseller, July 2026; 27.5k ratings"
+ },
+ {
+  "id": 50,
+  "category": "Fashion",
+  "name": "Casio Vintage A158WA-1 Watch",
+  "variant": "Silver steel strap",
+  "brand": "Casio",
+  "price": "~1,595–1,795",
+  "stores": [
+   {
+    "store": "Amazon",
+    "url": null
+   },
+   {
+    "store": "Flipkart",
+    "url": null
+   },
+   {
+    "store": "Tata CLiQ",
+    "url": null
+   },
+   {
+    "store": "Myntra",
+    "url": null
+   }
+  ],
+  "why": "Evergreen bestseller; same model code on every store"
+ }
+]

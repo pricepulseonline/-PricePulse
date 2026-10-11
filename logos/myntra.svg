@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100" role="img" aria-label="Myntra">
+  <g fill="none" stroke-linecap="round" stroke-width="15">
+    <path d="M28 73 C39 43 45 24 58 17" stroke="#ff3f6c"/>
+    <path d="M58 17 C66 36 73 57 83 75" stroke="#ff905a"/>
+    <path d="M83 75 C94 54 102 31 112 18" stroke="#f4511e"/>
+    <path d="M112 18 C124 34 131 53 140 73" stroke="#ff3f6c"/>
+  </g>
+  <text x="164" y="63" font-family="Arial,Helvetica,sans-serif" font-size="38" font-weight="700" fill="#111">Myntra</text>
+</svg>

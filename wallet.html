@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#071923" name="theme-color"/>
+<meta name="robots" content="noindex"/>
+<title>PricePulse Wallet</title>
+<link href="pricepulse-v17.css?v=78.8.127" rel="stylesheet"/>
+<link href="wallet.css?v=78.8.127" rel="stylesheet"/>
+<link rel="stylesheet" href="plus-savings-v146.css?v=78.8.146"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="premium-v200.css?v=216.1"/></head>
+<body class="pp-wallet-page">
+<header class="site-header" id="home"><div class="header-main container"><a aria-label="PricePulse Home" class="brand" href="index.html#home"><img alt="" class="brand-mark" src="logo-icon.png"/><span class="brand-copy"><strong><span>Price</span><em>Pulse</em></strong><small>RIGHT PRICE, RIGHT CHOICE</small></span></a><form class="search" id="siteSearch"><input id="searchInput" placeholder="Search products or categories..." type="search"/><button aria-label="Search">⌕</button></form><div class="header-actions"><button class="header-link wishlist-link" id="wishlistTop"><span aria-hidden="true" class="wishlist-heart"><svg focusable="false" viewbox="0 0 24 24"><path d="M12 20.35 10.55 19.03C5.4 14.36 2 11.27 2 7.5 2 4.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.42 22 7.5c0 3.77-3.4 6.86-8.55 11.54L12 20.35Z"></path></svg></span><span>Wishlist</span><b id="wishCount">0</b></button><button aria-expanded="false" class="header-link deal-link" id="dealTop"><span aria-hidden="true" class="deal-bell"><svg focusable="false" viewbox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path><path d="M10 19h4"></path></svg><em class="pp-deal-unread-badge" hidden="" id="dealUnreadBadge">0</em></span><span>Deal</span><b id="dealCount">0</b></button><button class="header-link" id="signInBtn"><span aria-hidden="true" class="signin-icon"></span><span>Sign In</span></button></div></div><div class="nav-wrap"><nav class="container category-nav"><button class="pp-home-nav" id="homeNavBtn" type="button"><span aria-hidden="true" class="pp-home-nav-icon"><svg focusable="false" viewBox="0 0 24 24"><path d="M3 11.2 12 3l9 8.2v9.3a.5.5 0 0 1-.5.5h-5.2v-6.1H8.7V21H3.5a.5.5 0 0 1-.5-.5v-9.3Z"></path></svg></span><span>Home</span></button><button aria-controls="allCategoriesMenu" aria-expanded="false" data-nav="all" id="allCategoriesBtn" type="button"><span class="nav-label">All Categories</span></button><button data-cat="mobiles" data-nav="mobiles">Mobiles</button><button data-cat="laptops" data-nav="laptops">Laptops</button><button data-cat="electronics" data-nav="electronics">Electronics</button><button data-cat="home" data-nav="home">Home &amp; Kitchen</button><button data-cat="fashion" data-nav="fashion">Fashion</button><button data-cat="appliances" data-nav="appliances">Appliances</button><button data-cat="beauty" data-nav="beauty">Beauty</button><button class="deals-nav" data-scroll="#deals">🔥 Deals</button></nav></div>
+<div class="all-categories-menu" hidden="" id="allCategoriesMenu">
+<div class="container all-categories-inner">
+<div class="all-categories-head">
+<div>
+<h3>All Categories</h3>
+<p class="menu-kicker">SHOP BY CATEGORY</p>
+</div>
+<button aria-label="Close categories" class="menu-close" id="closeCategoriesMenu">×</button>
+</div>
+<div class="all-categories-grid">
+<button class="menu-category" data-menu-cat="mobiles">
+<img alt="" src="phone.svg"/>
+<span><b>Mobiles</b><small>Phones &amp; accessories</small></span>
+</button>
+<button class="menu-category" data-menu-cat="laptops">
+<img alt="" src="laptop.svg"/>
+<span><b>Laptops</b><small>Computers &amp; notebooks</small></span>
+</button>
+<button class="menu-category" data-menu-cat="electronics">
+<img alt="" src="headphones.svg"/>
+<span><b>Electronics</b><small>Audio &amp; gadgets</small></span>
+</button>
+<button class="menu-category" data-menu-cat="home">
+<img alt="" src="airfryer.svg"/>
+<span><b>Home &amp; Kitchen</b><small>Kitchen &amp; home essentials</small></span>
+</button>
+<button class="menu-category" data-menu-cat="fashion">
+<img alt="" src="sneaker.svg"/>
+<span><b>Fashion</b><small>Shoes &amp; style</small></span>
+</button>
+<button class="menu-category" data-menu-cat="appliances">
+<img alt="" src="fridge.svg"/>
+<span><b>Appliances</b><small>Large home appliances</small></span>
+</button>
+<button class="menu-category" data-menu-cat="beauty">
+<img alt="" src="beauty.svg"/>
+<span><b>Beauty</b><small>Beauty &amp; personal care</small></span>
+</button>
+<button class="menu-category" data-menu-cat="watches">
+<img alt="" src="watch.svg"/>
+<span><b>Smart Watches</b><small>Wearables &amp; smart tech</small></span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="shell app-shell">
+<section class="wallet-hero" id="overview">
+<div>
+<p class="eyebrow">WALLET</p>
+<h1>PricePulse Rewards Wallet</h1>
+<p class="lead">Your shopping rewards, referrals and redemptions — all in one place.</p>
+</div>
+<button class="ghost-btn" id="howBtn" type="button">How it works</button>
+</section><div class="wallet-auth-notice" hidden="" id="walletAuthNotice">Sign in on PricePulse to view your Wallet.</div>
+<section aria-label="Wallet balances" class="balance-grid">
+<article class="balance-card primary-balance">
+<div class="label-row"><span>Available Rewards</span><span class="verified">✓ Ready to use</span></div>
+<div class="balance" id="walletAvailable">₹0</div>
+<p>Confirmed rewards available for eligible redemption.</p>
+<button class="primary-btn" data-tab-target="redeem" type="button">Redeem &amp; Shop →</button>
+</article>
+<article class="balance-card secondary-balance-card">
+<div class="mini-balance-icon pending-icon">⌛</div>
+<div class="secondary-balance-copy"><span>Pending Rewards</span><strong id="walletPending">₹0</strong><small>Awaiting confirmation</small></div>
+</article>
+<article class="balance-card secondary-balance-card">
+<div class="mini-balance-icon lock-icon">⌁</div>
+<div class="secondary-balance-copy"><span>Redemption Pending</span><strong id="walletRedemption">₹0</strong><small>No active request</small></div>
+</article>
+<article class="balance-card secondary-balance-card">
+<div class="mini-balance-icon earned-icon">↗</div>
+<div class="secondary-balance-copy"><span>Lifetime Earned</span><strong id="walletLifetime">₹0</strong><small>Confirmed rewards</small></div>
+</article>
+</section>
+<section class="wallet-plus-value" id="walletPlusValue" aria-live="polite"></section>
+<nav aria-label="Wallet sections" class="tabs">
+<button class="tab active" data-tab="rewards" type="button"><span>Rewards</span></button>
+<button class="tab" data-tab="invite" type="button"><span>Invite &amp; Earn</span></button>
+<button class="tab" data-tab="redeem" type="button"><span>Redeem &amp; Shop</span></button>
+<button class="tab" data-tab="vouchers" type="button"><span>My Vouchers</span><i id="voucherCountBadge">0</i></button>
+<button class="tab" data-tab="history" type="button"><span>History</span></button>
+</nav>
+<section class="panel active" data-panel="rewards">
+<div class="section-head">
+<div><p class="eyebrow green">YOUR REWARDS</p><h2>Reward progress at a glance</h2><p>Pending rewards unlock only after eligible affiliate transactions are confirmed.</p></div>
+</div>
+<div class="reward-list" id="walletRewardList"><div class="wallet-empty-state">No rewards yet. Eligible confirmed shopping rewards will appear here.</div></div>
+<div class="info-strip"><span class="info-icon">↺</span><div><b>Return protection</b><small>Pending progress can reduce if the related order is cancelled, returned or rejected by the affiliate network.</small></div></div>
+</section>
+<section class="panel" data-panel="invite">
+<article class="invite-hero">
+<div class="invite-hero-copy">
+<p class="eyebrow mint-text">INVITE &amp; EARN</p>
+<h2>You get ₹100. Your friend gets ₹100.</h2>
+<p>Both rewards unlock progressively from your friend’s confirmed eligible shopping.</p>
+<div class="invite-pills"><span>Unlimited direct referrals</span><span>No reward before confirmed earning</span></div>
+</div>
+<div class="dual-reward">
+<div><small>YOU</small><strong>₹100</strong><span>Referral Reward</span></div>
+<b>+</b>
+<div><small>FRIEND</small><strong>₹100</strong><span>Welcome Reward</span></div>
+</div>
+</article>
+<div class="invite-grid">
+<article class="ref-card">
+<span>Your referral code</span>
+<div class="ref-code"><strong id="refCode">PULSE------</strong><button id="copyCode" type="button">Copy</button></div>
+<button class="primary-btn wide" id="shareReferral" type="button">Share Invite →</button>
+<small>Each genuine direct referral has its own ₹100 target. Referral count is not capped.</small>
+</article>
+<article class="ref-stats">
+<div><strong id="walletFriendsJoined">0</strong><span>Friends Joined</span></div>
+<div><strong id="walletShoppingStarted">0</strong><span>Shopping Started</span></div>
+<div><strong id="walletReferralUnlocked">₹0</strong><span>Rewards Unlocked</span></div>
+</article>
+</div>
+<div class="referrals" id="walletReferralList"><div class="wallet-empty-state">Your direct referrals will appear here.</div></div>
+</section>
+<section class="panel" data-panel="redeem">
+<div class="section-head redeem-head">
+<div><p class="eyebrow green">REDEEM &amp; SHOP</p><h2>Use rewards and start a tracked shopping session</h2><p>Choose an eligible store. PricePulse starts fresh affiliate tracking before the voucher is unlocked.</p></div>
+<div class="available-chip"><small>Available</small><strong id="walletAvailableChip">₹0</strong></div>
+</div>
+<div class="store-grid">
+<button class="store-card eligible" data-logo="logos/croma.svg" data-store="Croma" type="button">
+<div class="store-logo"><img alt="Croma" src="logos/croma.svg"/></div>
+<div class="store-copy"><b>Croma</b><small>Reward route prepared for eligible campaign</small></div>
+<span class="store-tags"><i>Fresh tracking</i><i>Campaign rule required</i></span>
+<em>Activate &amp; Shop →</em>
+</button>
+<button class="store-card eligible" data-logo="logos/myntra-logo.png" data-store="Myntra" type="button">
+<div class="store-logo"><img alt="Myntra" src="logos/myntra-logo.png"/></div>
+<div class="store-copy"><b>Myntra</b><small>Reward route prepared for eligible campaign</small></div>
+<span class="store-tags"><i>Fresh tracking</i><i>Campaign rule required</i></span>
+<em>Activate &amp; Shop →</em>
+</button>
+<button class="store-card eligible" data-logo="logos/ajio-logo.png" data-store="AJIO" type="button">
+<div class="store-logo"><img alt="AJIO" src="logos/ajio-logo.png"/></div>
+<div class="store-copy"><b>AJIO</b><small>Reward route prepared for eligible campaign</small></div>
+<span class="store-tags"><i>Fresh tracking</i><i>Campaign rule required</i></span>
+<em>Activate &amp; Shop →</em>
+</button>
+<button class="store-card restricted" disabled="" type="button">
+<div class="store-logo"><img alt="Amazon" src="logos/amazon-logo.png"/></div>
+<div class="store-copy"><b>Amazon</b><small>Reward redemption unavailable for this campaign</small></div>
+<span class="store-tags"><i>Affiliate only</i></span>
+<em>Not eligible</em>
+</button>
+</div>
+<div class="redemption-list-wrap">
+<div class="redemption-list-head"><div><p class="eyebrow green">ACTIVE REDEMPTIONS</p><h3>Tracked reward sessions</h3></div><small>Locked rewards stay protected until issued or released.</small></div>
+<div class="redemption-list" id="walletRedemptionList"><div class="wallet-empty-state">No active redemption session.</div></div>
+</div>
+<article class="logic-card">
+<div class="logic-title"><span>↗</span><div><h3>How PricePulse keeps the reward loop working</h3><p>Your product does not need to be listed on PricePulse.</p></div></div>
+<div class="flow"><span>Wallet</span><b>→</b><span>Choose Store</span><b>→</b><span>Fresh Tracking</span><b>→</b><span>Voucher Unlock</span><b>→</b><span>Shop Any Eligible Product</span></div>
+</article>
+</section>
+
+<section class="panel" data-panel="vouchers">
+<div class="section-head vouchers-head"><div><p class="eyebrow green">MY VOUCHERS</p><h2>Your issued reward vouchers</h2><p>Copy an active voucher code and use it only where that retailer accepts gift cards or voucher codes. Retailer terms and exclusions still apply.</p></div><div class="voucher-summary"><small>Active</small><strong id="walletActiveVoucherCount">0</strong></div></div>
+<div class="voucher-list" id="walletVoucherList"><div class="wallet-empty-state">No issued vouchers yet. Redeem a confirmed reward or wait for an admin/provider to issue your voucher.</div></div>
+<div class="info-strip voucher-info"><span class="info-icon">i</span><div><b>How to use</b><small>Copy the voucher code, continue through the tracked PricePulse shopping route, and apply the code at the retailer's supported Gift Card / Voucher step. TEST vouchers have no cash value.</small></div></div>
+</section>
+<section class="panel" data-panel="history">
+<div class="section-head"><div><p class="eyebrow green">HISTORY</p><h2>Wallet activity</h2><p>Every reward, reversal and redemption stays visible.</p></div><button class="ghost-btn small" type="button">Filter</button></div>
+<div class="ledger" id="walletLedger">
+<div class="ledger-head"><span>Activity</span><span>Status</span><span>Amount</span></div>
+
+
+
+
+<div class="wallet-empty-state ledger-empty">No wallet activity yet.</div></div>
+</section>
+</main>
+<div class="modal" hidden="" id="modal">
+<div class="backdrop" data-close=""></div>
+<section aria-modal="true" class="dialog" role="dialog">
+<button class="close" data-close="" type="button">×</button>
+<div id="modalBody"></div>
+</section>
+</div>
+<div class="toast" id="toast"></div>
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer="" src="wallet.js?v=78.8.146"></script>
+</body>
+</html>

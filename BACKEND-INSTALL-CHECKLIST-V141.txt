@@ -1,0 +1,27 @@
+V78.8.141 BACKEND INSTALL CHECKLIST
+
+Before SQL
+[ ] V78.8.140 behavior backed up / current project ZIP retained
+[ ] Admin Catalog backend already installed
+[ ] public.pp_price_admins contains the intended admin user
+[ ] Two real Auth test users available
+
+Run
+[ ] Supabase SQL Editor -> run supabase-plus-wallet-v141-final.sql
+[ ] No older Plus/Wallet draft SQL is run afterwards
+
+Verify
+[ ] select public.pp_get_plus_wallet_backend_version(); returns 78.8.141
+[ ] Admin Plus status shows Database mode
+[ ] Admin Wallet referral test uses Database mode
+[ ] User A referral + User B welcome reward persist across refresh / browser
+[ ] Plus activates only after eligible confirmed purchase when claim is pending
+[ ] Master OFF pauses effective Plus without changing individual record to expired
+[ ] Return to Individual Mode restores individual state
+[ ] One Wallet redemption creates only one negative ledger entry
+[ ] Manual voucher fulfills that existing redemption; no second debit
+[ ] My Vouchers persists across sessions
+
+Retailer campaigns
+[ ] Leave reward campaign active=false until affiliate/provider rules are verified
+[ ] Configure the real provider, SubID support, hold days and reward share before enabling Redeem & Shop in production

@@ -1,0 +1,47 @@
+/* V78.8.153 — targeted follow-up on V152. Only the Plus page; no functional changes. */
+@media (min-width:1120px){
+  /* Keep the existing compact hero, but make its live member pass actually occupy the stage. */
+  #ppPlusPage .pp-pg-hero {grid-template-columns:minmax(0,.94fr) minmax(410px,1.06fr);gap:15px;}
+  #ppPlusPage .pp-pg-stage {display:grid;grid-template-columns:minmax(0,1fr) 112px;align-items:center;justify-items:center;column-gap:7px;padding:10px 13px;}
+  #ppPlusPage .pp-pg-card-wrap {width:min(330px,100%);height:137px;grid-column:1;grid-row:1;}
+  #ppPlusPage .pp-pg-member-card {padding:15px 19px;}
+  #ppPlusPage .pp-pg-member-card strong {font-size:24px;}
+  #ppPlusPage .pp-pg-stage-stats {position:relative;left:auto;bottom:auto;grid-column:2;grid-row:1;width:112px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:6px;transform:none;}
+  #ppPlusPage .pp-pg-mini {width:100%;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:7px 8px;font-size:10.4px;line-height:1.12;white-space:normal;background:rgba(255,255,255,.95);}
+  #ppPlusPage .pp-pg-mini b {font-size:13.1px;line-height:1.05;}
+  #ppPlusPage .pp-pg-orbit {width:380px;height:172px;}
+  #ppPlusPage .pp-pg-halo {width:365px;height:170px;}
+  /* Wider Plus cells with intentionally readable type and clearer active column. */
+  #ppPlusPage .pp-pg-table {grid-template-columns:minmax(180px,1.17fr) minmax(90px,.72fr) minmax(148px,1.01fr);}
+  #ppPlusPage .pp-pg-cell {font-size:13.4px;line-height:1.18;color:#213b49;}
+  #ppPlusPage .pp-pg-cell:nth-child(3n+1) {font-weight:795;}
+  #ppPlusPage .pp-pg-cell:nth-child(3n+2) {font-weight:800;}
+  #ppPlusPage .pp-pg-cell.pp-pg-plus {font-weight:850;background:#fff7e2;}
+  #ppPlusPage .pp-pg-cell.pp-pg-th {font-size:13px;font-weight:950;}
+  #ppPlusPage .pp-pg-cell.pp-pg-th.pp-pg-plus {background:linear-gradient(105deg,#f7e6b5,#fceecf);}
+  #ppPlusPage .pp-pg-compare-head h2 {font-size:20px;}
+}
+@media (min-width:1120px) and (max-height:850px){
+  #ppPlusPage .pp-pg-hero {gap:12px;}
+  #ppPlusPage .pp-pg-stage {padding:5px 10px;min-height:163px;}
+  #ppPlusPage .pp-pg-card-wrap {width:min(310px,100%);height:126px;}
+  #ppPlusPage .pp-pg-member-card {padding:12px 16px;}
+  #ppPlusPage .pp-pg-member-card strong {font-size:22px;}
+  #ppPlusPage .pp-pg-stage-stats {transform:translateY(11px);gap:5px;}
+  #ppPlusPage .pp-pg-mini {padding:4px 7px;font-size:10px;}
+  #ppPlusPage .pp-pg-mini b {font-size:12.5px;}
+  #ppPlusPage .pp-pg-cell {font-size:13px;min-height:29.5px;}
+}
+@media (min-width:1120px) and (max-height:770px){
+  #ppPlusPage .pp-pg-stage {min-height:153px;}
+  #ppPlusPage .pp-pg-card-wrap {height:120px;}
+  #ppPlusPage .pp-pg-stage-stats {transform:translateY(11px);gap:4px;}
+  #ppPlusPage .pp-pg-mini {padding:4px 7px;}
+}
+/* Let tablet/mobile stay naturally readable, never force desktop stage layout onto it. */
+@media (max-width:1119px){
+  #ppPlusPage .pp-pg-table {grid-template-columns:minmax(160px,1.12fr) minmax(80px,.75fr) minmax(135px,1fr);}
+}
+@media (max-width:620px){
+  #ppPlusPage .pp-pg-table {grid-template-columns:minmax(125px,1.22fr) minmax(63px,.64fr) minmax(94px,.97fr);}
+}

@@ -1,0 +1,1 @@
+V64: Amazon logo optical alignment only. Moved Amazon retailer logo down very slightly (translateY 2px) in Home card retailer strip, comparison popup rows, and Best Price chip so it lines up better with Flipkart and Croma. No changes to logo source files, prices, affiliate links, layout, buttons, or functionality.

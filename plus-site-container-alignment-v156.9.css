@@ -1,0 +1,25 @@
+/* PricePulse Plus V78.8.156.9 — align the HERO to the established Plus page layout.
+   On desktop the existing sections (benefits, compare, tracker, FAQ, final CTA) all
+   live in the shared 1170px .pp-rd-inner column. Reuse its exact horizontal bounds.
+   The value strip retains its approved floating overlap and wider visual design.
+   Card visuals, animation speed, headings, CTA and all other site modules unchanged. */
+@media (min-width:1181px) {
+  #ppPlusPage .pp-rd-hero-inner {
+    width: min(1170px, calc(100% - 36px));
+    max-width: 1170px;
+    padding-left: 0;
+    padding-right: 0;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    column-gap: 24px;
+  }
+  #ppPlusPage .pp-rd-hero-visual {
+    left: auto;
+    align-items: flex-end;
+  }
+  /* The existing 3D rotateY() projects the card edge a few pixels beyond
+     the CSS box. Compensate for perspective so the VISIBLE card edge (not just
+     its grid column) matches the site's established right-hand boundary. */
+  #ppPlusPage .pp-rd-premium-card {
+    margin-right: clamp(12px, 1vw, 20px);
+  }
+}

@@ -1,0 +1,26 @@
+PricePulse V204 — Launch readiness
+
+DONE in V204
+[x] SEO: page description, canonical (price-pulse.in), Open Graph + Twitter share card (og-image.jpg),
+    Organization/WebSite structured data, per-product page titles and descriptions
+[x] robots.txt (admin + wallet pages hidden from Google), sitemap.xml, 404.html, site.webmanifest
+[x] Admin pages marked noindex
+[x] No missing images/CSS/JS references, no JavaScript errors on any page (tested desktop + phone)
+[x] Clean upload package: only files the live site needs (no README/SQL/backup files)
+
+UPLOAD
+- Upload the contents of the "UPLOAD" ZIP to your hosting root (where index.html sits).
+- Keep the full PROJECT ZIP as your working copy. SQL files live only there — never upload them.
+- If you use Netlify/Vercel/Cloudflare Pages, 404.html is picked up automatically.
+
+STILL NEEDED FROM YOU BEFORE GOING LIVE
+[ ] Payment for ₹99 Plus (Razorpay or Cashfree + Supabase function) — planned as the last step
+[ ] Products: only 10 products are in the catalog now. Add more via the Admin panel.
+[ ] Verified prices: run fresh price checks so cards show real prices (prices older than 24-48h are hidden by design)
+[ ] Affiliate links: confirm every store link carries your affiliate/SubID (Cuelinks / Mitgo verification tags are present)
+[ ] Supabase: confirm Row Level Security is ON for all tables and only admins can write prices/catalog
+[ ] Supabase Auth: add https://price-pulse.in to Site URL + Redirect URLs (Google login / email OTP)
+[ ] Google Search Console: add the domain and submit https://price-pulse.in/sitemap.xml
+[ ] Analytics (optional): tell me which one (Google Analytics / Microsoft Clarity) and I will add it
+[ ] Contact email and legal pages: review About / Privacy / Terms text once
+[ ] "Android APK — Coming Soon" in the footer: keep or remove

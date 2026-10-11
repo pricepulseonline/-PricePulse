@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=372,initial-scale=1">
+<link rel="stylesheet" href="pricepulse-v17.css?v=78.8.20">
+<style>
+html,body{margin:0;padding:0;width:372px;min-width:372px;background:#fff;overflow:visible}
+body{font-family:inherit}
+#ppAdminExactMirror{width:372px;min-height:620px;background:#fff;overflow:visible}
+#ppAdminExactMirror .pp-v787-product{width:372px!important;min-width:372px!important;max-width:372px!important;margin:0!important}
+#ppAdminExactMirror .pp-v787-product-stage{overflow:visible!important;position:relative!important}
+#ppAdminExactMirror .pp-v787-product-visual.pp-global-product-surface{overflow:visible!important;position:relative!important;z-index:2!important}
+#ppAdminExactMirror .pp-v787-product-visual.pp-global-product-surface .pp-global-product-image{position:relative!important;z-index:4!important}
+#ppAdminExactMirror .pp-v787-product-copy{position:relative!important;background:transparent!important}
+#ppAdminExactMirror .pp-v78-gallery-rail{position:relative!important;z-index:8!important}
+#ppAdminExactMirror .pp-v78-gallery-thumb{position:relative!important;z-index:9!important;cursor:pointer!important}
+#ppAdminExactMirror .pp-v78-product-actions{position:relative!important;z-index:7!important}
+#ppAdminExactMirror .pp-v78-secondary-action{pointer-events:none}
+#ppAdminExactMirror .pp-preview-empty{height:100%;display:grid;place-items:center;color:#81929e;font-size:12px}
+/* V78.8.13 ADMIN PREVIEW ONLY:
+   force the exact DESKTOP live left-column geometry inside the narrow iframe.
+   The iframe itself is 372px wide, so without these overrides the site's mobile
+   @media rules fire and pull the title/details upward. */
+#ppAdminExactMirror .pp-v787-product{
+  padding:10px 6px 6px!important;
+  padding-right:22px!important;
+  border-right:1px solid #edf1f4!important;
+  border-bottom:0!important;
+}
+#ppAdminExactMirror .pp-v787-brand-logo{
+  height:36px!important;
+  margin:0 0 8px!important;
+  padding:0!important;
+}
+#ppAdminExactMirror .pp-v787-brand-logo .pp-v78-product-brand{
+  width:144px!important;
+  height:34px!important;
+}
+#ppAdminExactMirror .pp-v787-product-stage{
+  padding:0!important;
+  margin:0!important;
+}
+#ppAdminExactMirror .pp-v787-product-visual{
+  height:258px!important;
+  padding:12px!important;
+  border-radius:18px!important;
+}
+#ppAdminExactMirror .pp-v78-gallery-rail{
+  margin-top:9px!important;
+  gap:8px!important;
+}
+#ppAdminExactMirror .pp-v78-gallery-thumb{
+  width:50px!important;
+  height:50px!important;
+  border-radius:11px!important;
+}
+#ppAdminExactMirror .pp-v787-product-copy{
+  padding:8px 0 0!important;
+}
+#ppAdminExactMirror .pp-v787-product-title{
+  font-size:24px!important;
+  margin:5px 0 7px!important;
+}
+#ppAdminExactMirror .pp-v787-direct-values{
+  margin:0 0 9px!important;
+  font-size:12.5px!important;
+  line-height:1.45!important;
+}
+#ppAdminExactMirror .pp-v787-direct-values span:not(:last-child)::after{
+  margin:0 7px!important;
+}
+#ppAdminExactMirror .pp-v78-product-subtitle{
+  font-size:12px!important;
+  margin:0!important;
+}
+#ppAdminExactMirror .pp-v787-product-advice{
+  margin-top:9px!important;
+  padding:9px 10px!important;
+  border-radius:12px!important;
+  font-size:11.5px!important;
+}
+#ppAdminExactMirror .pp-v787-product-actions{
+  margin-top:8px!important;
+}
+#ppAdminExactMirror .pp-v787-wishlist{
+  min-height:38px!important;
+  padding:7px 11px!important;
+  font-size:12px!important;
+}
+</style>
+<script defer src="brand-logo-normalizer.js?v=78.8.20"></script>
+</head>
+<body>
+<div id="ppAdminExactMirror">
+  <section class="pp-v78-product pp-v787-product" aria-label="Product details">
+    <div class="pp-v787-brand-logo" id="brandWrap"><img class="pp-v78-product-brand pp-global-brand-logo" id="brandLogo" alt="Brand logo" hidden></div>
+    <div class="pp-v78-product-stage pp-v787-product-stage">
+      <div class="pp-v78-product-visual pp-v787-product-visual pp-global-product-surface pp-img-bg-original" id="visualStage">
+        <img class="pp-v52-main-image pp-v78-main-image pp-global-product-image" id="mainImage" alt="Product preview" hidden>
+        <div class="pp-preview-empty" id="emptyState">Choose a product image to preview.</div>
+      </div>
+    </div>
+    <div class="pp-v52-gallery-rail pp-v78-gallery-rail" id="galleryRail"></div>
+    <div class="pp-v78-product-copy pp-v787-product-copy">
+      <h2 class="pp-v78-product-title pp-v787-product-title" id="productTitle">Product</h2>
+      <div class="pp-v787-direct-values" id="directValues"></div>
+      <p class="pp-v78-product-subtitle" id="listingCount">Retailer listings available</p>
+      <div class="pp-v78-product-advice pp-v787-product-advice"><span aria-hidden="true">✓</span><span>Compare the exact model and variant on the retailer’s website before buying.</span></div>
+      <div class="pp-v78-product-actions pp-v787-product-actions"><button type="button" class="pp-v78-secondary-action pp-v787-wishlist is-saved"><span aria-hidden="true">♥</span><span>Saved in Wishlist</span></button></div>
+    </div>
+  </section>
+</div>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const clamp=(v,min,max,f)=>{const n=Number(v);return Number.isFinite(n)?Math.min(max,Math.max(min,n)):f};
+  const norm=item=>({
+    url:String(item?.src||item?.url||'').trim(),
+    bg:['soft','white','transparent','original'].includes(item?.bg)?item.bg:'soft',
+    fit:['contain','cover'].includes(item?.fit)?item.fit:'contain',
+    position:['center','top','bottom','left','right'].includes(item?.position)?item.position:'center',
+    scale:String(clamp(item?.scale,70,260,100)),
+    rotate:String(clamp(item?.rotate,-30,30,0)),
+    x:String(clamp(item?.x,-30,30,0)),
+    y:String(clamp(item?.y,-30,30,0)),
+    slot:String(item?.slot||'')
+  });
+  const pos=v=>({center:'center center',top:'center top',bottom:'center bottom',left:'left center',right:'right center'})[v]||'center center';
+  function bgClass(item){return 'pp-img-bg-'+norm(item).bg;}
+  function fitImage(img,item){
+    const c=norm(item); if(!img||!c.url)return; const host=img.parentElement;if(!host)return;
+    const run=()=>{
+      const nw=Number(img.naturalWidth)||0,nh=Number(img.naturalHeight)||0;if(!nw||!nh)return;
+      const cs=getComputedStyle(host);
+      const availW=Math.max(20,host.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0));
+      const availH=Math.max(20,host.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0));
+      const fitMode=c.fit==='cover'?'cover':'contain';
+      const base=(fitMode==='cover'?Math.max(availW/nw,availH/nh):Math.min(availW/nw,availH/nh));
+      const baseW=nw*base,baseH=nh*base;
+      const rad=(Number(c.rotate)||0)*Math.PI/180,ca=Math.abs(Math.cos(rad)),sa=Math.abs(Math.sin(rad));
+      const rotW=baseW*ca+baseH*sa,rotH=baseW*sa+baseH*ca;
+      const desired=Math.max(.7,Math.min(2.6,(Number(c.scale)||100)/100));
+      const isThumb=host.matches('.pp-v78-gallery-thumb,.pp-v52-gallery-thumb');
+      const gutter=isThumb?.90:.96;
+      // Exact Compare Popup mirror is a hero surface: Scale/X/Y must always be honored.
+      // Thumbnails stay safe-fit so they remain useful selectors.
+      const applied=isThumb
+        ? Math.max(.2,Math.min(desired,(availW*gutter)/Math.max(1,rotW),(availH*gutter)/Math.max(1,rotH)))
+        : Math.max(.2,desired);
+      const preset=String(c.position||'center');
+      const presetX=preset==='left'?-availW*.12:preset==='right'?availW*.12:0;
+      const presetY=preset==='top'?-availH*.12:preset==='bottom'?availH*.12:0;
+      const rawX=(Number(c.x)||0)/100*availW,rawY=(Number(c.y)||0)/100*availH;
+      const tx=isThumb?0:(presetX+rawX);
+      const ty=isThumb?0:(presetY+rawY);
+      img.style.setProperty('width',baseW.toFixed(2)+'px','important');
+      img.style.setProperty('height',baseH.toFixed(2)+'px','important');
+      img.style.setProperty('max-width','none','important'); img.style.setProperty('max-height','none','important');
+      img.style.setProperty('object-fit',fitMode,'important'); img.style.setProperty('object-position',pos(c.position),'important');
+      img.style.setProperty('transform',`translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0) rotate(${Number(c.rotate)||0}deg) scale(${applied.toFixed(4)})`,'important');
+      img.style.setProperty('transform-origin','center center','important');
+    };
+    img.src=c.url; img.hidden=false;
+    if(img.complete&&img.naturalWidth)requestAnimationFrame(run);else img.addEventListener('load',()=>requestAnimationFrame(run),{once:true});
+  }
+  let state=null,activeSlot='primary';
+  function show(item){
+    const visual=$('visualStage'),img=$('mainImage'),empty=$('emptyState');
+    visual.classList.remove('pp-img-bg-soft','pp-img-bg-white','pp-img-bg-transparent','pp-img-bg-original');
+    visual.classList.add(bgClass(item));
+    if(!item?.url&&!item?.src){img.hidden=true;empty.hidden=false;return;}
+    empty.hidden=true;fitImage(img,item);
+  }
+  function render(s){
+    state=s||{}; activeSlot=String(s?.activeSlot||'primary');
+    const brand=$('brandLogo');
+    if(s.brandLogo){brand.src=s.brandLogo;brand.hidden=false;brand.alt=(s.brandName||'Brand')+' logo';}else{brand.hidden=true;brand.removeAttribute('src');}
+    $('productTitle').textContent=s.name||'Product';
+    $('directValues').innerHTML=(s.details||[]).map(v=>`<span>${String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</span>`).join('');
+    const count=Number(s.listingCount)||0;$('listingCount').textContent=`${count||'—'} retailer ${count===1?'listing':'listings'} available`;
+    const items=(s.items||[]).map(norm);
+    let active=items.find(x=>x.slot===activeSlot)||items.find(x=>x.slot==='primary')||items[0]||null;
+    show(active||{});
+    const rail=$('galleryRail');rail.innerHTML='';
+    items.forEach((item,i)=>{
+      const b=document.createElement('button');b.type='button';b.className='pp-v52-gallery-thumb pp-v78-gallery-thumb '+bgClass(item)+(item===active?' is-active':'');b.setAttribute('aria-label','View product photo '+(i+1));
+      const im=document.createElement('img');im.className='pp-global-product-image';im.alt='';b.appendChild(im);rail.appendChild(b);fitImage(im,item);
+      b.addEventListener('click',()=>{activeSlot=item.slot||'';active=item;show(item);rail.querySelectorAll('button').forEach(x=>x.classList.toggle('is-active',x===b));parent.postMessage({type:'pp-admin-live-preview-slot',slot:activeSlot},'*');});
+    });
+    requestAnimationFrame(()=>parent.postMessage({type:'pp-admin-live-preview-height',height:document.documentElement.scrollHeight},'*'));
+  }
+  addEventListener('message',e=>{if(e.data?.type==='pp-admin-live-preview-state')render(e.data.state);});
+  addEventListener('resize',()=>state&&render(state));
+  parent.postMessage({type:'pp-admin-live-preview-ready'},'*');
+})();
+</script>
+</body>
+</html>

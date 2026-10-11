@@ -1,0 +1,123 @@
+/* PricePulse V78.8.160 — FOUR user-approved visual fixes only.
+   Built from approved V159. Keep site/hero container, value strip, all lower sections,
+   business rules, animation keyframes/timing, admin and Supabase untouched. */
+
+/* #1: equal-looking left/right membership-card silhouette, while retaining
+   dimensional perspective, depth shadow, subtle interactive lift and sheen. */
+#ppPlusPage .pp-rd-premium-card {
+  transform:perspective(1400px) rotateY(-3deg) rotateX(3deg) rotate(-.2deg) translateZ(0);
+  transform-style:preserve-3d;
+}
+#ppPlusPage .pp-rd-premium-card:hover {
+  transform:perspective(1400px) rotateY(-1deg) rotateX(1deg) rotate(0deg) translateY(-5px) scale(1.018);
+}
+/* Keep the card's original proportions. Equal horizontal internal gutters
+   and untouched content make both sides visibly balanced. */
+#ppPlusPage .pp-rd-card-top,
+#ppPlusPage .pp-rd-card-bottom {
+  width:100%;
+  min-width:0;
+}
+
+/* #3: make the gold curve rise ONLY from the bottom centre/right section.
+   Never touch the bottom-left MORE DEALS · MORE REWARDS text.
+   Replaces only the hero card's curve; the member pass uses its old curve. */
+#ppPlusPage .pp-rd-premium-card::before {
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  left:49%;right:-2%;bottom:-1%;top:auto;
+  height:43%;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  transform:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 220' preserveAspectRatio='none'%3E%3Cpath d='M 0 216 C 154 143 368 50 600 68' fill='none' stroke='%23edc572' stroke-width='2.8' opacity='.88'/%3E%3Cpath d='M 0 219 C 154 148 368 56 600 74' fill='none' stroke='%23bd9148' stroke-width='1' opacity='.42'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+}
+/* Keep the bottom label and sparkle ABOVE decorative layers and readable. */
+#ppPlusPage .pp-rd-card-bottom {position:relative;z-index:2}
+
+/* #2: center the EXISTING compact feature capsule directly under the card.
+   Keep icon/text/gap/capsule styling intact — change placement only. */
+#ppPlusPage .pp-rd-hero-visual {--pp-plus-card-width:452px}
+#ppPlusPage .pp-rd-card-caption {
+  align-self:center;
+  justify-content:center;
+  text-align:center;
+}
+/* Wide desktop uses flex-end alignment for the CARD against the site grid.
+   Half-card margin + half-own-width translation centers the natural-width row
+   at exactly that card's center, without stretching the capsule itself. */
+@media(min-width:1181px){
+  #ppPlusPage .pp-rd-card-caption {
+    align-self:flex-end;
+    flex:0 0 auto;
+    width:max-content;
+    max-width:min(100%,var(--pp-plus-card-width));
+    margin-right:calc((var(--pp-plus-card-width) / 2) + clamp(12px,1vw,20px));
+    transform:translateX(50%);
+  }
+}
+@media(min-width:921px) and (max-height:800px){
+  #ppPlusPage .pp-rd-hero-visual{--pp-plus-card-width:415px}
+}
+@media(min-width:921px) and (max-height:720px){
+  #ppPlusPage .pp-rd-hero-visual{--pp-plus-card-width:390px}
+}
+@media(min-width:1600px) and (min-height:960px){
+  #ppPlusPage .pp-rd-hero-visual{--pp-plus-card-width:492px}
+}
+@media(max-width:920px){
+  #ppPlusPage .pp-rd-hero-visual{--pp-plus-card-width:390px}
+  #ppPlusPage .pp-rd-premium-card,
+  #ppPlusPage .pp-rd-premium-card:hover {transform:none}
+  #ppPlusPage .pp-rd-card-caption{align-self:center;margin-right:0;transform:none}
+}
+@media(max-width:610px){
+  #ppPlusPage .pp-rd-hero-visual{--pp-plus-card-width:370px}
+}
+
+/* #4: clearly clickable gold-outline secondary comparison action.
+   Existing data-pp-pg-action=compare scroll logic is untouched. */
+#ppPlusPage .pp-rd-hero-actions .pp-rd-ghost {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:10px 17px;
+  border:1px solid rgba(238,198,112,.83);
+  border-radius:13px;
+  background:rgba(15,37,59,.52);
+  color:#f5d891;
+  font-size:14px;
+  font-weight:800;
+  text-decoration:none;
+  box-shadow:inset 0 1px 0 rgba(255,240,205,.10),0 4px 16px rgba(3,12,25,.11);
+  transition:background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+#ppPlusPage .pp-rd-hero-actions .pp-rd-ghost:hover {
+  background:rgba(220,176,93,.16);
+  border-color:#ffe3a6;
+  box-shadow:0 8px 20px rgba(214,163,70,.18),inset 0 1px 0 rgba(255,235,192,.14);
+  transform:translateY(-2px);
+  text-decoration:none;
+}
+#ppPlusPage .pp-rd-hero-actions .pp-rd-ghost:active{transform:translateY(0)}
+#ppPlusPage .pp-rd-hero-actions .pp-rd-ghost:focus-visible {
+  outline:3px solid #ffe1a0;
+  outline-offset:3px;
+}
+@media(max-width:920px){
+  /* Match the existing mobile action height; no new vertical page shift. */
+  #ppPlusPage .pp-rd-hero-actions .pp-rd-ghost{min-height:46px}
+}
+@media(max-width:610px){
+  #ppPlusPage .pp-rd-hero-actions .pp-rd-ghost{width:100%;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){
+  #ppPlusPage .pp-rd-hero-actions .pp-rd-ghost{transition:none}
+}

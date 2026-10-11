@@ -1,0 +1,17 @@
+/* PricePulse Plus V78.8.156.7 — ONLY desktop Hero horizontal breathing space.
+   V156.6 had over-compressed its 1250px composition to 1140px/16px.
+   Keep the approved V156.6 visuals, first-fold value strip, card animation,
+   layout, JS and all other modules intact. Mobile stays identical. */
+@media (min-width:921px) {
+  #ppPlusPage .pp-rd-hero-inner {
+    max-width:1200px;
+    grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+    column-gap:20px;
+  }
+}
+@media (min-width:921px) and (max-width:1080px) {
+  #ppPlusPage .pp-rd-hero-inner {
+    grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);
+    column-gap:18px;
+  }
+}

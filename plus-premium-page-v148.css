@@ -1,0 +1,79 @@
+/* PricePulse V78.8.148 — integrated Plus savings membership workspace.
+   Visual-only evolution from the V146 lineage. No Wallet/Alerts/Admin/backend logic changed. */
+body.pp-plus-page-open main > :not(#ppPlusPage){display:none!important}
+body.pp-plus-page-open footer{display:none!important}
+#ppPlusPage{--ink:#0b2332;--ink2:#123447;--muted:#6d7d86;--line:#dde8e5;--soft:#f4f8f7;--green:#09a878;--green2:#20ca93;--gold:#eabf61;--gold2:#f7df9d;position:relative;width:100%;max-width:none;margin:0;color:var(--ink);background:radial-gradient(circle at 82% 10%,rgba(230,191,95,.12),transparent 21%),radial-gradient(circle at 16% 22%,rgba(14,170,121,.07),transparent 22%),#f6f9f8;overflow:hidden}
+#ppPlusPage[hidden]{display:none!important}
+#ppPlusPage *{box-sizing:border-box}
+#ppPlusPage button,#ppPlusPage a{font:inherit}
+
+/* Live workspace shell: intentionally not a dark banner. */
+#ppPlusPage .pp-pg-hero{position:relative;width:min(1360px,calc(100% - 42px));min-height:246px;margin:14px auto 0;padding:20px 22px;display:grid;grid-template-columns:minmax(0,1.07fr) minmax(410px,.93fr);align-items:stretch;gap:18px;border:1px solid #dbe7e3;border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(248,252,250,.94));box-shadow:0 18px 48px rgba(20,53,62,.08);overflow:hidden}
+#ppPlusPage .pp-pg-hero:before{content:"";position:absolute;width:420px;height:420px;right:-110px;top:-190px;border-radius:50%;background:radial-gradient(circle,rgba(238,196,93,.22),rgba(238,196,93,0) 67%);pointer-events:none}
+#ppPlusPage .pp-pg-hero:after{content:"";position:absolute;width:340px;height:340px;left:-190px;bottom:-250px;border-radius:50%;background:radial-gradient(circle,rgba(18,187,137,.14),rgba(18,187,137,0) 68%);pointer-events:none}
+#ppPlusPage .pp-pg-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:4px 8px 4px 4px;max-width:700px}
+#ppPlusPage .pp-pg-kicker{width:max-content;margin:0 0 8px;padding:6px 10px;border:1px solid #ead8aa;border-radius:999px;background:#fffaf0;color:#946717;font-size:9px;font-weight:950;letter-spacing:.16em;text-transform:uppercase}
+#ppPlusPage .pp-pg-title{margin:0;color:#102a3a;font-size:clamp(34px,3.5vw,52px);line-height:.98;letter-spacing:-.045em;font-weight:950}
+#ppPlusPage .pp-pg-title span{color:#0bb27f}
+#ppPlusPage .pp-pg-title em{font-style:normal;background:linear-gradient(100deg,#c68d2c,#f3cf76);-webkit-background-clip:text;background-clip:text;color:transparent}
+#ppPlusPage .pp-pg-tagline{margin:8px 0 7px;color:#62747d;font-size:15px;font-weight:700}
+#ppPlusPage .pp-pg-price{display:flex;align-items:center;gap:10px;margin:0 0 11px}
+#ppPlusPage .pp-pg-price strong{font-size:39px;line-height:1;font-weight:950;letter-spacing:-.045em;color:#0f2736}
+#ppPlusPage .pp-pg-price span{padding:6px 10px;border-radius:999px;background:#fff4d4;color:#815711;font-size:11px;font-weight:900;border:1px solid #eed8a2}
+#ppPlusPage .pp-pg-active-line{display:inline-flex;align-items:center;gap:7px;width:max-content;margin:0 0 10px;padding:6px 9px;border-radius:999px;border:1px solid #cfe8dd;background:#edf9f4;color:#1a7157;font-size:10px;font-weight:900}
+#ppPlusPage .pp-pg-active-line i{width:7px;height:7px;border-radius:50%;background:#28c78e;box-shadow:0 0 0 4px rgba(40,199,142,.1)}
+#ppPlusPage .pp-pg-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#ppPlusPage .pp-pg-primary{border:0;border-radius:12px;padding:12px 19px;min-width:280px;background:linear-gradient(135deg,#0b986e,#19c88f);box-shadow:0 10px 22px rgba(8,157,112,.2),inset 0 1px 0 rgba(255,255,255,.22);color:#fff;font-size:12px;font-weight:950;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+#ppPlusPage .pp-pg-primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(8,157,112,.27),inset 0 1px 0 rgba(255,255,255,.22)}
+#ppPlusPage .pp-pg-primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
+#ppPlusPage .pp-pg-link{border:1px solid #d8e4e0;border-radius:11px;background:#fff;color:#344b56;padding:11px 14px;text-decoration:none;font-size:10.5px;font-weight:850;cursor:pointer}
+#ppPlusPage .pp-pg-back{position:absolute;z-index:5;top:14px;right:14px;border:1px solid #d9e4e0;border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.82);color:#52656d;font-size:9px;font-weight:850;cursor:pointer;backdrop-filter:blur(8px)}
+
+/* Membership preview panel – designed as interactive UI, not a poster illustration. */
+#ppPlusPage .pp-pg-stage{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;min-height:204px;border:1px solid #dce8e3;border-radius:20px;background:linear-gradient(145deg,#f7fbf9,#eef5f2);overflow:hidden;perspective:900px}
+#ppPlusPage .pp-pg-stage:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0 57%,rgba(233,191,89,.13) 57% 58%,transparent 58% 64%,rgba(12,170,121,.08) 64% 65%,transparent 65%);pointer-events:none}
+#ppPlusPage .pp-pg-halo{position:absolute;width:315px;height:315px;border-radius:50%;background:radial-gradient(circle,rgba(236,194,91,.23),rgba(236,194,91,0) 64%)}
+#ppPlusPage .pp-pg-orbit{position:absolute;width:330px;height:330px;border:1px solid rgba(204,157,51,.28);border-radius:50%}
+#ppPlusPage .pp-pg-member-card{position:relative;width:294px;height:158px;padding:18px 20px;border:1px solid rgba(236,190,79,.62);border-radius:22px;background:linear-gradient(145deg,#0f2b3d,#0a1d2a 68%,#0b2533);box-shadow:0 22px 40px rgba(10,43,54,.19),inset 0 1px 0 rgba(255,255,255,.1);transform:rotate(-2deg);transition:transform .3s ease,box-shadow .3s ease;overflow:hidden;color:#fff;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;align-items:start}
+#ppPlusPage .pp-pg-member-card:before{content:"";position:absolute;inset:-45% -65%;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.18) 49%,transparent 60%);transform:translateX(-42%);transition:transform .75s ease}
+#ppPlusPage .pp-pg-stage:hover .pp-pg-member-card{transform:rotate(0deg) translateY(-3px);box-shadow:0 28px 48px rgba(10,43,54,.26),0 0 0 1px rgba(236,190,79,.08),inset 0 1px 0 rgba(255,255,255,.12)}
+#ppPlusPage .pp-pg-stage:hover .pp-pg-member-card:before{transform:translateX(48%)}
+#ppPlusPage .pp-pg-member-card img{grid-column:1;width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 5px 10px rgba(0,0,0,.2))}
+#ppPlusPage .pp-pg-member-card strong{grid-column:1 / 3;align-self:center;font-size:21px;letter-spacing:-.03em;position:relative;z-index:2}.pp-pg-member-card strong span{color:#1bc98f}.pp-pg-member-card strong em{font-style:normal;color:#f1ce72}
+#ppPlusPage .pp-pg-member-card small{grid-column:1;align-self:end;color:#d7c58e;font-size:7.5px;letter-spacing:.19em;font-weight:850;position:relative;z-index:2}
+#ppPlusPage .pp-pg-member-card .pp-card-price-badge{grid-column:2;grid-row:1;padding:6px 8px;border-radius:9px;background:rgba(241,201,105,.13);border:1px solid rgba(241,201,105,.25);color:#f4d786;font-size:9px;font-weight:900;position:relative;z-index:2}
+#ppPlusPage .pp-pg-crown{position:absolute;z-index:5;top:17px;left:calc(50% + 91px);width:45px;height:31px;filter:drop-shadow(0 7px 10px rgba(76,53,4,.12));transform:rotate(6deg)}
+#ppPlusPage .pp-pg-pedestal{display:none}
+#ppPlusPage .pp-pg-stage-stats{position:absolute;left:18px;bottom:16px;display:flex;gap:7px;z-index:5}
+#ppPlusPage .pp-pg-mini{padding:6px 8px;border:1px solid rgba(13,73,87,.08);border-radius:10px;background:rgba(255,255,255,.87);box-shadow:0 5px 14px rgba(25,55,62,.05);color:#4b626a;font-size:8px;font-weight:800;backdrop-filter:blur(8px)}
+#ppPlusPage .pp-pg-mini b{display:block;color:#0e2b39;font-size:11px;margin-bottom:1px}
+
+/* The rest reads like a dashboard, not a marketing image. */
+#ppPlusPage .pp-pg-content{width:min(1360px,calc(100% - 42px));margin:10px auto 14px;padding:0;display:grid;gap:10px;background:transparent}
+#ppPlusPage .pp-pg-benefits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+#ppPlusPage .pp-pg-benefit{min-width:0;display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid #dde7e4;border-radius:14px;background:#fff;box-shadow:0 7px 18px rgba(20,54,63,.035)}
+#ppPlusPage .pp-pg-benefit-icon{flex:0 0 36px;width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:#fff5d9;border:1px solid #f0dda8;color:#8a5d0f;font-size:17px;font-weight:950}
+#ppPlusPage .pp-pg-benefit b{display:block;color:#122c3b;font-size:11.6px;line-height:1.2}.pp-pg-benefit p{margin:2px 0 0;color:#708088;font-size:8.9px;line-height:1.32}
+#ppPlusPage .pp-pg-lower{display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:10px;min-height:0}
+#ppPlusPage .pp-pg-compare{min-width:0;border:1px solid #dfe8e5;border-radius:15px;background:#fff;overflow:hidden;box-shadow:0 7px 18px rgba(20,54,63,.03)}
+#ppPlusPage .pp-pg-compare-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px 7px;border-bottom:1px solid #edf1ef}
+#ppPlusPage .pp-pg-compare-head h2{margin:0;color:#122c3b;font-size:18px;letter-spacing:-.025em}.pp-pg-compare-head span{padding:4px 7px;border-radius:999px;background:#f5f8f7;color:#728087;font-size:8.7px;font-weight:800}
+#ppPlusPage .pp-pg-table{display:grid;grid-template-columns:minmax(220px,1.45fr) .62fr .85fr}
+#ppPlusPage .pp-pg-cell{min-height:27px;display:flex;align-items:center;padding:4px 10px;border-bottom:1px solid #eef2f0;color:#3d515a;font-size:9.6px;line-height:1.15}
+#ppPlusPage .pp-pg-cell:nth-child(3n+2),#ppPlusPage .pp-pg-cell:nth-child(3n+3){justify-content:center;text-align:center;border-left:1px solid #eef2f0;font-weight:800}
+#ppPlusPage .pp-pg-cell.pp-pg-th{min-height:26px;background:#f7f9f8;color:#53646b;font-size:8.7px;font-weight:950;letter-spacing:.04em}
+#ppPlusPage .pp-pg-cell.pp-pg-plus{background:#fffbf1;color:#815b12}
+#ppPlusPage .pp-pg-cell.pp-pg-th.pp-pg-plus{background:#fff1c8;color:#79520b}
+#ppPlusPage .pp-pg-cell.is-yes{color:#0a8f67}.pp-pg-cell.is-no{color:#b46b5e}
+#ppPlusPage .pp-pg-value-panel{border:1px solid #dce7e3;border-radius:15px;padding:13px;background:linear-gradient(165deg,#ffffff,#f7fbf9);color:#17303d;display:flex;flex-direction:column;min-height:0;box-shadow:0 8px 18px rgba(20,54,63,.035)}
+#ppPlusPage .pp-pg-value-panel small{color:#936714;font-size:8.3px;font-weight:950;letter-spacing:.16em}.pp-pg-value-panel h2{margin:4px 0 8px;font-size:20px}.pp-pg-value-math{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}.pp-pg-value-math div{padding:8px;border-radius:10px;background:#f5f8f7;border:1px solid #e5ece9}.pp-pg-value-math span{display:block;color:#76858c;font-size:8.2px}.pp-pg-value-math strong{display:block;margin-top:2px;font-size:20px}.pp-pg-value-math .is-green{background:#edf9f4;border-color:#d4eadf}.pp-pg-value-math .is-green strong{color:#0c976b}
+#ppPlusPage .pp-pg-value-panel p{margin:3px 0;color:#687980;font-size:9.2px;line-height:1.33}.pp-pg-value-panel b{color:#0d8f68}
+#ppPlusPage .pp-pg-value-panel .pp-pg-panel-action{margin-top:auto;border:0;border-radius:10px;padding:9px 10px;background:#0f2b3a;color:#fff;font-size:9.8px;font-weight:900;cursor:pointer;transition:transform .18s ease}.pp-pg-panel-action:hover{transform:translateY(-1px)}
+#ppPlusPage .pp-pg-reassure{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 12px;border:1px solid #d2e8de;border-radius:12px;background:#edf9f4;color:#48635a}
+#ppPlusPage .pp-pg-reassure strong{display:block;color:#17624b;font-size:10.2px}.pp-pg-reassure span{font-size:8.8px}.pp-pg-reassure>span:last-child{text-align:right;color:#6c7c75}
+#ppPlusPage .pp-pg-flash{animation:ppPgFlash .8s ease}@keyframes ppPgFlash{0%,100%{box-shadow:0 7px 18px rgba(20,54,63,.03)}50%{box-shadow:0 0 0 4px rgba(238,190,70,.22),0 7px 18px rgba(20,54,63,.03)}}
+
+@media (max-height:800px) and (min-width:901px){#ppPlusPage .pp-pg-hero{min-height:220px;padding-top:15px;padding-bottom:15px}#ppPlusPage .pp-pg-stage{min-height:184px}#ppPlusPage .pp-pg-member-card{width:270px;height:145px}#ppPlusPage .pp-pg-title{font-size:40px}#ppPlusPage .pp-pg-price strong{font-size:34px}#ppPlusPage .pp-pg-benefit{padding:7px 9px}#ppPlusPage .pp-pg-cell{min-height:24px;font-size:8.7px}.pp-pg-value-panel p{font-size:8.5px}}
+@media (max-width:1040px){#ppPlusPage .pp-pg-hero{grid-template-columns:1fr 390px}#ppPlusPage .pp-pg-stage-stats{display:none}#ppPlusPage .pp-pg-benefits{grid-template-columns:repeat(2,1fr)}#ppPlusPage .pp-pg-lower{grid-template-columns:1fr 270px}}
+@media (max-width:900px){body.pp-plus-page-open{overflow:auto!important}#ppPlusPage{overflow:visible}#ppPlusPage .pp-pg-hero{width:calc(100% - 20px);grid-template-columns:1fr;margin-top:10px;padding:18px 16px;gap:12px}#ppPlusPage .pp-pg-copy{padding-top:20px}#ppPlusPage .pp-pg-stage{min-height:220px}#ppPlusPage .pp-pg-content{width:calc(100% - 20px)}#ppPlusPage .pp-pg-lower{grid-template-columns:1fr}#ppPlusPage .pp-pg-benefits{grid-template-columns:1fr 1fr}#ppPlusPage .pp-pg-back{top:10px;right:10px}}
+@media (max-width:620px){#ppPlusPage .pp-pg-title{font-size:38px}#ppPlusPage .pp-pg-price strong{font-size:34px}#ppPlusPage .pp-pg-primary{min-width:0;width:100%}#ppPlusPage .pp-pg-link{width:100%}#ppPlusPage .pp-pg-benefits{grid-template-columns:1fr}#ppPlusPage .pp-pg-member-card{width:260px;height:145px}#ppPlusPage .pp-pg-table{grid-template-columns:1.2fr .55fr .75fr}#ppPlusPage .pp-pg-cell{font-size:8.4px;padding:5px 6px}#ppPlusPage .pp-pg-reassure{align-items:flex-start;flex-direction:column}#ppPlusPage .pp-pg-reassure>span:last-child{text-align:left}}

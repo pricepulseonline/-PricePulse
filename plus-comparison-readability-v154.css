@@ -1,0 +1,39 @@
+/* PricePulse V78.8.154 — scoped legibility enhancement for Free vs Plus only.
+   Keep V153 zero-scroll first-view dimensions, row-height, spacing and every action unchanged. */
+@media (min-width:1120px){
+  #ppPlusPage .pp-pg-table .pp-pg-cell {
+    font-size:14.3px;
+    line-height:1.14;
+    letter-spacing:-.012em;
+    color:#1d3441;
+    /* Current grid row sizing is preserved; only glyphs/contrast change. */
+  }
+  #ppPlusPage .pp-pg-table .pp-pg-cell:nth-child(3n+1){
+    font-weight:810;
+    color:#183240;
+  }
+  #ppPlusPage .pp-pg-table .pp-pg-cell:nth-child(3n+2){
+    color:#29424c;
+    font-weight:800;
+  }
+  #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-plus {
+    color:#654713;
+    font-weight:850;
+  }
+  #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-plus.is-yes {color:#126344;}
+  #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-th {
+    font-size:13.7px;
+    font-weight:950;
+    letter-spacing:0;
+  }
+}
+@media (min-width:1120px) and (max-height:850px){
+  #ppPlusPage .pp-pg-table .pp-pg-cell {font-size:13.95px;line-height:1.12;}
+  #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-th {font-size:13.4px;}
+}
+@media (min-width:1120px) and (max-height:770px){
+  #ppPlusPage .pp-pg-table .pp-pg-cell {font-size:13.75px;}
+  #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-th {font-size:13.15px;}
+}
+
+#ppPlusPage .pp-pg-title span{color:#102b3a;}

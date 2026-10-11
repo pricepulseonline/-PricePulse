@@ -1,0 +1,40 @@
+/* V78.8.144: only the Member Deals content view. Header and popup unchanged. */
+body.pp-member-deals-open main > :not(#ppMemberDeals){display:none!important}
+#ppMemberDeals{padding-top:32px;padding-bottom:48px;color:#172b36;min-height:65vh}
+#ppMemberDeals[hidden]{display:none!important}
+#ppMemberDeals .pp-md-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px}
+#ppMemberDeals .pp-md-eyebrow{color:#88701d;font-weight:800;letter-spacing:.12em;font-size:12px;margin:0 0 10px}
+#ppMemberDeals h1{font-size:clamp(24px,3vw,34px);line-height:1.2;margin:0 0 10px}
+#ppMemberDeals p{line-height:1.6;color:#61717c;margin:6px 0 0}
+#ppMemberDeals button{border:1px solid #d3dedb;border-radius:12px;background:#fff;color:#17644d;padding:12px 16px;font-weight:700;cursor:pointer;flex-shrink:0}
+#ppMemberDeals button:focus-visible{outline:3px solid #19865c;outline-offset:3px}
+#ppMemberDeals .pp-md-status{display:flex;align-items:center;gap:16px;padding:22px;border:1px solid #d6e7dc;border-radius:18px;background:#f1f9f3}
+#ppMemberDeals .pp-md-status>span:first-child{font-size:28px;color:#a88a28}
+#ppMemberDeals .pp-md-status strong{color:#15563e}
+#ppMemberDeals .pp-md-badge{margin-left:auto;background:#dcefe2;color:#175d41;font-size:11px;font-weight:800;border-radius:20px;padding:7px 11px}
+#ppMemberDeals .pp-md-empty{text-align:center;margin:24px 0;padding:35px 20px;border:1px dashed #d8dfda;border-radius:18px;background:#fcfcf9}
+#ppMemberDeals .pp-md-empty>span{font-size:32px;color:#a58a38}
+#ppMemberDeals h2{font-size:18px;line-height:1.4;margin:10px 0}
+#ppMemberDeals .pp-md-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#ppMemberDeals .pp-md-card{padding:22px;border:1px solid #e0e6e4;border-radius:16px;background:#fff}
+#ppMemberDeals .pp-md-card h2{margin-top:0}
+@media(max-width:600px){#ppMemberDeals{padding-top:22px}#ppMemberDeals .pp-md-heading{align-items:flex-start;flex-direction:column;gap:16px}#ppMemberDeals .pp-md-grid{grid-template-columns:1fr}#ppMemberDeals .pp-md-status{padding:16px;gap:10px}#ppMemberDeals .pp-md-badge{font-size:9px;padding:6px 8px}#ppMemberDeals .pp-md-card{padding:18px}}
+
+#ppMemberDeals h1:focus{outline:none}
+/* V78.8.145 live member-campaign cards */
+#ppMemberDeals .pp-md-section{min-width:0}
+#ppMemberDeals .pp-md-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#ppMemberDeals .pp-md-section-head span{font-size:11px;font-weight:900;color:#6d5b1d;background:#fff4c8;border-radius:999px;padding:4px 8px}
+#ppMemberDeals .pp-md-offers{display:grid;gap:12px;margin-top:12px}
+#ppMemberDeals .pp-md-offer{border:1px solid #e4e7df;border-radius:14px;padding:15px;background:#fffdf8}
+#ppMemberDeals .pp-md-offer.featured{border-color:#e4cd76;box-shadow:0 10px 24px rgba(117,93,18,.08)}
+#ppMemberDeals .pp-md-offer-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+#ppMemberDeals .pp-md-offer h3{font-size:15px;margin:3px 0 0;color:#1f3830}
+#ppMemberDeals .pp-md-retailer{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#7d6a26}
+#ppMemberDeals .pp-md-value{font-size:13px;color:#166147;background:#eaf6ee;border-radius:999px;padding:6px 9px;white-space:nowrap}
+#ppMemberDeals .pp-md-code{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px dashed #ddce93;border-radius:10px;padding:9px 10px;margin-top:10px;background:#fffaf0}
+#ppMemberDeals .pp-md-code small{display:block;font-size:9px;color:#867543}.pp-md-code b{font-size:12px;letter-spacing:.04em}
+#ppMemberDeals .pp-md-copy,#ppMemberDeals .pp-md-action{padding:8px 10px;border-radius:9px;font-size:11px}
+#ppMemberDeals .pp-md-terms{font-size:11px;color:#77827e!important}
+#ppMemberDeals .pp-md-offer-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;font-size:10px;color:#78857f}
+@media(max-width:600px){#ppMemberDeals .pp-md-offer-top,#ppMemberDeals .pp-md-offer-foot{align-items:flex-start;flex-direction:column}.pp-md-value{white-space:normal}}

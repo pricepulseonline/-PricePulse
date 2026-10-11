@@ -1,0 +1,56 @@
+/* PricePulse Plus V78.8.156.5
+   Approved final first-fold fitting pass only.
+   All prior page content, behavior, visual identity, and sheen duration are preserved.
+   Change area: desktop hero/card/value-strip geometry and separation only. */
+@media (min-width:921px){
+  #ppPlusPage .pp-rd-hero-inner{
+    gap:20px;
+    padding-left:20px;
+    padding-right:20px;
+  }
+  /* Use the available horizontal/vertical space rather than leaving a tiny card
+     floating inside a large empty second column. Keep existing card style/animation. */
+  #ppPlusPage .pp-rd-hero-visual{
+    gap:13px;
+    padding-top:0;
+  }
+  #ppPlusPage .pp-rd-premium-card{
+    width:min(100%,452px);
+    padding:24px 26px;
+  }
+  #ppPlusPage .pp-rd-card-caption{
+    margin-top:1px;
+  }
+  /* Larger, still floating value equation: same copy/colours, no detached strip. */
+  #ppPlusPage .pp-rd-equation{
+    width:min(1210px,calc(100% + 20px));
+    margin-left:-10px;
+    margin-right:-10px;
+    margin-bottom:16px;
+    padding:15px 26px 13px;
+    box-shadow:0 22px 42px rgba(10,39,47,.13),0 6px 17px rgba(10,39,47,.07),inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  #ppPlusPage .pp-rd-benefit-section{padding-top:8px}
+}
+@media (min-width:921px) and (max-height:800px){
+  #ppPlusPage .pp-rd-hero-inner{gap:18px}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,415px);padding:20px 22px}
+  #ppPlusPage .pp-rd-hero-visual{gap:10px}
+  #ppPlusPage .pp-rd-equation{
+    padding:12px 18px 10px;
+    margin-bottom:13px;
+  }
+  #ppPlusPage .pp-rd-benefit-section{padding-top:7px}
+}
+@media (min-width:921px) and (max-height:720px){
+  #ppPlusPage .pp-rd-hero-inner{gap:15px}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,390px);padding:18px 20px}
+  #ppPlusPage .pp-rd-equation{padding:10px 14px 8px;margin-bottom:10px}
+  #ppPlusPage .pp-rd-benefit-section{padding-top:6px}
+}
+
+/* Extra-tall desktop monitors: use available space rather than a tiny pass. */
+@media(min-width:1600px) and (min-height:960px){
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,492px);padding:27px 29px}
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(58px,3.5vw,67px)}
+}

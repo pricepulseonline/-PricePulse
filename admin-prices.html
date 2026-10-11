@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PricePulse · Admin Catalog & Price Dashboard</title>
+<link rel="icon" href="favicon-v18.png"/>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#122a3c;background:#f4f8fa;--green:#09b77f;--green2:#18d49d;--navy:#082235;--line:#d9e9e3;--muted:#587080;--soft:#f5fbf8;--warn:#a05a10;--bad:#b3261e}*{box-sizing:border-box}body{max-width:1240px;margin:0 auto;padding:24px 18px 54px}button,input,select,textarea{font:inherit}.brand-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}.brand-lockup{display:flex;align-items:center;gap:10px;min-width:0}.brand-lockup img{width:48px;height:48px;object-fit:contain}.brand-copy strong{display:block;font-size:27px;line-height:1}.brand-copy strong span{color:#fff}.brand-copy strong em{color:var(--green2);font-style:normal}.brand-copy small{display:block;letter-spacing:.16em;font-size:9px;font-weight:800;color:#dcebe6;margin-top:5px}.brand-head-card{background:linear-gradient(135deg,#082235,#11384a);border-radius:18px;padding:16px 18px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 12px 34px #05233920}.brand-head-card h1{font-size:22px;margin:0}.brand-head-card .muted{color:#c8d9d5}.version{font-size:12px;color:#b9d1ca}.panel{border:1px solid var(--line);box-shadow:0 5px 22px #0b3d2f10;border-radius:15px;padding:18px;background:#fff;margin:15px 0}.notice{background:#fff8df;border:1px solid #f1dda0;color:#60490d;border-radius:10px;padding:12px 14px;line-height:1.5}.notice b{color:#3e2d00}.muted{color:var(--muted);font-size:14px}.fine{font-size:12px;color:#61766e;line-height:1.45}.bad{color:var(--bad)!important}.good{color:#08734d!important}.warn{color:var(--warn)!important}h1,h2,h3,h4,p{margin-top:0}h2{font-size:18px;margin-bottom:8px}label{display:block;margin:10px 0 6px;font-size:13px;font-weight:750}input,select,textarea{padding:10px 12px;border:1px solid #c8d9d4;border-radius:9px;max-width:100%;width:100%;background:#fff;color:#18372f}textarea{min-height:74px;resize:vertical}button,.button-link{cursor:pointer;border:0;border-radius:9px;padding:10px 15px;font-weight:800;background:#086a4a;color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}button:hover,.button-link:hover{filter:brightness(.98);transform:translateY(-1px)}button:disabled{opacity:.48;cursor:not-allowed;transform:none}.subtle{background:#e9f4ef;color:#134d38}.ghost{background:#fff;color:#155943;border:1px solid #cfe3db}.danger{background:#fff0ee;color:#9e2a23;border:1px solid #f1c9c5}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}.row{display:flex;gap:8px;align-items:center}.row input[type=checkbox]{width:auto}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}.summary>div{border:1px solid #deebe6;border-radius:12px;background:#f8fcfa;padding:14px}.summary strong{display:block;font-size:24px;color:#075a3c}.summary span{font-size:12px;color:#60766e}.workspace{display:grid;grid-template-columns:350px minmax(0,1fr);gap:16px;align-items:start}.side{position:sticky;top:12px}.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:10px}.toolbar select{margin:0;flex:1}.product-list{display:grid;gap:8px;max-height:68vh;overflow:auto;padding-right:3px}.product-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:#fff;color:#16352b;border:1px solid #dce9e4;padding:11px 12px}.product-item:hover,.product-item.active{border-color:#58a98b;background:#f2faf6}.product-item b{display:block;font-size:13px;line-height:1.3}.product-item small{display:block;color:#6b7d76;font-size:10px;margin-top:4px}.badge,.mini,.source-pill,.match-pill{display:inline-flex;align-items:center;border-radius:999px;font-size:10px;font-weight:850;white-space:nowrap;padding:5px 8px}.badge.ready,.mini.fresh,.match-pill.match{background:#e5f7ef;color:#08734d}.badge.partial,.source-pill{background:#eaf4ff;color:#245f9b}.badge.due,.mini.expired,.mini.never,.match-pill.needs_review{background:#fff1e5;color:#9a4a13}.match-pill.mismatch{background:#ffebe9;color:#a32d26}.match-pill.unverified{background:#edf1f3;color:#607078}.editor-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:13px}.editor-head h2{margin:0}.editor-tools{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.selected-note{background:#f0f8f5;border:1px solid #d5e9e1;border-radius:9px;padding:9px 11px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.box{border:1px solid #dde8e4;border-radius:13px;padding:14px;background:#fff}.box.fresh{border-color:#b9dfcf}.box.expired{border-color:#efd2ba}.box-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.box h3{margin:0 0 5px;font-size:18px}.box small{display:block;color:#587080}.saved-price{font-size:16px;color:#0a6b47}.verify{align-items:flex-start;font-size:12px;font-weight:650;line-height:1.35}.status{min-height:30px;margin-top:8px}.verify-actions{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.capture-preview{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;background:#f7fbfa;border:1px dashed #c7ddd5;border-radius:10px;padding:9px;margin:9px 0}.capture-preview[hidden]{display:none}.capture-preview img{width:92px;height:92px;border-radius:9px;background:#fff;object-fit:contain;border:1px solid #e0ebe7}.capture-preview b{font-size:12px;line-height:1.35}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 10px}.field-grid .wide{grid-column:1/-1}.field-note{font-size:10px;color:#7a8d86;margin-top:4px}.required-hint{color:#9a4a13}.check-panel{border:1px solid #d9e8e2;background:#f8fbfa;border-radius:10px;padding:10px;margin-top:10px}.check-panel .row{align-items:flex-start}.match-detail{margin-top:7px;font-size:11px;color:#60766e}.override{background:#fff4f2;border:1px solid #f1d1cc;border-radius:9px;padding:9px;margin-top:8px}.listing-state{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px}.empty{padding:10px}.top-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.catalog-actions{display:flex;gap:8px;flex-wrap:wrap}.catalog-note{font-size:12px;color:#60766e}.helper-box{border:1px solid #cfe4dc;background:#f4fbf8;border-radius:12px;padding:13px;margin-top:12px}.helper-box code{font-size:11px;overflow-wrap:anywhere}.helper-steps{margin:8px 0 0;padding-left:18px;color:#526b62;font-size:12px;line-height:1.55}dialog{border:0;border-radius:16px;padding:0;max-width:640px;width:min(94vw,640px);box-shadow:0 22px 70px #06261f44}dialog::backdrop{background:#08223599;backdrop-filter:blur(3px)}.dialog-card{padding:20px}.dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.dialog-head h2{margin:0}.dialog-close{background:#eef4f2;color:#27483e;padding:7px 10px}.dialog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dialog-grid .wide{grid-column:1/-1}.image-preview{width:100%;max-height:180px;object-fit:contain;background:#f7faf9;border:1px solid #e2ece8;border-radius:10px;padding:8px}.setup-warning{background:#fff2e8;border:1px solid #f0d0b7;color:#864411;border-radius:10px;padding:10px 12px;margin:10px 0}.hidden{display:none!important}#dashboard[hidden],#authCard[hidden],#editZone[hidden]{display:none}#uid{font-family:monospace;overflow-wrap:anywhere}pre{overflow-wrap:anywhere;white-space:pre-wrap;background:#f2f7f6;border-radius:6px;padding:12px}
+.manage-list{display:grid;gap:9px;max-height:60vh;overflow:auto;padding-right:3px}.manage-item{border:1px solid #dce9e4;border-radius:11px;padding:11px 12px;background:#fbfdfc;display:flex;align-items:center;justify-content:space-between;gap:12px}.manage-item-main{min-width:0}.manage-item-main b{display:block;font-size:14px}.manage-item-main small{display:block;color:#6a7d76;font-size:11px;margin-top:3px;overflow-wrap:anywhere}.manage-item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.manage-state{display:inline-flex;margin-top:5px;border-radius:999px;padding:3px 7px;font-size:9px;font-weight:850}.manage-state.active{background:#e5f7ef;color:#08734d}.manage-state.inactive{background:#edf1f3;color:#607078}.danger-note{background:#fff4f2;border:1px solid #f1d1cc;color:#8f322b;border-radius:9px;padding:8px 10px;font-size:11px;line-height:1.4}.logo-upload{border:1px dashed #c7ddd5;background:#f8fcfa;border-radius:10px;padding:10px}.logo-upload-row{display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:10px;align-items:center}.logo-preview{width:118px;height:78px;object-fit:contain;background:#fff;border:1px solid #e0ebe7;border-radius:9px;padding:8px}.logo-preview[hidden]{display:none}.manage-item-main.has-logo{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center}.manage-logo{width:56px;height:40px;object-fit:contain;background:#fff;border:1px solid #e0ebe7;border-radius:8px;padding:5px}.file-hint{font-size:10px;color:#6c8179;margin-top:5px;line-height:1.4}
+@media(max-width:900px){.workspace{grid-template-columns:1fr}.side{position:static}.product-list{max-height:42vh}.grid{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.logo-upload-row{grid-template-columns:1fr}.logo-preview{width:100%;height:92px}body{padding:14px 10px}.brand-head-card{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:1fr 1fr}.editor-head{display:block}.editor-tools{justify-content:flex-start;margin-top:9px}.field-grid,.dialog-grid{grid-template-columns:1fr}.field-grid .wide,.dialog-grid .wide{grid-column:auto}.capture-preview{grid-template-columns:70px 1fr}.capture-preview img{width:70px;height:70px}}
+
+.field-source{display:inline-flex;align-items:center;margin-top:4px;border-radius:999px;padding:3px 7px;font-size:9px;font-weight:850;line-height:1.2}.field-source.captured{background:#e5f7ef;color:#08734d}.field-source.existing{background:#eaf4ff;color:#245f9b}.field-source.manual{background:#fff1e5;color:#9a4a13}.field-source.edited{background:#f0ebff;color:#6942a6}
+
+/* V78.8.2 — product editor viewport fit + clean select chevrons */
+#productDialog{width:min(96vw,940px);max-width:940px;max-height:92dvh;overflow:hidden}
+.product-dialog-card{width:100%;max-height:92dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-gutter:stable;padding:20px}
+#productDialog select{
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  appearance:none;
+  padding-right:44px;
+  background-color:#fff;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23365349' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  background-size:15px 15px;
+}
+#productDialog select:focus{border-color:#58a98b;box-shadow:0 0 0 3px rgba(9,183,127,.10);outline:none}
+.premium-image-manager{border:1px solid #cfe3dc;border-radius:14px;background:#f8fcfa;padding:14px;margin-top:4px}
+.premium-image-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.premium-image-head h3{margin:0 0 4px;font-size:16px}
+.mode-field{min-width:250px;margin:0}
+.website-preview-card{border:1px solid #d9e8e2;border-radius:14px;background:#fff;padding:12px;margin:8px 0 14px}.website-preview-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}.website-preview-head b{font-size:14px}.website-preview-head small{display:block;color:#6f827b;font-size:10px;margin-top:3px}.preview-mode-badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;background:#e5f7ef;color:#08734d;font-size:9px;font-weight:850}.website-preview-stage{height:230px;border:1px solid #e0ebe7;border-radius:12px;display:grid;place-items:center;overflow:hidden;position:relative;padding:14px;background:linear-gradient(180deg,#f2f8fb,#edf6f6)}.website-preview-stage.white{background:#fff}.website-preview-stage.transparent{background:repeating-conic-gradient(#f6faf8 0 25%,#fff 0 50%) 50%/18px 18px}.website-preview-stage.original{background:#f7faf9}.website-preview-stage img{width:100%;height:100%;display:block;transition:.18s ease;transform-origin:center center}.website-preview-empty{font-size:11px;color:#83958e;text-align:center}.website-preview-thumbs{display:flex;gap:8px;margin-top:9px;min-height:62px}.website-preview-thumb{width:62px;height:62px;padding:5px;border:1px solid #d9e8e2;border-radius:10px;background:#fff;overflow:hidden}.website-preview-thumb.is-active{border-color:#47a982;box-shadow:0 0 0 2px #dff4eb}.website-preview-thumb img{width:100%;height:100%;object-fit:contain;display:block}.fallback-note{margin-top:-2px;margin-bottom:8px}
+.global-preview-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr);gap:12px;align-items:start}.global-preview-surface{border:1px solid #e1ebe7;border-radius:12px;background:#fbfdfc;padding:10px;min-width:0}.global-preview-surface.is-popup{grid-row:span 3}.global-preview-label{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#08734d;margin-bottom:8px}.global-preview-brand-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.global-preview-brand-row>span{font-size:8px;font-weight:850;color:#08734d;background:#e9f8f1;border-radius:999px;padding:5px 7px;white-space:nowrap}.global-preview-brand{display:block;width:auto;height:20px;max-width:100px;object-fit:contain;object-position:left center}.global-preview-brand.floating{position:absolute;left:10px;top:9px;z-index:3;height:20px;max-width:90px}.global-preview-compact-stage{height:auto;aspect-ratio:1.5/1;border:1px solid #e1ebe7;border-radius:12px;display:grid;place-items:center;overflow:hidden;position:relative;padding:34px 10px 10px}.global-preview-mini-stage{width:78px;height:78px;flex:0 0 78px;border:1px solid #e1ebe7;border-radius:11px;display:grid;place-items:center;overflow:hidden;position:relative;padding:7px}.global-preview-surface.is-wishlist .global-preview-mini-stage{width:112px;height:96px;flex-basis:112px}.global-preview-row{display:flex;align-items:center;gap:10px;min-width:0}.global-preview-row>div:last-child{min-width:0}.global-preview-surface strong{display:block;font-size:11px;color:#20372f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:7px}.global-preview-row strong{margin-top:4px}.global-preview-surface small{display:block;color:#71847d;font-size:8px;margin-top:4px}.global-preview-compact-stage.soft,.global-preview-mini-stage.soft{background:linear-gradient(180deg,#f2f8fb,#edf6f6)}.global-preview-compact-stage.white,.global-preview-mini-stage.white{background:#fff}.global-preview-compact-stage.transparent,.global-preview-mini-stage.transparent{background:repeating-conic-gradient(#f6faf8 0 25%,#fff 0 50%) 50%/16px 16px}.global-preview-compact-stage.original,.global-preview-mini-stage.original{background:#f7faf9}.global-preview-compact-stage>img[data-global-preview-image],.global-preview-mini-stage>img[data-global-preview-image]{display:block;width:auto;height:auto;transform-origin:center center;margin:auto}.global-preview-note{margin:10px 0 0;color:#60766d}.website-preview-stage>img{width:auto!important;height:auto!important;margin:auto}.website-preview-thumb img{width:auto!important;height:auto!important;margin:auto}.global-preview-surface.is-popup .website-preview-stage{width:min(100%,344px);height:280px;margin-inline:auto}.global-preview-surface.is-popup .website-preview-thumbs{min-height:54px}.global-preview-surface.is-popup .website-preview-thumb{width:54px;height:54px}
+.site-image-source-cards{display:flex;gap:9px;overflow:auto;padding:2px 0 10px;scrollbar-width:thin}.site-source-card{flex:0 0 155px;border:1px solid #d9e8e2;border-radius:11px;background:#fff;padding:8px}.site-source-card img{width:100%;height:92px;object-fit:contain;background:#f7faf9;border-radius:8px}.site-source-card b{display:block;font-size:11px;line-height:1.25;margin-top:6px}.site-source-card small{display:block;font-size:9px;color:#6f827b;margin-top:2px}.site-source-actions{display:flex;gap:5px;margin-top:7px}.site-source-actions button{padding:6px 8px;font-size:9px;flex:1}.site-source-select{display:none!important}
+.site-image-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.site-image-slot{border:1px solid #d9e8e2;border-radius:12px;background:#fff;padding:12px;min-width:0}
+.site-image-slot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.site-image-slot-head b{font-size:14px}.site-image-slot-head small{display:block;color:#6f827b;font-size:10px;margin-top:3px}
+.slot-badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 7px;background:#e5f7ef;color:#08734d;font-size:9px;font-weight:850}.slot-badge.secondary{background:#edf4fb;color:#376987}
+.site-image-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.site-image-controls label{margin-top:6px}.site-image-controls input[type=range]{padding:0;border:0;accent-color:#08734d}.range-line{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:6px;align-items:center}.range-value{font-size:10px;text-align:center;border:1px solid #d7e4df;border-radius:7px;padding:5px 3px;background:#f8fbfa;color:#315348}
+.site-image-preview{height:190px;margin-top:10px;border:1px solid #e0ebe7;border-radius:12px;display:grid;place-items:center;overflow:hidden;position:relative;padding:10px}
+.site-image-preview.soft{background:linear-gradient(180deg,#f2f8fb,#edf6f6)}.site-image-preview.white{background:#fff}.site-image-preview.transparent{background:repeating-conic-gradient(#f6faf8 0 25%,#fff 0 50%) 50%/18px 18px}.site-image-preview.original{background:#f7faf9}
+.site-image-preview img{width:100%;height:100%;display:block;transition:.18s ease;transform-origin:center center}
+.site-image-preview .preview-empty{font-size:11px;color:#83958e;text-align:center}
+.premium-image-safety{margin:10px 0 0}
+@media(max-width:760px){#productDialog{width:calc(100vw - 16px);max-width:none;max-height:94dvh}.premium-image-head{display:block}.mode-field{min-width:0}.site-image-grid{grid-template-columns:1fr}.site-image-controls{grid-template-columns:1fr 1fr}.product-dialog-card{width:100%;max-height:94dvh;padding:16px 14px}.website-preview-stage{height:210px}.global-preview-grid{grid-template-columns:1fr}.global-preview-surface.is-popup{grid-row:auto}.global-preview-surface.is-popup .website-preview-stage{width:min(100%,320px);height:260px}#productDialog select{padding-right:40px;background-position:right 12px center}}
+
+/* ===== V78.8.7 Live Compare hero overflow preview ===== */
+.global-preview-surface.is-popup{overflow:visible!important}
+.global-preview-surface.is-popup .website-preview-stage{overflow:visible!important;z-index:2!important}
+.global-preview-surface.is-popup .website-preview-stage>img{position:relative!important;z-index:3!important}
+.global-preview-surface.is-popup .website-preview-thumbs{position:relative!important;z-index:5!important}
+
+
+/* ===== V78.8.8 Admin-only exact live popup preview =====
+   Live website files are unchanged. This reproduces the approved left product column
+   inside Admin so image zoom/tilt can be judged against thumbnails + title boundary. */
+.global-preview-surface.is-popup{overflow:visible!important;padding:10px 12px 12px!important;background:#fff!important}
+.global-preview-surface.is-popup .global-preview-brand-row{height:36px;margin:0 0 8px!important;padding:0!important}
+.global-preview-surface.is-popup .global-preview-brand{width:144px!important;height:34px!important;max-width:144px!important;object-fit:contain!important;object-position:left center!important}
+.global-preview-surface.is-popup .global-preview-brand-row>span{align-self:flex-start}
+.global-preview-surface.is-popup .website-preview-stage{width:100%!important;height:258px!important;margin:0!important;padding:12px!important;border:0!important;border-radius:18px!important;background:#f5f8f9;overflow:visible!important;position:relative!important;z-index:2!important}
+.global-preview-surface.is-popup .website-preview-stage>img{position:relative!important;z-index:3!important;width:auto!important;height:auto!important;max-width:none!important;max-height:none!important;margin:auto!important}
+.global-preview-surface.is-popup .website-preview-thumbs{display:flex!important;gap:8px!important;margin-top:9px!important;min-height:50px!important;position:relative!important;z-index:8!important}
+.global-preview-surface.is-popup .website-preview-thumb{width:50px!important;height:50px!important;padding:5px!important;border-radius:11px!important;background:#fff!important;border:1px solid #dce5ea!important;box-shadow:none!important;overflow:hidden!important;position:relative!important;z-index:9!important}
+.global-preview-surface.is-popup .website-preview-thumb.is-active{border-color:#0a9d67!important;box-shadow:0 0 0 2px rgba(10,157,103,.14)!important}
+.global-preview-surface.is-popup .popup-preview-copy{padding:8px 0 0!important;position:relative!important;z-index:6!important;background:#fff}
+.global-preview-surface.is-popup .popup-preview-copy h3{font-size:24px!important;line-height:1.2!important;letter-spacing:-.02em!important;margin:5px 0 7px!important;color:#0a2239!important;font-weight:850!important}
+.global-preview-surface.is-popup .popup-preview-direct-values{display:flex;flex-wrap:wrap;align-items:center;gap:4px 0;margin:0 0 9px;color:#4e6577;font-size:12.5px;font-weight:750;line-height:1.45}
+.global-preview-surface.is-popup .popup-preview-direct-values span{display:inline;white-space:normal}
+.global-preview-surface.is-popup .popup-preview-direct-values span:not(:last-child)::after{content:' • ';color:#9aaab6;margin:0 7px}
+.global-preview-surface.is-popup .popup-preview-listings{font-size:12px!important;margin:0!important;color:#657989!important;font-weight:700}
+.global-preview-surface.is-popup .popup-preview-advice{display:flex;align-items:flex-start;gap:10px;margin-top:9px;padding:9px 10px;border-radius:12px;font-size:11.5px;line-height:1.45;background:#f1f8f4;border:1px solid #deede4;color:#22604a}
+.global-preview-surface.is-popup .popup-preview-advice>span:first-child{display:grid;place-items:center;width:21px;height:21px;flex:0 0 21px;border-radius:50%;background:#0f9d67;color:#fff;font-size:12px;font-weight:900}
+.global-preview-surface.is-popup .popup-preview-wishlist{display:inline-flex;align-items:center;gap:9px;min-height:38px;margin-top:8px;padding:7px 11px;border-radius:12px;border:1px solid #f4c9d5;background:#fff4f7;color:#153450;font-size:12px;font-weight:800;pointer-events:none}
+.global-preview-surface.is-popup .popup-preview-wishlist span:first-child{color:#e1577b;font-size:16px}
+@media(max-width:760px){.global-preview-surface.is-popup .website-preview-stage{height:212px!important;padding:8px!important}.global-preview-surface.is-popup .popup-preview-copy h3{font-size:22px!important}.global-preview-surface.is-popup .popup-preview-direct-values{font-size:11.5px!important}.global-preview-surface.is-popup .popup-preview-direct-values span:not(:last-child)::after{margin:0 5px}}
+
+/* ===== V78.8.9 Admin-only TRUE live left-column geometry =====
+   Do not approximate the Compare Popup preview. Use the exact desktop geometry
+   of the live V78.8.7 left product column so Scale/Tilt/X/Y can be judged 1:1. */
+@media(min-width:761px){
+  .global-preview-grid{grid-template-columns:372px minmax(220px,1fr)!important;gap:12px!important;align-items:start!important}
+  .global-preview-surface.is-popup{
+    width:372px!important;max-width:372px!important;
+    padding:10px 22px 6px 6px!important;
+    border:0!important;border-right:1px solid #edf1f4!important;
+    border-radius:0!important;box-shadow:none!important;background:transparent!important;
+  }
+  .global-preview-surface.is-popup>.global-preview-label{display:none!important}
+  .global-preview-surface.is-popup .global-preview-brand-row{height:36px!important;margin:0 0 8px!important;padding:0!important}
+  .global-preview-surface.is-popup .global-preview-brand{width:144px!important;height:34px!important;max-width:144px!important}
+  .global-preview-surface.is-popup .website-preview-stage{
+    box-sizing:border-box!important;width:344px!important;height:258px!important;
+    margin:0!important;padding:12px!important;border:0!important;border-radius:18px!important;
+    background:#f5f8f9!important;overflow:visible!important;position:relative!important;z-index:2!important;
+  }
+  .global-preview-surface.is-popup .website-preview-thumbs{margin-top:9px!important;gap:8px!important;min-height:58px!important}
+  .global-preview-surface.is-popup .website-preview-thumb{
+    box-sizing:border-box!important;width:58px!important;height:58px!important;padding:6px!important;
+    border-radius:14px!important;border:1px solid #d6e3eb!important;background:#fff!important;
+  }
+  .global-preview-surface.is-popup .popup-preview-copy{padding:8px 0 0!important}
+  .global-preview-surface.is-popup .popup-preview-copy h3{font-size:24px!important;margin:5px 0 7px!important}
+}
+@media(max-width:760px){
+  .global-preview-surface.is-popup{width:100%!important;max-width:372px!important;margin-inline:auto!important}
+}
+
+
+/* V78.8.10 exact live-site mirror: the admin panel embeds the same live left-column component. */
+.global-preview-surface.is-popup.is-exact-live-mirror{width:398px!important;max-width:398px!important;padding:10px 12px 12px!important;overflow:visible!important;background:#fff!important}
+.live-exact-preview-frame{display:block;width:372px;height:690px;border:0;background:#fff;overflow:visible;margin:0 auto}
+@media(max-width:760px){.global-preview-surface.is-popup.is-exact-live-mirror{width:100%!important;max-width:398px!important}.live-exact-preview-frame{width:372px;max-width:100%;height:690px;transform-origin:top left}}
+
+/* PricePulse V78.8.131 — isolated Plus membership admin controls */
+.plus-admin-card{margin:16px 0 18px;border:1px solid #ead79f;border-radius:16px;background:linear-gradient(135deg,#fffdf6,#fff 58%,#f8fbfa);padding:16px;box-shadow:0 8px 24px rgba(79,57,8,.06)}
+.plus-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}.plus-admin-head h2{margin:0;color:#17362d}.plus-admin-head p{margin:5px 0 0}.plus-admin-badge{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid #ead9aa;background:#fff7de;color:#876114;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900}.plus-admin-badge:before{content:'★';color:#c5962f}
+.plus-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end}.plus-admin-grid label{margin:0}.plus-admin-grid button{min-height:42px}.plus-admin-state{margin-top:12px;border:1px solid #e4ece8;border-radius:12px;background:#f9fcfb;padding:12px 13px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.plus-admin-state strong{display:block;font-size:14px}.plus-admin-state small{display:block;color:#637970;margin-top:3px;line-height:1.4}.plus-state-pill{display:inline-flex;align-items:center;justify-content:center;min-width:76px;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em;background:#edf2f0;color:#60756d}.plus-state-pill.active{background:#e5f7ef;color:#08734d}.plus-state-pill.pending{background:#fff4d2;color:#8a6418}.plus-state-pill.available{background:#edf1f3;color:#62727a}.plus-state-pill.expired{background:#f4eceb;color:#8a4e49}.plus-state-pill.master-paused{background:#fff0ed;color:#9a4237;min-width:132px}.plus-state-pill.master-active{background:#fff3cf;color:#8a6514;min-width:120px}.plus-admin-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}.plus-admin-actions .activate-plus{background:linear-gradient(135deg,#0a7552,#08a774)}.plus-admin-note{margin:9px 0 0;font-size:11px;color:#6c7c76;line-height:1.45}.plus-admin-mode{font-weight:850}.plus-admin-mode.local{color:#956a10}.plus-admin-mode.database{color:#08734d}
+@media(max-width:760px){.plus-admin-grid{grid-template-columns:1fr}.plus-admin-head{flex-direction:column}.plus-admin-state{flex-direction:column}}
+
+
+/* V78.8.133 — selected Plus user identity + global master control */
+.plus-selected-user{margin-top:10px;display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid #e8e1c8;border-radius:12px;background:#fffdf7}.plus-selected-avatar{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:linear-gradient(145deg,#fff2bd,#e5bd56);color:#6d4c08;font-size:16px;box-shadow:inset 0 0 0 1px rgba(126,88,13,.14)}.plus-selected-user strong{display:block;font-size:13px;color:#17362d}.plus-selected-user small{display:block;margin-top:2px;color:#6a7b75}.plus-selected-user code{display:block;margin-top:3px;font-size:10.5px;color:#8a7760;word-break:break-all}.plus-master-box{margin-top:14px;padding:13px;border:1px solid #dbc475;border-radius:14px;background:linear-gradient(135deg,#fff9e8,#fff 62%,#f4faf7)}.plus-master-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.plus-master-head strong{display:block;color:#17362d;font-size:14px}.plus-master-head small{display:block;margin-top:3px;color:#6a766f;line-height:1.4}.plus-master-pill{display:inline-flex;align-items:center;justify-content:center;min-width:84px;padding:6px 9px;border-radius:999px;font-size:10px;font-weight:950;letter-spacing:.04em}.plus-master-pill.individual{background:#edf1f3;color:#65747b}.plus-master-pill.active{background:#fff0bd;color:#76520b;border:1px solid #e3c36b}.plus-master-pill.inactive{background:#fae9e7;color:#9b423b;border:1px solid #edc5c1}.plus-master-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.plus-master-actions .activate-plus{background:linear-gradient(135deg,#9f761e,#d3a63d)}.danger-soft{background:#fff1ef!important;color:#a4423a!important;border:1px solid #efc9c5!important}.danger-soft:hover{background:#ffe7e3!important}.plus-master-box .muted{margin:8px 0 0}.plus-master-box .plus-admin-note{margin-top:8px}@media(max-width:760px){.plus-master-head{flex-direction:column}.plus-master-actions{flex-direction:column}.plus-master-actions button{width:100%}}
+
+.wallet-admin-card{margin:16px 0 18px;border:1px solid #bfe2d4;border-radius:16px;background:linear-gradient(135deg,#f4fcf8,#fff 58%,#f8fbfa);padding:16px;box-shadow:0 8px 24px rgba(8,106,74,.06)}
+.wallet-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}.wallet-admin-head h2{margin:0;color:#17362d}.wallet-admin-head p{margin:5px 0 0}.wallet-admin-badge{display:inline-flex;align-items:center;white-space:nowrap;border:1px solid #bfe2d4;background:#eaf8f2;color:#08734d;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900}.wallet-admin-badge:before{content:'₹';margin-right:5px}
+.wallet-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;gap:8px;align-items:end}.wallet-admin-grid label{margin:0}.wallet-admin-grid .wallet-wide{grid-column:span 2}.wallet-admin-grid button{min-height:42px}
+.wallet-test-state{margin-top:12px;border:1px solid #dceae4;border-radius:13px;background:#fff;padding:13px}.wallet-test-state-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.wallet-test-state strong{display:block;font-size:14px}.wallet-test-state small{display:block;color:#647870;margin-top:3px;line-height:1.45}.wallet-test-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.wallet-test-pill{border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;background:#edf2f0;color:#66776f}.wallet-test-pill.done{background:#e5f7ef;color:#08734d}.wallet-test-pill.warn{background:#fff4d2;color:#8a6418}.wallet-reward-preview{margin-top:11px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.wallet-reward-preview>div{border:1px solid #e0ebe7;border-radius:10px;padding:10px;background:#f9fcfb}.wallet-reward-preview small{font-size:10px}.wallet-reward-preview b{display:block;font-size:17px;margin-top:3px;color:#086a4a}
+.wallet-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.wallet-admin-actions .wallet-primary{background:linear-gradient(135deg,#08734d,#0aa874)}.wallet-admin-actions .wallet-stage{background:#eef7f3;color:#155943;border:1px solid #cfe3db}.wallet-admin-actions .wallet-reverse{background:#fff1ef;color:#a4423a;border:1px solid #efc9c5}.wallet-admin-note{margin:9px 0 0;font-size:11px;color:#697b74;line-height:1.5}
+@media(max-width:860px){.wallet-admin-grid{grid-template-columns:1fr 1fr}.wallet-admin-grid .wallet-wide{grid-column:auto}.wallet-reward-preview{grid-template-columns:1fr}}
+@media(max-width:620px){.wallet-admin-head{flex-direction:column}.wallet-admin-grid{grid-template-columns:1fr}.wallet-admin-actions button{width:100%}}
+.voucher-admin-card{border-color:#ead9aa;background:linear-gradient(135deg,#fffdf6,#fff 58%,#f8fbfa)}.voucher-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) minmax(0,170px);gap:8px;align-items:end}.voucher-admin-grid label{margin:0}.voucher-admin-grid .voucher-wide{grid-column:span 2}.voucher-admin-grid button{min-height:42px}@media(max-width:860px){.voucher-admin-grid{grid-template-columns:1fr 1fr}.voucher-admin-grid .voucher-wide{grid-column:auto}}@media(max-width:620px){.voucher-admin-grid{grid-template-columns:1fr}}
+
+
+/* V78.8.139 — organized admin workspace */
+.admin-section-nav{position:sticky;top:10px;z-index:40;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:14px 0;padding:8px;border:1px solid #dce9e4;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 10px 28px rgba(8,34,53,.09);backdrop-filter:blur(14px)}
+.admin-nav-btn{min-width:0;text-align:left;background:#f7fbf9;color:#17362d;border:1px solid transparent;border-radius:12px;padding:11px 12px;display:grid;grid-template-columns:26px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center;box-shadow:none;transform:none}
+.admin-nav-btn:hover{transform:none;background:#f0f8f5;border-color:#d4e7df}.admin-nav-btn>span{grid-row:1/3;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#e8f5ef;color:#08734d;font-weight:950}.admin-nav-btn b{font-size:12px;line-height:1.2}.admin-nav-btn small{font-size:9.5px;color:#71837c;line-height:1.25;margin-top:2px}.admin-nav-btn.active{background:linear-gradient(135deg,#0a6d4c,#0c8d62);color:#fff;border-color:#0a6d4c;box-shadow:0 8px 18px rgba(8,106,74,.18)}.admin-nav-btn.active>span{background:rgba(255,255,255,.15);color:#fff}.admin-nav-btn.active small{color:#d8efe6}
+.admin-view-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:12px 0 4px;padding:4px 2px}.admin-view-heading span{display:block;font-size:9px;font-weight:950;letter-spacing:.15em;color:#0a7b55}.admin-view-heading h2{font-size:20px;margin:4px 0 3px}.admin-view-heading p{margin:0;color:#657a72;font-size:12px}
+body[data-admin-view="catalog"] .plus-only,body[data-admin-view="catalog"] .wallet-only,body[data-admin-view="catalog"] .tools-only{display:none!important}
+body[data-admin-view="plus"] .catalog-only,body[data-admin-view="plus"] .wallet-only,body[data-admin-view="plus"] .tools-only{display:none!important}
+body[data-admin-view="wallet"] .catalog-only,body[data-admin-view="wallet"] .plus-only,body[data-admin-view="wallet"] .tools-only{display:none!important}
+body[data-admin-view="tools"] .catalog-only,body[data-admin-view="tools"] .plus-only,body[data-admin-view="tools"] .wallet-only{display:none!important}
+body:not([data-admin-view]) .plus-only,body:not([data-admin-view]) .wallet-only,body:not([data-admin-view]) .tools-only{display:none!important}
+body:not([data-admin-view="growth"]) .growth-only{display:none!important}
+body[data-admin-view="growth"] .catalog-only,body[data-admin-view="growth"] .plus-only,body[data-admin-view="growth"] .wallet-only,body[data-admin-view="growth"] .tools-only{display:none!important}
+body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccountDetails{margin:12px 0;padding:12px;border:1px solid #dce9e4;border-radius:12px;background:#f9fcfb}
+@media(max-width:860px){.admin-section-nav{grid-template-columns:repeat(2,minmax(0,1fr));position:static}.admin-view-heading h2{font-size:18px}}
+@media(max-width:520px){.admin-section-nav{grid-template-columns:1fr}.admin-nav-btn{grid-template-columns:26px minmax(0,1fr)}}
+</style>
+<link rel="stylesheet" href="plus-member-deals-admin.css?v=213">
+</head>
+<body>
+<header class="brand-head-card">
+  <div class="brand-lockup"><img src="logo-icon.png" alt="PricePulse"><span class="brand-copy"><strong><span>Price</span><em>Pulse</em></strong><small>RIGHT PRICE, RIGHT CHOICE</small></span></div>
+  <div><h1>Admin Catalog & Price Dashboard</h1><div class="version">V78.8.145 · Plus Member Deals Manager</div></div>
+</header>
+<div class="notice"><b>Safe verification flow:</b> Open the retailer listing → capture what can be detected → manually complete anything missing → confirm the exact product/model/variant → publish. Auto-detected data is never published until you confirm it. Manual checks remain fresh for up to 24 hours.</div>
+
+<div class="panel" id="authCard">
+  <h2>Secure sign-in</h2><p class="muted">Use your existing authorized PricePulse admin account.</p>
+  <form id="loginForm"><label for="email">Email</label><input id="email" type="email" autocomplete="email" required placeholder="Administrator email"/><div class="actions"><button type="submit">Send sign-in code</button></div></form>
+  <form id="otpForm" hidden><label for="otp">Email OTP (6 digits)</label><input id="otp" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required/><div class="actions"><button type="submit">Verify code</button></div></form>
+  <p id="authMsg" role="status" aria-live="polite" class="muted"></p>
+</div>
+
+<div class="panel" id="dashboard" hidden>
+  <div class="top-actions">
+    <div class="actions" style="margin-top:0"><button id="logout" class="subtle" type="button">Sign out</button><button id="load" type="button">Refresh data</button><button id="nextDue" class="subtle catalog-only" type="button">Next product needing review</button></div>
+    <div class="catalog-actions catalog-only"><button id="addProduct" type="button">+ Add Product</button><button id="addBrand" class="ghost" type="button">+ Add Brand</button><button id="manageBrands" class="ghost" type="button">Manage Brands</button><button id="addStore" class="ghost" type="button">+ Add Store</button><button id="manageStores" class="ghost" type="button">Manage Stores</button></div>
+  </div>
+  <nav class="admin-section-nav" aria-label="Admin workspace sections">
+    <button class="admin-nav-btn active" type="button" data-admin-view="catalog"><span>▦</span><b>Catalog &amp; Prices</b><small>Products, stores &amp; verification</small></button>
+    <button class="admin-nav-btn" type="button" data-admin-view="plus"><span>★</span><b>PricePulse Plus</b><small>Membership controls</small></button>
+    <button class="admin-nav-btn" type="button" data-admin-view="wallet"><span>₹</span><b>Wallet &amp; Rewards</b><small>Referrals, rewards &amp; vouchers</small></button>
+    <button class="admin-nav-btn" type="button" data-admin-view="growth"><span>↗</span><b>Growth &amp; Links</b><small>Clicks, affiliate, requests &amp; sales</small></button>
+    <button class="admin-nav-btn" type="button" data-admin-view="tools"><span>⚙</span><b>Tools &amp; Setup</b><small>Capture helper &amp; admin details</small></button>
+  </nav>
+  <div class="admin-view-heading"><div><span id="adminViewEyebrow">CATALOG &amp; PRICES</span><h2 id="adminViewTitle">Product catalog &amp; retailer verification</h2><p id="adminViewDesc">Manage products, retailer links, verification freshness and Best Price readiness.</p></div></div>
+  <details id="adminAccountDetails" class="tools-only"><summary class="muted">Admin account details</summary><p class="muted">Supabase auth UUID:</p><pre id="uid"></pre></details>
+  <p id="adminStatus" role="status" class="muted"></p>
+  <div id="catalogSetupWarning" class="setup-warning hidden catalog-only">Catalog tables are not enabled yet. Existing products will still work, but Add Product / Add Brand / Add Store require running <b>supabase-admin-catalog-v77.sql</b> once in Supabase.</div>
+
+  <div class="helper-box tools-only" id="helperBox">
+    <b>One-click retailer capture helper</b>
+    <p class="catalog-note">Drag <a id="captureBookmarklet" class="button-link" href="#">PricePulse Capture v2.5</a> to your Chrome bookmarks bar once. If you already added the older helper, replace that bookmark with this one. On any retailer product page, click that bookmark. It copies detectable product data (title, image, price/rating when exposed in structured data) to your clipboard. Then return here and click <b>Paste Capture</b>.</p>
+    <div class="actions"><button id="copyHelper" class="subtle" type="button">Copy capture helper</button></div>
+    <ol class="helper-steps"><li>Open retailer with <b>Open & Verify</b>.</li><li>Click the <b>PricePulse Capture</b> bookmark.</li><li>Return here → <b>Paste Capture</b> → review warnings → publish.</li></ol>
+  </div>
+
+  <div id="editZone" hidden>
+    <section class="plus-admin-card plus-only" id="plusAdminCard" aria-labelledby="plusAdminHeading">
+      <div class="plus-admin-head"><div><h2 id="plusAdminHeading">PricePulse Plus Membership</h2><p class="muted">Protected Plus controls use Supabase automatically when V78.8.141 is installed; local test fallback remains available before installation.</p></div><span class="plus-admin-badge">PLUS CONTROL</span></div>
+      <div class="plus-admin-grid">
+        <label>User UUID<input id="plusUserId" autocomplete="off" spellcheck="false" placeholder="Paste user UUID"></label>
+        <button id="plusUseMe" class="ghost" type="button">Use my admin account</button>
+        <button id="plusLoad" class="subtle" type="button">Check status</button>
+      </div>
+      <div class="plus-selected-user" id="plusSelectedUser">
+        <span class="plus-selected-avatar">★</span>
+        <div><strong id="plusSelectedName">No user selected</strong><small id="plusSelectedEmail">Choose a user before changing Plus status.</small><code id="plusSelectedUid">—</code></div>
+      </div>
+      <div class="plus-admin-state" id="plusAdminState"><div><strong>No user selected</strong><small>Use your admin account for a quick end-to-end Plus UI test.</small></div><span class="plus-state-pill available">—</span></div>
+      <div class="plus-admin-actions"><button id="plusActivate" class="activate-plus" type="button" disabled>Activate Plus · 1 Year</button><button id="plusDeactivate" class="ghost" type="button" disabled>Deactivate → Pending</button></div>
+      <p class="plus-admin-note">Manual Activate affects only the selected user. It sets <b>active</b> + activation time + exact 1-year expiry. Deactivate returns that user's claim to <b>pending</b>. <span id="plusAdminMode" class="plus-admin-mode">Mode not checked yet.</span></p>
+      <p id="plusAdminMsg" role="status" aria-live="polite" class="muted"></p>
+      <div class="plus-master-box">
+        <div class="plus-master-head"><div><strong>Master Plus Control</strong><small>Global override for every signed-in PricePulse account. Use this only when you want Plus ON or OFF across the whole system.</small></div><span id="plusMasterPill" class="plus-master-pill individual">INDIVIDUAL</span></div>
+        <div class="plus-master-actions"><button id="plusMasterActivate" class="activate-plus" type="button">Master Activate All · 1 Year</button><button id="plusMasterDeactivate" class="danger-soft" type="button">Master Deactivate All</button><button id="plusMasterIndividual" class="ghost" type="button">Return to Individual Mode</button></div>
+        <p class="plus-admin-note">Master Activate temporarily gives every signed-in account Plus. Master Deactivate temporarily pauses Plus system-wide. Return to Individual Mode removes the global override and restores each user’s own Active / Pending / Available state. Master controls never change an individual membership into Expired.</p>
+        <p id="plusMasterMsg" role="status" aria-live="polite" class="muted"></p>
+      </div>
+    </section>
+
+
+    <section class="wallet-admin-card wallet-only" id="walletAdminCard" aria-labelledby="walletAdminHeading">
+      <div class="wallet-admin-head"><div><h2 id="walletAdminHeading">Wallet &amp; Referral Test Console</h2><p class="muted">₹100 referrer + ₹100 friend. Uses the protected V78.8.141 backend when installed, with local test fallback before installation.</p></div><span class="wallet-admin-badge">REWARD ENGINE</span></div>
+      <div class="wallet-admin-grid">
+        <label>Referrer UUID<input id="walletReferrerId" autocomplete="off" spellcheck="false" placeholder="Referrer user UUID"></label>
+        <button id="walletUseMeReferrer" class="ghost" type="button">Use my admin</button>
+        <label>Friend UUID<input id="walletFriendId" autocomplete="off" spellcheck="false" placeholder="Referred / new user UUID"></label>
+        <button id="walletUseMeFriend" class="ghost" type="button">Use my admin</button>
+        <label class="wallet-wide">Test order / transaction reference<input id="walletOrderRef" autocomplete="off" spellcheck="false" placeholder="TEST-ORDER-001"></label>
+        <label class="wallet-wide">Confirmed affiliate commission (₹)<input id="walletCommission" inputmode="decimal" type="number" min="0" step="0.01" value="400"></label>
+      </div>
+      <div class="wallet-test-state" id="walletAdminState">
+        <div class="wallet-test-state-top"><div><strong>No referral selected</strong><small>Enter two different user UUIDs, then create the test referral.</small></div><span class="plus-state-pill available" id="walletAdminModePill">LOCAL READY</span></div>
+        <div class="wallet-test-pills"><span class="wallet-test-pill" id="walletJoinedPill">Referral joined</span><span class="wallet-test-pill" id="walletPurchasePill">Purchase confirmed</span><span class="wallet-test-pill" id="walletReturnPill">Return window clear</span><span class="wallet-test-pill" id="walletCommissionPill">Commission confirmed</span></div>
+        <div class="wallet-reward-preview"><div><small>Referrer unlocked</small><b id="walletReferrerUnlocked">₹0</b></div><div><small>Friend unlocked</small><b id="walletFriendUnlocked">₹0</b></div><div><small>Eligible commission pool (50%)</small><b id="walletRewardPool">₹0</b></div></div>
+      </div>
+      <div class="wallet-admin-actions">
+        <button id="walletCreateReferral" class="wallet-primary" type="button">Create ₹100 + ₹100 Referral</button>
+        <button id="walletPurchaseConfirmed" class="wallet-stage" type="button">1 · Purchase Confirmed</button>
+        <button id="walletReturnClear" class="wallet-stage" type="button">2 · Return Window Clear</button>
+        <button id="walletCommissionConfirmed" class="wallet-stage" type="button">3 · Confirm Commission &amp; Unlock</button>
+        <button id="walletReverseOrder" class="wallet-reverse" type="button">Return / Cancel Order</button>
+        <button id="walletOpenReferrer" class="ghost" type="button">Open Referrer Wallet</button>
+        <button id="walletOpenFriend" class="ghost" type="button">Open Friend Wallet</button>
+      </div>
+      <p class="wallet-admin-note">Funding rule: at most <b>50% of confirmed affiliate commission</b> funds the combined ₹200 referral pair target. Unlock stages are <b>10% → 25% → 50% → 75% → 100%</b>. Nothing unlocks until purchase confirmation, return/cancellation clearance and affiliate commission confirmation are all true. Self-referrals and a second referrer for the same friend are blocked.</p>
+      <p id="walletAdminMsg" role="status" aria-live="polite" class="muted"></p>
+    </section>
+
+    <section class="wallet-admin-card voucher-admin-card wallet-only" id="voucherAdminCard" aria-labelledby="voucherAdminHeading">
+      <div class="wallet-admin-head"><div><h2 id="voucherAdminHeading">Manual Voucher Issuance</h2><p class="muted">Issue a real retailer voucher code manually while provider/API integration is pending. Local test mode can also create a safe manual voucher for UI validation.</p></div><span class="wallet-admin-badge">VOUCHERS</span></div>
+      <div class="voucher-admin-grid">
+        <label>User UUID<input id="voucherUserId" autocomplete="off" spellcheck="false" placeholder="Wallet user UUID"></label>
+        <button id="voucherUseMe" class="ghost" type="button">Use my admin</button>
+        <label>Retailer<input id="voucherRetailer" autocomplete="off" spellcheck="false" placeholder="Croma" value="Croma"></label>
+        <label>Amount (₹)<input id="voucherAmount" inputmode="decimal" type="number" min="1" step="1" value="100"></label>
+        <label class="voucher-wide">Voucher code<input id="voucherCode" autocomplete="off" spellcheck="false" placeholder="Paste real retailer voucher / gift-card code"></label>
+        <label>Expiry date<input id="voucherExpiry" type="date"></label>
+        <label>Redemption ID <span class="muted">(optional local test)</span><input id="voucherRedemptionId" autocomplete="off" spellcheck="false" placeholder="Locked redemption UUID"></label>
+      </div>
+      <div class="wallet-test-state" id="voucherAdminState"><div class="wallet-test-state-top"><div><strong>No voucher issued yet</strong><small>Enter the target user and voucher details. Production issuance should reference the user's locked redemption.</small></div><span class="plus-state-pill available" id="voucherAdminModePill">LOCAL READY</span></div></div>
+      <div class="wallet-admin-actions">
+        <button id="voucherIssueBtn" class="wallet-primary" type="button">Issue Voucher</button>
+        <button id="voucherMarkUsedBtn" class="wallet-stage" type="button">Mark Last Voucher Used</button>
+        <button id="voucherOpenWalletBtn" class="ghost" type="button">Open User Wallet</button>
+        <button id="voucherResetUserBtn" class="wallet-reverse" type="button">Reset Current Test User Wallet</button>
+      </div>
+      <p class="wallet-admin-note">Manual issue is for codes you have legitimately obtained from an authorized retailer/provider. PricePulse does not generate cash-value codes itself. Test vouchers remain clearly marked TEST ONLY.</p>
+      <p id="voucherAdminMsg" role="status" aria-live="polite" class="muted"></p>
+    </section>
+
+    <div class="summary catalog-only"><div><strong id="sumReady">0/0</strong><span>Products with Best Price ready</span></div><div><strong id="sumFresh">0/0</strong><span>Fresh retailer checks</span></div><div><strong id="sumDue">0</strong><span>Checks due / never checked</span></div><div><strong id="sumCatalog">0</strong><span>Catalog products</span></div></div>
+    <div class="workspace catalog-only">
+      <aside class="side"><div class="toolbar"><select id="filter" aria-label="Product status filter"><option value="attention">Needs attention</option><option value="all">All products</option><option value="ready">Best Price ready</option><option value="tracking">Tracking / unavailable</option><option value="archived">Archived</option></select></div><div class="product-list" id="productList"></div></aside>
+      <main class="panel" id="editor">
+        <div class="editor-head"><div><h2 id="selectedTitle">Select a product</h2><p id="selectedMeta" class="muted"></p></div><div class="editor-tools"><button id="editProduct" class="ghost" type="button">Edit Product</button><button id="archiveProduct" class="subtle" type="button">Archive Product</button><button id="deleteProduct" class="danger" type="button">Delete Product</button><button id="addListing" class="subtle" type="button">+ Add Retailer Link</button></div></div>
+        <p id="selectedStatus" class="selected-note fine"></p><div class="grid" id="stores"></div>
+      </main>
+    </div>
+    <p id="saveMsg" role="status" aria-live="polite" class="muted"></p>
+  </div>
+</div>
+
+<dialog id="brandDialog"><form method="dialog" class="dialog-card" id="brandForm"><div class="dialog-head"><div><h2 id="brandDialogTitle">Add Brand</h2><p class="muted">Create once; use the same official logo everywhere later.</p></div><button class="dialog-close" value="cancel">×</button></div><input type="hidden" name="editing_slug"><div class="dialog-grid"><div><label>Brand name *</label><input name="name" required placeholder="Samsung"></div><div><label>Slug</label><input name="slug" placeholder="auto-generated"></div><div class="wide logo-upload"><label>Official logo</label><div class="logo-upload-row"><div><input name="logo_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><div class="file-hint">Recommended: transparent SVG, PNG or WebP. Max 2 MB. A new upload overrides the URL/path below.</div><label>Or logo URL / existing local path</label><input name="logo_url" placeholder="https://... or logos/official/samsung.png"></div><img class="logo-preview" id="brandLogoPreview" alt="Brand logo preview" hidden></div></div><div class="wide"><label>Official website</label><input name="website_url" type="url" placeholder="https://..."></div><div class="wide"><label>Aliases / keywords</label><input name="aliases" placeholder="comma separated"></div></div><div class="actions"><button value="save" id="saveBrand">Save Brand</button><button class="subtle" value="cancel">Cancel</button></div><p class="status fine" id="brandMsg"></p></form></dialog>
+
+<dialog id="storeDialog"><form method="dialog" class="dialog-card" id="storeForm"><div class="dialog-head"><div><h2 id="storeDialogTitle">Add Store</h2><p class="muted">Store metadata for links, official logos and future API/feed sync.</p></div><button class="dialog-close" value="cancel">×</button></div><input type="hidden" name="editing_slug"><div class="dialog-grid"><div><label>Store name *</label><input name="name" required placeholder="Amazon"></div><div><label>Slug</label><input name="slug" placeholder="auto-generated"></div><div class="wide"><label>Domain *</label><input name="domain" required placeholder="amazon.in"></div><div class="wide logo-upload"><label>Official store logo</label><div class="logo-upload-row"><div><input name="logo_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><div class="file-hint">Recommended: transparent SVG, PNG or WebP. Max 2 MB. A new upload overrides the URL/path below.</div><label>Or logo URL / existing local path</label><input name="logo_url" placeholder="https://... or logos/amazon-logo.png"></div><img class="logo-preview" id="storeLogoPreview" alt="Store logo preview" hidden></div></div><div class="wide"><label>Notes</label><textarea name="notes" placeholder="Affiliate program / feed notes"></textarea></div></div><div class="actions"><button value="save" id="saveStore">Save Store</button><button class="subtle" value="cancel">Cancel</button></div><p class="status fine" id="storeMsg"></p></form></dialog>
+
+
+<dialog id="brandsManageDialog"><div class="dialog-card"><div class="dialog-head"><div><h2>Manage Brands</h2><p class="muted">Edit metadata, deactivate unused brands, or permanently delete only when no products depend on them.</p></div><button class="dialog-close" type="button" data-close-dialog="brandsManageDialog">×</button></div><div id="brandsManageList" class="manage-list"></div><p class="status fine" id="brandsManageMsg"></p><div class="actions"><button class="subtle" type="button" data-close-dialog="brandsManageDialog">Close</button></div></div></dialog>
+
+<dialog id="storesManageDialog"><div class="dialog-card"><div class="dialog-head"><div><h2>Manage Stores</h2><p class="muted">Edit metadata, deactivate unused stores, or permanently delete only when no retailer links depend on them.</p></div><button class="dialog-close" type="button" data-close-dialog="storesManageDialog">×</button></div><div id="storesManageList" class="manage-list"></div><p class="status fine" id="storesManageMsg"></p><div class="actions"><button class="subtle" type="button" data-close-dialog="storesManageDialog">Close</button></div></div></dialog>
+
+<dialog id="productDialog"><form method="dialog" class="dialog-card product-dialog-card" id="productForm">
+<div class="dialog-head"><div><h2 id="productDialogTitle">Add Product</h2><p class="muted">Canonical identity is used to catch wrong retailer variants.</p></div><button class="dialog-close" value="cancel">×</button></div>
+<input type="hidden" name="editing_id">
+<div class="dialog-grid">
+  <div class="wide"><label>Product name *</label><input name="name" required placeholder="OnePlus Nord 6"></div>
+  <div><label>Product ID</label><input name="product_id" placeholder="auto-generated"></div>
+  <div><label>Brand *</label><select name="brand_slug" required></select></div>
+  <div><label>Category *</label><select name="category" required aria-label="Product category"></select></div>
+  <div><label>Identity key *</label><input name="identity_key" required placeholder="Nord 6 / PA0056 / 50g"></div>
+  <div><label>Model / SKU</label><input name="model_code" placeholder="PA0056"></div>
+  <div><label>Variant</label><input name="variant" placeholder="8GB/256GB, 50g, White"></div>
+  <div><label>Status</label><select name="status"><option value="active">Active</option><option value="tracking">Tracking</option><option value="draft">Draft</option></select></div>
+  <div class="wide"><label>Canonical fallback image URL / local path</label><input name="image_url" placeholder="Current fallback image remains available"><p class="fine fallback-note">Backup only. The Website Preview below shows the curated Primary / Secondary images when selected.</p></div>
+  <div class="wide website-preview-card" id="websitePreviewCard">
+    <div class="website-preview-head"><div><b>Global Live Preview</b><small>One image setup is rendered with the same safe-fit rules on Home, Compare Popup, Wishlist and Deal Alerts. Brand logo also comes from the central Admin brand logo.</small></div><span class="preview-mode-badge" id="websitePreviewMode">Auto preview</span></div>
+    <div class="global-preview-grid">
+      <section class="global-preview-surface is-popup is-exact-live-mirror">
+        <div class="global-preview-label">Compare Popup · exact live website mirror</div>
+        <iframe id="liveExactPreviewFrame" class="live-exact-preview-frame" src="admin-live-preview.html?v=78.8.14" title="Exact live Compare Popup preview" scrolling="no"></iframe>
+      </section>
+      <section class="global-preview-surface is-home"><div class="global-preview-label">Home / Category Card</div><div class="global-preview-compact-stage original" data-global-preview-stage><img class="global-preview-brand floating" data-global-preview-brand alt="Brand logo" hidden><img data-global-preview-image alt="Home card preview" hidden></div><strong data-global-preview-name>Product</strong></section>
+      <section class="global-preview-surface is-wishlist"><div class="global-preview-label">Wishlist</div><div class="global-preview-row"><div class="global-preview-mini-stage original" data-global-preview-stage><img data-global-preview-image alt="Wishlist preview" hidden></div><div><img class="global-preview-brand" data-global-preview-brand alt="Brand logo" hidden><strong data-global-preview-name>Product</strong><small>Best verified price</small></div></div></section>
+      <section class="global-preview-surface is-deal"><div class="global-preview-label">Deal Alerts</div><div class="global-preview-row"><div class="global-preview-mini-stage original" data-global-preview-stage><img data-global-preview-image alt="Deal alert preview" hidden></div><div><strong data-global-preview-name>Product</strong><small>Current Price · Verified</small></div></div></section>
+    </div>
+    <p class="fine global-preview-note">Compare Popup preview now renders the actual live left-side component inside an isolated mirror using the same frontend stylesheet and image-rendering rules. Use it to judge Scale / Tilt / X / Y before saving. Home, Wishlist and Deal Alerts remain compact safe-fit previews.</p>
+  </div>
+
+  <section class="wide premium-image-manager" aria-labelledby="premiumImageHeading">
+    <div class="premium-image-head">
+      <div><h3 id="premiumImageHeading">Premium site images</h3><p class="fine">Optional 2-image gallery. Existing automatic verified-image logic stays unchanged unless you choose Curated 2-image mode.</p></div>
+      <label class="mode-field">Website image mode<select name="site_image_mode"><option value="auto">Auto · verified best-store image</option><option value="curated">Curated · fixed 2-image gallery</option></select></label>
+    </div>
+
+    <div class="site-image-source-cards" id="siteImageSourceCards" aria-label="Available verified product images"></div>
+    <div class="site-image-grid">
+      <article class="site-image-slot" data-site-slot="primary">
+        <div class="site-image-slot-head"><div><b>Image 1 · Primary</b><small>Main website/card image in Curated mode.</small></div><span class="slot-badge">Primary</span></div>
+        <select name="site_primary_source" class="site-source-select" aria-hidden="true"><option value="">Choose source…</option></select>
+        <label>Image URL</label>
+        <input name="site_primary_url" class="site-image-url" placeholder="https://...">
+        <label>Or upload local image</label>
+        <input name="site_primary_file" class="site-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <div class="site-image-controls">
+          <label>Background<select name="site_primary_bg"><option value="soft">Soft premium light</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
+          <label>Fit<select name="site_primary_fit"><option value="contain">Contain · no crop</option><option value="cover">Cover</option></select></label>
+          <label>Position preset<select name="site_primary_position"><option value="center">Center</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="left">Left</option><option value="right">Right</option></select></label>
+          <label>Scale<div class="range-line"><input name="site_primary_scale" type="range" min="70" max="260" step="1" value="100"><span class="range-value" data-range-value="site_primary_scale">100%</span></div></label>
+          <label>Tilt / 3D angle<div class="range-line"><input name="site_primary_rotate" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_primary_rotate">0°</span></div></label>
+          <label>X position<div class="range-line"><input name="site_primary_x" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_primary_x">0</span></div></label>
+          <label>Y position<div class="range-line"><input name="site_primary_y" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_primary_y">0</span></div></label>
+        </div>
+        <div class="site-image-preview soft" id="sitePrimaryPreviewBox"><img id="sitePrimaryPreview" alt="Primary site image preview" hidden><span class="preview-empty">No primary image selected</span></div>
+      </article>
+
+      <article class="site-image-slot" data-site-slot="secondary">
+        <div class="site-image-slot-head"><div><b>Image 2 · Alternate</b><small>Back / side / 3D-angle thumbnail in the popup.</small></div><span class="slot-badge secondary">Alternate</span></div>
+        <select name="site_secondary_source" class="site-source-select" aria-hidden="true"><option value="">Choose source…</option></select>
+        <label>Image URL</label>
+        <input name="site_secondary_url" class="site-image-url" placeholder="https://...">
+        <label>Or upload local image</label>
+        <input name="site_secondary_file" class="site-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <div class="site-image-controls">
+          <label>Background<select name="site_secondary_bg"><option value="soft">Soft premium light</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
+          <label>Fit<select name="site_secondary_fit"><option value="contain">Contain · no crop</option><option value="cover">Cover · premium hero</option></select></label>
+          <label>Position preset<select name="site_secondary_position"><option value="center">Center</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="left">Left</option><option value="right">Right</option></select></label>
+          <label>Scale<div class="range-line"><input name="site_secondary_scale" type="range" min="70" max="260" step="1" value="100"><span class="range-value" data-range-value="site_secondary_scale">100%</span></div></label>
+          <label>Tilt / 3D angle<div class="range-line"><input name="site_secondary_rotate" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_secondary_rotate">0°</span></div></label>
+          <label>X position<div class="range-line"><input name="site_secondary_x" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_secondary_x">0</span></div></label>
+          <label>Y position<div class="range-line"><input name="site_secondary_y" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_secondary_y">0</span></div></label>
+        </div>
+        <div class="site-image-preview soft" id="siteSecondaryPreviewBox"><img id="siteSecondaryPreview" alt="Secondary site image preview" hidden><span class="preview-empty">No alternate image selected</span></div>
+      </article>
+    </div>
+    <p class="fine premium-image-safety">Retailer choices only use images already saved from exact-match verification. Local uploads use a dedicated public product-image bucket; if upload storage is not enabled yet, URL-based images continue to work normally.</p>
+  </section>
+</div>
+<div class="actions"><button value="save" id="saveProduct">Save Product</button><button class="subtle" value="cancel">Cancel</button></div>
+<p class="status fine" id="productMsg"></p>
+</form></dialog>
+
+<dialog id="listingDialog"><form method="dialog" class="dialog-card" id="listingForm"><div class="dialog-head"><div><h2>Add Retailer Link</h2><p class="muted" id="listingProductName"></p></div><button class="dialog-close" value="cancel">×</button></div><div class="dialog-grid"><div><label>Store *</label><select name="store_slug" required></select></div><div><label>Listing status</label><select name="listing_status"><option value="active">Active listing</option><option value="out_of_stock">Out of stock</option><option value="not_listed">Not listed yet</option><option value="track_only">Track only</option></select></div><div class="wide"><label>Affiliate / tracked URL</label><input name="affiliate_url" type="url" placeholder="https://..."></div><div class="wide"><label>Direct retailer URL (optional)</label><input name="direct_url" type="url" placeholder="https://..."></div></div><p class="fine">For <b>Not listed yet</b> or <b>Track only</b>, a URL is optional. These states never count as live offers or Best Price.</p><div class="actions"><button value="save" id="saveListing">Save Retailer Link</button><button class="subtle" value="cancel">Cancel</button></div><p class="status fine" id="listingMsg"></p></form></dialog>
+
+
+<script>
+(function(){
+  const meta={
+    catalog:['CATALOG & PRICES','Product catalog & retailer verification','Manage products, retailer links, verification freshness and Best Price readiness.'],
+    plus:['PRICEPULSE PLUS','Membership controls','Manage one user or apply a temporary system-wide Plus override.'],
+    wallet:['WALLET & REWARDS','Rewards, referrals & vouchers','Test referral rewards, commission unlocks and voucher fulfillment in one workspace.'],
+    growth:['GROWTH & LINKS','Clicks, affiliate links, requests & sales','See store clicks, what to verify next, affiliate settings, product links shoppers asked for, and the sale countdown.'],
+    tools:['TOOLS & SETUP','Admin tools & setup','Use the retailer capture helper, review account details and setup status.']
+  };
+  function setView(view){
+    if(!meta[view])view='catalog';
+    document.body.dataset.adminView=view;
+    try{localStorage.setItem('pp_admin_view_v140',view)}catch(_){}
+    document.querySelectorAll('.admin-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.adminView===view));
+    const m=meta[view];
+    const e=document.getElementById('adminViewEyebrow'),t=document.getElementById('adminViewTitle'),d=document.getElementById('adminViewDesc');
+    if(e)e.textContent=m[0];if(t)t.textContent=m[1];if(d)d.textContent=m[2];
+    window.scrollTo({top:Math.max(0,(document.querySelector('.admin-section-nav')?.getBoundingClientRect().top||0)+window.scrollY-14),behavior:'smooth'});
+  }
+  document.querySelectorAll('.admin-nav-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.adminView)));
+  let initial='catalog';try{initial=localStorage.getItem('pp_admin_view_v140')||'catalog'}catch(_){}
+  setView(initial);
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="brand-logo-normalizer.js?v=78.8.20" defer></script>
+<script src="admin-prices.js?v=224" defer></script>
+<script src="plus-member-deals-admin.js?v=78.8.145" defer></script>
+<script src="admin-growth-v211.js?v=215" defer></script>
+<script src="admin-links-v212.js?v=222" defer></script>
+<script src="admin-linkfix-v223.js?v=223" defer></script>
+<script src="admin-review-v224.js?v=224" defer></script>
+<script src="admin-deals-v219.js?v=220" defer></script>
+</body></html>
+
+<style>
+/* V78.8.14 admin global brand-logo sizing contract */
+.global-preview-brand.floating{width:124px!important;height:30px!important;max-width:124px!important;object-fit:contain!important;object-position:left center!important}
+.global-preview-surface.is-wishlist .global-preview-brand{width:104px!important;height:24px!important;max-width:104px!important;object-fit:contain!important;object-position:left center!important}
+
+</style>

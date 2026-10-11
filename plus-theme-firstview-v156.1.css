@@ -1,0 +1,103 @@
+/* PricePulse Plus 78.8.156.1 — approved scope: match site's original color system,
+   fit hero+value strip into first desktop viewport, preserve lower-section natural layout. */
+#ppPlusPage.pp-rd{
+  --rd-navy:var(--navy,#061923);
+  --rd-deep:#061923;
+  --rd-ink:#102b3a;
+  --rd-green:var(--pp-hover-color,#078f68);
+  background:var(--soft,#f7f9fb);
+}
+/* The navy/gold membership card stays premium; CTA aligns with the site's emerald actions. */
+#ppPlusPage .pp-rd-hero{
+  background:radial-gradient(circle at 80% 24%,rgba(222,180,83,.14),transparent 37%),
+    radial-gradient(circle at 8% 82%,rgba(5,191,135,.12),transparent 37%),
+    linear-gradient(111deg,var(--navy,#061923),#0b2936 64%,#0c3c36);
+}
+#ppPlusPage .pp-rd-cta{
+  background:linear-gradient(135deg,var(--green,#05bf87),var(--green2,#18d49d));
+  border:1px solid #10b580;color:#06291e;
+  box-shadow:0 9px 24px rgba(5,151,105,.18),inset 0 1px rgba(255,255,255,.3);
+}
+#ppPlusPage .pp-rd-cta:hover{box-shadow:0 13px 29px rgba(5,151,105,.27)}
+#ppPlusPage .pp-rd-cta:focus-visible{outline-color:#eac879}
+#ppPlusPage .pp-rd-benefit-foot{background:#eaf8f2;color:#087653}
+#ppPlusPage .pp-rd-track-link{color:#078f68}
+#ppPlusPage .pp-rd-eq-col.is-green strong{color:#078f68}
+#ppPlusPage .pp-rd-tracker-math>div:nth-child(3) b{color:#078f68}
+#ppPlusPage .pp-rd-hero-inner{
+  min-height:0;padding:23px 24px 47px;gap:25px;
+}
+#ppPlusPage .pp-rd-hero-copy{padding-top:0}
+#ppPlusPage .pp-rd-hero-copy h1{
+  font-size:clamp(40px,4vw,57px);line-height:1.08;margin:15px 0 12px;
+}
+#ppPlusPage .pp-rd-hero-desc{font-size:14px;line-height:1.52;margin-bottom:15px}
+#ppPlusPage .pp-rd-hero-fine{margin-top:11px;line-height:1.5}
+#ppPlusPage .pp-rd-hero-visual{gap:15px;padding:4px 0 0}
+#ppPlusPage .pp-rd-premium-card{width:min(100%,410px);padding:22px 23px}
+#ppPlusPage .pp-rd-cta{min-height:48px;padding:11px 20px}
+#ppPlusPage .pp-rd-ghost{min-height:46px;padding:10px 8px}
+#ppPlusPage .pp-rd-equation{
+  margin:-24px 0 55px;padding:13px 21px 11px;
+  row-gap:2px;column-gap:12px;
+  box-shadow:0 13px 34px rgba(10,39,47,.10);
+}
+#ppPlusPage .pp-rd-eq-col strong{font-size:33px}
+#ppPlusPage .pp-rd-eq-result{padding:10px 8px}
+#ppPlusPage .pp-rd-eq-result strong{font-size:28px}
+#ppPlusPage .pp-rd-eq-note{margin:7px 0 0;padding-top:7px}
+/* In-page anchored comparison should reveal its heading and BOTH cards together.
+   Keep readable natural flow, no clipping or hidden scroll containers. */
+#ppPlusPage .pp-rd-compare-section{scroll-margin-top:calc(14px + 88px)}
+#ppPlusPage .pp-rd-benefit-section,#ppPlusPage .pp-rd-compare-section,
+#ppPlusPage .pp-rd-tracker,#ppPlusPage .pp-rd-faq{scroll-margin-top:110px}
+@media(min-width:921px) and (max-height:800px){
+  #ppPlusPage .pp-rd-hero-inner{padding-top:14px;padding-bottom:43px;gap:16px}
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(39px,3.7vw,51px);margin:12px 0 9px}
+  #ppPlusPage .pp-rd-hero-desc{font-size:13.3px;margin-bottom:12px}
+  #ppPlusPage .pp-rd-eyebrow{padding:6px 11px}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,370px);padding:18px 20px}
+  #ppPlusPage .pp-rd-hero-visual{gap:10px}
+  #ppPlusPage .pp-rd-card-caption{gap:12px}
+  #ppPlusPage .pp-rd-equation{margin-top:-19px;padding:10px 15px 9px;margin-bottom:42px}
+  #ppPlusPage .pp-rd-eq-col strong{font-size:29px}
+  #ppPlusPage .pp-rd-eq-result strong{font-size:25px}
+  #ppPlusPage .pp-rd-eq-note{font-size:10px;margin-top:5px;padding-top:6px}
+  #ppPlusPage .pp-rd-section-head{margin-bottom:15px}
+  #ppPlusPage .pp-rd-section-head h2{font-size:30px}
+  #ppPlusPage .pp-rd-plan-grid{margin:17px auto 13px}
+  #ppPlusPage .pp-rd-plan{padding:21px 25px}
+  #ppPlusPage .pp-rd-plan-price{font-size:39px;margin:11px 0}
+  #ppPlusPage .pp-rd-plan ul{gap:10px;margin-bottom:14px}
+  #ppPlusPage .pp-rd-plan>p{margin-bottom:12px;font-size:13px}
+  #ppPlusPage .pp-rd-plan li{font-size:12.8px}
+  #ppPlusPage .pp-rd-full-compare summary{padding:11px 20px}
+}
+@media(min-width:921px) and (max-height:720px){
+  #ppPlusPage .pp-rd-hero-inner{padding-top:10px;padding-bottom:36px;gap:13px}
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(37px,3.5vw,47px);margin:9px 0 8px}
+  #ppPlusPage .pp-rd-hero-desc{font-size:12.8px;line-height:1.45;margin-bottom:9px}
+  #ppPlusPage .pp-rd-hero-fine{font-size:10px;margin-top:7px}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,330px)}
+  #ppPlusPage .pp-rd-equation{margin-top:-15px;padding:8px 12px 7px}
+  #ppPlusPage .pp-rd-eq-col strong{font-size:27px}
+  #ppPlusPage .pp-rd-eq-result strong{font-size:23px}
+  #ppPlusPage .pp-rd-plan{padding:17px 22px}
+  #ppPlusPage .pp-rd-plan ul{gap:7px;margin-bottom:12px}
+  #ppPlusPage .pp-rd-section-head h2{font-size:27px}
+}
+/* On tablet/mobile maintain readable natural scrolling, never force unreasonably tiny text. */
+@media(max-width:920px){
+  #ppPlusPage .pp-rd-hero-inner{padding:26px 23px 66px;gap:16px}
+  #ppPlusPage .pp-rd-hero-visual{padding-top:8px}
+  #ppPlusPage .pp-rd-equation{margin-top:-32px}
+}
+@media(max-width:610px){
+  #ppPlusPage .pp-rd-hero-inner{padding:26px 17px 56px}
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(34px,9vw,40px)}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,370px)}
+  #ppPlusPage .pp-rd-equation{padding:14px 9px 10px;margin-top:-23px;margin-bottom:40px}
+  #ppPlusPage .pp-rd-eq-col strong{font-size:29px}
+  #ppPlusPage .pp-rd-eq-result strong{font-size:27px}
+  #ppPlusPage .pp-rd-section-head h2{font-size:27px}
+}

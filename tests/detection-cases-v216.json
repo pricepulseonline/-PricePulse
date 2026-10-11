@@ -1,0 +1,542 @@
+{
+ "links": [
+  [
+   "https://www.amazon.in/Xiaomi-inch-Ultra-Smart-L43MB-FPIN/dp/B0DXXXX111",
+   "Xiaomi|L43MB|Smart TV|43|electronics"
+  ],
+  [
+   "https://www.amazon.in/Samsung-inches-Crystal-Ultra-UA43DUE70BKLXL/dp/B0CZXXXX12",
+   "Samsung|Crystal|Smart TV|43|electronics"
+  ],
+  [
+   "https://www.amazon.in/LG-139-cm-inches-Smart-55UR7500PSC/dp/B0BXXXX113",
+   "LG||Smart TV|55|electronics"
+  ],
+  [
+   "https://www.flipkart.com/sony-bravia-2-108-cm-43-inch-ultra-hd-4k-led-smart-google-tv/p/itm123",
+   "Sony|Bravia|Smart TV|43|electronics"
+  ],
+  [
+   "https://www.amazon.in/Cetaphil-Hydrating-Sulphate-Free-Cleanser-Sensitive/dp/B01CCGW4OE",
+   "Cetaphil|Hydrating|Face Wash / Cleanser|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Minimalist-Sunscreen-SPF-50-PA/dp/B0B12345AB",
+   "Minimalist||Sunscreen|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Mamaearth-Vitamin-Wash-Turmeric-Glow/dp/B08XXX",
+   "Mamaearth|Vitamin|Face Wash / Cleanser|-|beauty"
+  ],
+  [
+   "https://www.nykaa.com/lakme-9-to-5-primer-matte-lip-color/p/123456",
+   "Lakme||Makeup|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Samsung-Galaxy-Ultra-Titanium-Storage/dp/B0DSKMKJV5",
+   "Samsung|Galaxy|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/Apple-iPhone-15-128-GB/dp/B0CHX1W1XY",
+   "Apple|iPhone 15|Smartphone|128GB|mobiles"
+  ],
+  [
+   "https://www.flipkart.com/oneplus-nord-ce4-lite-5g-mega-blue-128-gb/p/itm1",
+   "OnePlus|Nord|Smartphone|128GB|mobiles"
+  ],
+  [
+   "https://www.amazon.in/Redmi-Note-Pro-Phantom-Storage/dp/B0CXXX",
+   "Redmi|Note|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/iQOO-Snapdragon%C2%AE-Processor-Slimmest-Smartphone/dp/B0HCB1Z9BR",
+   "iQOO|Snapdragon|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/Spigen-Ultra-Hybrid-Samsung-Galaxy-Cover/dp/B0XX",
+   "Spigen||Phone Cover|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Samsung-Original-Galaxy-Buds-Core/dp/B0XXX",
+   "Samsung|Galaxy|Earbuds|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/boAt-Rockerz-450-Bluetooth-Headphones/dp/B07PR1CL3S",
+   "boAt|Rockerz 450|Headphones|-|electronics"
+  ],
+  [
+   "https://www.flipkart.com/xiaomi-mi-120w-hypercharge-wall-charger-mobile/p/itm123abc",
+   "Xiaomi|Hypercharge|Charger|120W|electronics"
+  ],
+  [
+   "https://www.amazon.in/Ambrane-20000mAh-Power-Bank-Charging/dp/B0XX",
+   "Ambrane||Power Bank|20000mAh|electronics"
+  ],
+  [
+   "https://www.amazon.in/Noise-ColorFit-Pro-Smartwatch-Calling/dp/B0XX",
+   "Noise|ColorFit Pro|Smartwatch|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/HP-Laptop-15s-i5-1235U-15-6-inch/dp/B0XX",
+   "HP|15s|Laptop|-|laptops"
+  ],
+  [
+   "https://www.amazon.in/Lenovo-IdeaPad-Slim-Laptop-16GB/dp/B0XX",
+   "Lenovo|IdeaPad|Laptop|-|laptops"
+  ],
+  [
+   "https://www.amazon.in/Apple-MacBook-Air-Laptop-chip/dp/B0XX",
+   "Apple|MacBook Air|Laptop|-|laptops"
+  ],
+  [
+   "https://www.amazon.in/Apple-iPad-11-inch-Wi-Fi/dp/B0XX",
+   "Apple||Tablet|11|electronics"
+  ],
+  [
+   "https://www.amazon.in/Daikin-Inverter-Split-Copper-MTKL50U/dp/B0XX",
+   "Daikin||Air Conditioner|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Voltas-1-5-Ton-Inverter-Split/dp/B0XX",
+   "Voltas||Air Conditioner|1.5 Ton|appliances"
+  ],
+  [
+   "https://www.amazon.in/Samsung-Frost-Double-Refrigerator-RT28C3053S8/dp/B0XX",
+   "Samsung||Refrigerator|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/LG-Inverter-Fully-Automatic-Washing-FHM1207SDM/dp/B0XX",
+   "LG||Washing Machine|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/IFB-Convection-Microwave-Oven-25SC4/dp/B0XX",
+   "IFB||Microwave / Oven|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Philips-NA120-00-Fryer-Technology/dp/B0XX",
+   "Philips|NA120|Air Fryer|-|home"
+  ],
+  [
+   "https://www.amazon.in/Prestige-Iris-Mixer-Grinder-Jars/dp/B0XX",
+   "Prestige|Iris|Mixer Grinder|-|home"
+  ],
+  [
+   "https://www.amazon.in/Milton-Thermosteel-Flask-1000-ml/dp/B00BBB2222",
+   "Milton|Thermosteel|Bottle / Flask|1000ml|home"
+  ],
+  [
+   "https://www.amazon.in/Pigeon-Amaze-Plus-Electric-Kettle/dp/B0XX",
+   "Pigeon|Amaze Plus|Kettle|-|home"
+  ],
+  [
+   "https://www.amazon.in/Atomberg-Renesa-1200mm-Ceiling-Remote/dp/B0XX",
+   "Atomberg|Renesa|Fan|-|home"
+  ],
+  [
+   "https://www.amazon.in/Kent-Grand-Water-Purifier/dp/B0XX",
+   "Kent|Grand|Water Purifier|-|home"
+  ],
+  [
+   "https://www.myntra.com/casual-shoes/puma/puma-men-smashic-white-sneakers/23456789/buy",
+   "Puma|Smashic|Shoes|-|fashion"
+  ],
+  [
+   "https://www.myntra.com/tshirts/roadster/roadster-men-black-printed-t-shirt/1234567/buy",
+   "Roadster||T-Shirt|-|fashion"
+  ],
+  [
+   "https://www.ajio.com/levis-men-511-slim-fit-jeans/p/469123456",
+   "Levis|511|Bottomwear|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Safari-Polycarbonate-Trolley-Luggage-Cabin/dp/B0XX",
+   "Safari||Luggage|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Fastrack-Analog-Black-Dial-Watch/dp/B0XX",
+   "Fastrack||Watch|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Philips-BT3211-15-Cordless-Trimmer/dp/B0XX",
+   "Philips|BT3211|Grooming|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Optimum-Nutrition-Standard-Protein-Powder/dp/B0XX",
+   "Optimum Nutrition||Nutrition|-|other"
+  ],
+  [
+   "https://www.amazon.in/OnePlus-Nord-Lite-Pastel-Storage/dp/B0XX",
+   "OnePlus|Nord|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/Vivo-Y28s-Twinkling-Purple-Storage/dp/B0XX",
+   "Vivo|Y28s|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.flipkart.com/realme-narzo-70-pro-5g-glass-green-128-gb/p/itm9",
+   "Realme|narzo|Smartphone|128GB|mobiles"
+  ],
+  [
+   "https://www.amazon.in/Motorola-Edge-Fusion-Sylvan-Storage/dp/B0XX",
+   "Motorola|Edge|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/Google-Pixel-Obsidian-Storage/dp/B0XX",
+   "Google|Pixel|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/JBL-Flip-Portable-Waterproof-Speaker/dp/B0XX",
+   "JBL|Flip|Speaker|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Sony-WH-1000XM5-Cancelling-Headphones-Hours/dp/B0XX",
+   "Sony|WH-1000XM5|Headphones|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Apple-AirPods-Pro-2nd-Generation/dp/B0XX",
+   "Apple|AirPods|Earbuds|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Fire-Boltt-Ninja-Calling-Smartwatch/dp/B0XX",
+   "Fire-Boltt|Ninja|Smartwatch|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Samsung-Galaxy-Tab-S9-FE/dp/B0XX",
+   "Samsung|Galaxy|Tablet|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/ASUS-Vivobook-i3-1215U-Laptop-X1502ZA/dp/B0XX",
+   "Asus|Vivobook|Laptop|-|laptops"
+  ],
+  [
+   "https://www.amazon.in/Acer-Aspire-Lite-Thin-Laptop/dp/B0XX",
+   "Acer|Aspire|Laptop|-|laptops"
+  ],
+  [
+   "https://www.amazon.in/LG-Ultragear-Gaming-Monitor-27GN750/dp/B0XX",
+   "LG|Ultragear|Monitor|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/SanDisk-Ultra-Dual-Drive-Type-C/dp/B0XX",
+   "SanDisk||Storage|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Logitech-M331-Silent-Wireless-Mouse/dp/B0XX",
+   "Logitech|M331|Mouse|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Canon-EOS-1500D-Digital-Camera/dp/B0XX",
+   "Canon|EOS|Camera|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/TCL-inches-Ultra-Google-55V6B/dp/B0XX",
+   "TCL||Smart TV|55|electronics"
+  ],
+  [
+   "https://www.amazon.in/Whirlpool-Frost-Free-Double-Door-Refrigerator/dp/B0XX",
+   "Whirlpool||Refrigerator|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Haier-Fully-Automatic-Front-Loading-HW70/dp/B0XX",
+   "Haier||Washing Machine|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Bajaj-Majesty-Instant-Water-Heater/dp/B0XX",
+   "Bajaj|Majesty|Water Heater|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Symphony-Diet-Personal-Cooler-White/dp/B0XX",
+   "Symphony|Diet|Air Cooler|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Eureka-Forbes-Aquaguard-Purifier/dp/B0XX",
+   "Eureka Forbes|Aquaguard|Water Purifier|-|home"
+  ],
+  [
+   "https://www.amazon.in/Hawkins-Classic-Aluminium-Pressure-Cooker/dp/B0XX",
+   "Hawkins|Classic|Cooker|-|home"
+  ],
+  [
+   "https://www.amazon.in/Wonderchef-Nutri-Blend-Mixer-Grinder/dp/B0XX",
+   "Wonderchef|Nutri|Mixer Grinder|-|home"
+  ],
+  [
+   "https://www.amazon.in/Borosil-Stainless-Steel-Hydra-Bottle/dp/B0XX",
+   "Borosil|Hydra|Bottle / Flask|-|home"
+  ],
+  [
+   "https://www.amazon.in/Wakefit-Orthopedic-Memory-Mattress/dp/B0XX",
+   "Wakefit|Orthopedic|Mattress|-|home"
+  ],
+  [
+   "https://www.myntra.com/sports-shoes/adidas/adidas-men-running-shoes/2345678/buy",
+   "Adidas||Shoes|-|fashion"
+  ],
+  [
+   "https://www.myntra.com/kurtas/libas/libas-women-printed-kurta/3456789/buy",
+   "Libas||Ethnic Wear|-|fashion"
+  ],
+  [
+   "https://www.ajio.com/us-polo-assn-men-slim-fit-shirt/p/4691234",
+   "US Polo||Shirt|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/American-Tourister-Polypropylene-Trolley-Suitcase/dp/B0XX",
+   "American Tourister||Luggage|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Wildcraft-Laptop-Backpack-Black/dp/B0XX",
+   "Wildcraft||Bag|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Ray-Ban-Aviator-Sunglasses/dp/B0XX",
+   "Ray-Ban|Aviator|Accessory|-|fashion"
+  ],
+  [
+   "https://www.nykaa.com/maybelline-new-york-fit-me-matte-poreless-foundation/p/12345",
+   "Maybelline New York||Makeup|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Neutrogena-Hydro-Boost-Water-Gel/dp/B0XX",
+   "Neutrogena|Hydro|Moisturiser / Cream|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Plum-Niacinamide-Face-Serum-30ml/dp/B0XX",
+   "Plum|Niacinamide|Serum|30ml|beauty"
+  ],
+  [
+   "https://www.amazon.in/Head-Shoulders-Anti-Dandruff-Shampoo/dp/B0XX",
+   "Head & Shoulders||Shampoo|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Fogg-Scent-Impressio-Perfume-Men/dp/B0XX",
+   "Fogg||Fragrance|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Colgate-Strong-Teeth-Toothpaste/dp/B0XX",
+   "Colgate||Oral Care|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Gillette-Mach3-Razor/dp/B0XX",
+   "Gillette|Mach3|Shaving|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/MuscleBlaze-Biozyme-Performance-Whey-Protein/dp/B0XX",
+   "MuscleBlaze|Biozyme|Nutrition|-|other"
+  ],
+  [
+   "https://www.amazon.in/Samsung-Galaxy-Smartphone-Jetblack-Storage/dp/B0XX",
+   "Samsung|Galaxy|Smartphone|-|mobiles"
+  ],
+  [
+   "https://www.amazon.in/realme-Buds-T300-Bluetooth-Cancellation/dp/B0XX",
+   "Realme|Buds|Earbuds|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Bose-QuietComfort-Ultra-Wireless-Headphones/dp/B0XX",
+   "Bose|QuietComfort|Headphones|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Portronics-Konnect-Charging-Cable/dp/B0XX",
+   "Portronics|Konnect|Cable|-|electronics"
+  ],
+  [
+   "https://www.amazon.in/Lloyd-Inverter-Split-Copper-GLS18I5FWSEV/dp/B0XX",
+   "Lloyd||Air Conditioner|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Godrej-Single-Refrigerator-RD-EDGE/dp/B0XX",
+   "Godrej||Refrigerator|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Samsung-Fully-Automatic-Loading-WW70T4020CX/dp/B0XX",
+   "Samsung||Washing Machine|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Usha-Mist-Air-Duos-Pedestal/dp/B0XX",
+   "Usha||Fan|-|home"
+  ],
+  [
+   "https://www.amazon.in/Crompton-Arno-Neo-Storage-Heater/dp/B0XX",
+   "Crompton|Arno|Water Heater|-|appliances"
+  ],
+  [
+   "https://www.amazon.in/Agaro-Regal-Electric-Rice-Cooker/dp/B0XX",
+   "Agaro|Regal|Cooker|-|home"
+  ],
+  [
+   "https://www.myntra.com/jeans/roadster/roadster-men-blue-slim-fit-jeans/1234/buy",
+   "Roadster||Bottomwear|-|fashion"
+  ],
+  [
+   "https://www.myntra.com/sarees/kalini/kalini-woven-design-saree/5678912/buy",
+   "Kalini||Ethnic Wear|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Skechers-Mens-Go-Walk-Shoe/dp/B0XX",
+   "Skechers||Shoes|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Crocs-Unisex-Classic-Clog/dp/B0XX",
+   "Crocs|Classic|Footwear|-|fashion"
+  ],
+  [
+   "https://www.amazon.in/Biotique-Bio-Honey-Gel-Moisturizer/dp/B0XX",
+   "Biotique|Honey|Moisturiser / Cream|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Lakme-Absolute-Kajal/dp/B0XX",
+   "Lakme|Absolute|Makeup|-|beauty"
+  ],
+  [
+   "https://www.amazon.in/Dove-Intense-Repair-Shampoo-650ml/dp/B0XX",
+   "Dove|Intense|Shampoo|650ml|beauty"
+  ],
+  [
+   "https://www.amazon.in/Wild-Stone-Code-Platinum-Perfume/dp/B0XX",
+   "Wild Stone|Code|Fragrance|-|beauty"
+  ]
+ ],
+ "searches": [
+  [
+   "samsung galaxy s25",
+   "Samsung|galaxy s25|Smartphone|-|mobiles"
+  ],
+  [
+   "iphone 16 pro 256gb",
+   "Apple|iphone 16 pro|Smartphone|256GB|mobiles"
+  ],
+  [
+   "redmi note 14",
+   "Redmi|note 14|Smartphone|-|mobiles"
+  ],
+  [
+   "sony 55 inch tv",
+   "Sony||Smart TV|55|electronics"
+  ],
+  [
+   "lg 1.5 ton ac",
+   "LG||Air Conditioner|1.5 Ton|appliances"
+  ],
+  [
+   "samsung 253 l fridge",
+   "Samsung||Refrigerator|253L|appliances"
+  ],
+  [
+   "ifb 7 kg washing machine",
+   "IFB||Washing Machine|7 kg|appliances"
+  ],
+  [
+   "boat airdopes 141",
+   "boAt|airdopes 141|Earbuds|-|electronics"
+  ],
+  [
+   "philips trimmer",
+   "Philips||Grooming|-|beauty"
+  ],
+  [
+   "mamaearth vitamin c face wash 100ml",
+   "Mamaearth|vitamin c|Face Wash / Cleanser|100ml|beauty"
+  ],
+  [
+   "nike running shoes uk 9",
+   "Nike||Shoes|UK 9|fashion"
+  ],
+  [
+   "prestige pressure cooker 5 litre",
+   "Prestige||Cooker|5L|home"
+  ],
+  [
+   "dell inspiron laptop 16gb",
+   "Dell|inspiron|Laptop|-|laptops"
+  ],
+  [
+   "milton water bottle 1 litre",
+   "Milton||Bottle / Flask|1L|home"
+  ],
+  [
+   "cetaphil moisturising cream",
+   "Cetaphil||Moisturiser / Cream|-|beauty"
+  ],
+  [
+   "whey protein 1kg",
+   "||Nutrition|1 kg|other"
+  ],
+  [
+   "oneplus 13r",
+   "OnePlus|13r|Smartphone|-|mobiles"
+  ],
+  [
+   "samsung s24 fe",
+   "Samsung|s24|Smartphone|-|mobiles"
+  ],
+  [
+   "mi 43 inch tv",
+   "Xiaomi||Smart TV|43|electronics"
+  ],
+  [
+   "daikin 1.5 ton 5 star split ac",
+   "Daikin||Air Conditioner|1.5 Ton|appliances"
+  ],
+  [
+   "lg 8 kg front load",
+   "LG||Washing Machine|8 kg|appliances"
+  ],
+  [
+   "noise buds vs104",
+   "Noise|vs104|Earbuds|-|electronics"
+  ],
+  [
+   "macbook air m3",
+   "Apple|macbook air m3|Laptop|-|laptops"
+  ],
+  [
+   "adidas ultraboost shoes size 8",
+   "Adidas|ultraboost|Shoes|-|fashion"
+  ],
+  [
+   "levis 511 jeans",
+   "Levis|511|Bottomwear|-|fashion"
+  ],
+  [
+   "the derma co sunscreen",
+   "The Derma Co||Sunscreen|-|beauty"
+  ],
+  [
+   "philips air fryer 4.2 l",
+   "Philips||Air Fryer|4.2L|home"
+  ],
+  [
+   "havells ceiling fan",
+   "Havells||Fan|-|home"
+  ],
+  [
+   "wildcraft trolley bag",
+   "Wildcraft||Luggage|-|fashion"
+  ],
+  [
+   "apple watch series 10",
+   "Apple|series|Smartwatch|-|electronics"
+  ],
+  [
+   "hp victus gaming laptop",
+   "HP|victus|Laptop|-|laptops"
+  ],
+  [
+   "samsung 1 ton window ac",
+   "Samsung||Air Conditioner|1 Ton|appliances"
+  ],
+  [
+   "boat stone 1200 speaker",
+   "boAt|stone 1200|Speaker|-|electronics"
+  ],
+  [
+   "crocs clog",
+   "Crocs||Footwear|-|fashion"
+  ],
+  [
+   "vivo v40",
+   "Vivo|v40|Smartphone|-|mobiles"
+  ]
+ ]
+}

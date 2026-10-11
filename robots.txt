@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-prices.html
+Disallow: /admin-live-preview.html
+Disallow: /wallet.html
+
+Sitemap: https://price-pulse.in/sitemap.xml

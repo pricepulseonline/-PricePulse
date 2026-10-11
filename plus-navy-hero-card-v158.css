@@ -1,0 +1,17 @@
+/* PricePulse V78.8.158 — approved Navy Blue theme correction, V157 locked base.
+   ONLY the backgrounds of the Plus sales hero and its premium membership card.
+   Preserve the approved 1170px alignment, size, effects, CTA, value strip and lower sections. */
+
+#ppPlusPage .pp-rd-hero {
+  background:
+    radial-gradient(circle at 80% 24%, rgba(222, 180, 83, .14), transparent 37%),
+    radial-gradient(circle at 8% 82%, rgba(44, 87, 132, .13), transparent 37%),
+    linear-gradient(111deg, #061923 0%, #0b2539 64%, #10273e 100%);
+}
+
+#ppPlusPage .pp-rd-premium-card {
+  background:
+    radial-gradient(circle at 85% 8%, rgba(239, 195, 107, .13), transparent 33%),
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, .06), transparent 22%),
+    linear-gradient(145deg, #16384b 0%, #0a2030 57%, #112a42 100%);
+}

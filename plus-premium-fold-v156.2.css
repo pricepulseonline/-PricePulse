@@ -1,0 +1,146 @@
+/* PricePulse Plus V78.8.156.2 — premium first fold polish
+   Scope: first fold only. Existing website, lower sections, Wallet/Wishlist/Admin/Supabase unchanged. */
+#ppPlusPage .pp-rd-hero{overflow:visible}
+#ppPlusPage .pp-rd-hero:after{
+  content:"";position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);
+  width:min(88%,1120px);height:38px;border-radius:24px;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,0));
+  filter:blur(8px);opacity:.7;pointer-events:none;
+}
+#ppPlusPage .pp-rd-hero-inner{
+  padding-top:26px;padding-bottom:60px;gap:30px;
+}
+#ppPlusPage .pp-rd-hero-copy h1{
+  font-size:clamp(43px,4.2vw,60px);
+  letter-spacing:-.05em;
+  text-wrap:balance;
+}
+#ppPlusPage .pp-rd-hero-desc{
+  max-width:520px;
+}
+#ppPlusPage .pp-rd-hero-actions{gap:14px}
+#ppPlusPage .pp-rd-cta{
+  min-height:50px;padding:12px 22px;border-radius:14px;
+  box-shadow:0 14px 30px rgba(5,151,105,.18),0 3px 0 rgba(2,76,53,.12),inset 0 1px rgba(255,255,255,.32);
+}
+#ppPlusPage .pp-rd-cta:hover{transform:translateY(-2px) scale(1.01)}
+#ppPlusPage .pp-rd-hero-fine{max-width:580px}
+#ppPlusPage .pp-rd-hero-visual{gap:17px;padding-top:6px;perspective:1400px}
+#ppPlusPage .pp-rd-premium-card{
+  width:min(100%,430px);
+  padding:24px 25px;
+  border-width:1.6px;
+  border-color:rgba(240,198,105,.88);
+  background:
+    radial-gradient(circle at 85% 8%,rgba(34,197,141,.18),transparent 33%),
+    radial-gradient(circle at 14% 18%,rgba(255,255,255,.06),transparent 22%),
+    linear-gradient(145deg,#16384b 0%,#0a2030 57%,#0f3734 100%);
+  transform:perspective(1400px) rotateY(-11deg) rotateX(4deg) rotate(-1.2deg) translateZ(0);
+  transform-style:preserve-3d;
+  box-shadow:
+    0 34px 68px rgba(0,0,0,.36),
+    0 16px 28px rgba(0,0,0,.2),
+    0 0 0 1px rgba(255,225,154,.08),
+    inset 0 1px 0 rgba(255,255,255,.22);
+}
+#ppPlusPage .pp-rd-premium-card:hover{
+  transform:perspective(1400px) rotateY(-6deg) rotateX(2deg) rotate(-.35deg) translateY(-5px) scale(1.018);
+  box-shadow:0 40px 80px rgba(0,0,0,.42),0 0 30px rgba(237,196,109,.17),inset 0 1px 0 rgba(255,255,255,.2);
+}
+#ppPlusPage .pp-rd-premium-card::after{
+  content:"";position:absolute;inset:auto 16px 12px 16px;height:26%;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(236,191,100,.16),transparent 70%);
+  filter:blur(16px);opacity:.85;
+}
+#ppPlusPage .pp-rd-card-sheen{
+  width:24%;height:240%;top:-62%;left:-72%;opacity:.9;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.05) 18%,rgba(255,245,216,.34) 50%,rgba(255,255,255,.07) 82%,transparent 100%);
+  animation:ppRdShineFast 4.6s linear infinite;
+  will-change:transform,left;
+}
+@keyframes ppRdShineFast{
+  0%{left:-72%;opacity:0}
+  8%{opacity:.45}
+  24%{opacity:.95}
+  52%{left:148%;opacity:.85}
+  60%{left:148%;opacity:0}
+  100%{left:148%;opacity:0}
+}
+#ppPlusPage .pp-rd-card-caption{
+  gap:16px;padding:7px 14px;border-radius:999px;
+  background:rgba(7,20,28,.2);border:1px solid rgba(239,205,128,.13);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+#ppPlusPage .pp-rd-equation{
+  position:relative;
+  margin:-28px 0 54px;
+  padding:14px 24px 12px;
+  border-radius:22px;
+  background:linear-gradient(180deg,#fffefb,#fff8ee);
+  border:1px solid rgba(228,206,165,.72);
+  box-shadow:0 20px 40px rgba(10,39,47,.12),0 5px 14px rgba(10,39,47,.05);
+}
+#ppPlusPage .pp-rd-equation::before{
+  content:"";position:absolute;left:16px;right:16px;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(241,205,132,.85),transparent);
+}
+#ppPlusPage .pp-rd-eq-col strong{font-size:34px}
+#ppPlusPage .pp-rd-eq-result{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 8px 16px rgba(151,111,41,.08);
+}
+#ppPlusPage .pp-rd-benefit-section{
+  position:relative;
+  margin-top:-6px;
+  padding-top:34px;
+}
+#ppPlusPage .pp-rd-benefit-section::before{
+  content:"";display:block;width:min(92%,1020px);height:24px;margin:0 auto 8px;
+  border-radius:18px 18px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,250,.86));
+  box-shadow:0 -8px 24px rgba(10,39,47,.05),0 8px 26px rgba(10,39,47,.04);
+  transform:perspective(1200px) rotateX(46deg) scaleX(.97);
+  transform-origin:center top;
+  opacity:.95;
+}
+#ppPlusPage .pp-rd-benefit-section .pp-rd-section-head{
+  margin-top:2px;
+}
+@media(min-width:921px) and (max-height:800px){
+  #ppPlusPage .pp-rd-hero-inner{padding-top:16px;padding-bottom:46px;gap:18px}
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(39px,3.8vw,52px);margin:12px 0 10px}
+  #ppPlusPage .pp-rd-hero-desc{font-size:13px;line-height:1.48;margin-bottom:11px}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,372px);padding:20px 21px}
+  #ppPlusPage .pp-rd-card-caption{gap:10px;padding:5px 10px}
+  #ppPlusPage .pp-rd-equation{margin-top:-19px;padding:10px 16px 9px;margin-bottom:44px}
+  #ppPlusPage .pp-rd-eq-col strong{font-size:29px}
+  #ppPlusPage .pp-rd-benefit-section{padding-top:26px}
+  #ppPlusPage .pp-rd-benefit-section::before{height:18px}
+}
+@media(min-width:921px) and (max-height:720px){
+  #ppPlusPage .pp-rd-hero-inner{padding-top:11px;padding-bottom:38px;gap:14px}
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(37px,3.55vw,47px);margin:9px 0 8px}
+  #ppPlusPage .pp-rd-hero-desc{font-size:12.4px;line-height:1.4;margin-bottom:8px}
+  #ppPlusPage .pp-rd-hero-fine{font-size:10px;margin-top:6px}
+  #ppPlusPage .pp-rd-premium-card{width:min(100%,336px)}
+  #ppPlusPage .pp-rd-card-caption{gap:8px;padding:4px 8px}
+  #ppPlusPage .pp-rd-equation{margin-top:-15px;padding:8px 13px 7px;margin-bottom:40px}
+  #ppPlusPage .pp-rd-eq-col strong{font-size:27px}
+  #ppPlusPage .pp-rd-benefit-section{padding-top:22px}
+  #ppPlusPage .pp-rd-benefit-section::before{height:15px;margin-bottom:4px}
+}
+@media(max-width:920px){
+  #ppPlusPage .pp-rd-hero-inner{padding-bottom:62px}
+  #ppPlusPage .pp-rd-premium-card{
+    width:min(100%,390px);
+    transform:none;
+    box-shadow:0 24px 48px rgba(0,0,0,.28),0 0 0 1px rgba(255,225,154,.08),inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  #ppPlusPage .pp-rd-premium-card:hover{transform:none}
+  #ppPlusPage .pp-rd-equation{margin-top:-26px}
+  #ppPlusPage .pp-rd-benefit-section{padding-top:26px}
+  #ppPlusPage .pp-rd-benefit-section::before{width:min(90%,520px);height:18px;margin-bottom:6px;transform:perspective(1000px) rotateX(52deg) scaleX(.96)}
+}
+@media(max-width:610px){
+  #ppPlusPage .pp-rd-hero-copy h1{font-size:clamp(34px,9vw,40px)}
+  #ppPlusPage .pp-rd-benefit-section::before{height:14px}
+}

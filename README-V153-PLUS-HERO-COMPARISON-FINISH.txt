@@ -1,0 +1,1 @@
+V78.8.153 from V152, scoped Plus CSS only: member pass fills the hero stage better, value chips are placed alongside rather than floating on top; Free vs Plus comparison text, columns and hierarchy refined. First-viewport fit and responsive layouts protected; no JS/SQL or business rule changes.

@@ -1,0 +1,2 @@
+PricePulse V78.8.156.1 — From V156 premium before/after screens (which were built from locked V154.1, not V155).
+Only Plus subscription page changes: align buttons/navy to main PricePulse theme while keeping gold membership treatment; remove redundant Back to shopping at top; fit hero + ₹99/₹100 value strip in desktop first view; compact desktop Free vs Plus to support full-section anchor with sticky-header offset. Mobile stays naturally scrollable and never crops text. No Wallet/Wishlist/Deals/Admin/Supabase logic changed.

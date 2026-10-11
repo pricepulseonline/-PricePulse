@@ -1,0 +1,32 @@
+/* V78.8.145 — Plus Member Deals Manager only. */
+.pp-deals-admin-card{margin-top:16px;border:1px solid #e6d9ad;border-radius:18px;background:linear-gradient(180deg,#fffdf7,#fff);padding:18px}
+.pp-deals-admin-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:14px}.pp-deals-admin-head h2{margin:0 0 5px}.pp-deals-admin-badge{font-size:11px;font-weight:900;letter-spacing:.08em;color:#765d13;background:#fff4c8;border:1px solid #e8d588;border-radius:999px;padding:7px 10px;white-space:nowrap}
+.pp-deals-readiness{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 16px}.pp-deals-readiness>div{border:1px solid #e7ece9;border-radius:12px;padding:10px 12px;background:#fbfcfb}.pp-deals-readiness b{display:block;font-size:18px}.pp-deals-readiness small{color:#6b7873}
+.pp-deals-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.pp-deals-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#44544e}.pp-deals-form input,.pp-deals-form select,.pp-deals-form textarea{width:100%;box-sizing:border-box;border:1px solid #dbe4e0;border-radius:10px;padding:10px 11px;background:#fff;color:#1c332b;font:inherit}.pp-deals-form textarea{resize:vertical;min-height:74px}.pp-deals-form .wide{grid-column:span 2}.pp-deals-form .full{grid-column:1/-1}.pp-deals-checks{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.pp-deals-checks label{flex-direction:row;align-items:center}.pp-deals-checks input{width:auto}
+.pp-deals-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.pp-deals-list{display:grid;gap:10px;margin-top:16px}.pp-deals-row{border:1px solid #e1e8e5;border-radius:14px;padding:13px;background:#fff;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.pp-deals-row h3{margin:0 0 4px;font-size:15px}.pp-deals-row p{margin:2px 0;color:#697872;font-size:12px}.pp-deals-row .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.pp-deals-chip{font-size:10px;font-weight:800;border-radius:999px;padding:5px 8px;background:#edf6f1;color:#27664f}.pp-deals-chip.off{background:#f3f0ee;color:#7d6b64}.pp-deals-row-actions{display:flex;gap:7px;align-items:flex-start;flex-wrap:wrap}.pp-deals-row-actions button{padding:8px 10px}
+.pp-deals-guidance{margin-top:12px;padding:12px 14px;border-radius:12px;background:#f7faf8;border:1px solid #e1ebe5;font-size:12px;color:#5c6e67}.pp-deals-guidance b{color:#254f40}
+@media(max-width:900px){.pp-deals-form{grid-template-columns:repeat(2,minmax(0,1fr))}.pp-deals-readiness{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.pp-deals-form{grid-template-columns:1fr}.pp-deals-form .wide,.pp-deals-form .full{grid-column:auto}.pp-deals-readiness{grid-template-columns:1fr 1fr}.pp-deals-row{grid-template-columns:1fr}}
+/* V211 growth admin */
+.pp-growth-card+.pp-growth-card{margin-top:16px}
+.pp-growth-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.pp-growth-tabs button{border:1px solid #e6d9ad;background:#fff;color:#2c3f38;border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer}
+.pp-growth-tabs button.is-on{background:#0B1B26;color:#F6D98A;border-color:#0B1B26}
+.pp-growth-inline{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pp-growth-inline input{flex:1;min-width:180px;padding:8px 10px;border:1px solid #dce9e4;border-radius:10px}
+/* V212 clicks */
+.pp-clk-bars{display:grid;gap:8px;margin-top:8px}
+.pp-clk-row{display:grid;grid-template-columns:110px 1fr 54px;align-items:center;gap:10px;font-size:13px;font-weight:700}
+.pp-clk-row i{height:10px;border-radius:99px;background:#eef3f1;overflow:hidden}
+.pp-clk-row i b{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#1E7A55,#2EA06E)}
+.pp-clk-row em{font-style:normal;text-align:right;color:#2c3f38}
+/* V213 */
+.pp-dem-n{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:4px;padding:0 6px;border-radius:99px;background:#f3eee2;color:#5b4a1d;font-size:11px}
+.pp-growth-tabs button.is-on .pp-dem-n{background:rgba(246,217,138,.2);color:#F6D98A}
+.pp-dem-fresh{display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;background:#e5f7ef;color:#08734d;font-weight:800;font-size:13px}
+.pp-clk-empty{margin:4px 0 0;padding:12px 14px;border-radius:12px;background:#f7faf9;border:1px dashed #cfe3db;color:#4e6a60;font-size:13px}
+.pp-req-det{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.pp-req-det span{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;background:#fff;border:1px solid #e6d9ad;font-size:12px;font-weight:700}
+.pp-req-det small{color:#8a7a4e;font-weight:700}
+.pp-req-det .pp-req-ok{background:#e5f7ef;border-color:#bfe5d2;color:#08734d}
+.pp-req-det .pp-req-price{background:#fff7e6;border-color:#f0d9a6;color:#7a5410}

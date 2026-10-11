@@ -1,0 +1,277 @@
+/* PricePulse Plus V78.8.157 — scoped LOWER PAGE premium finishing only.
+   V156.9 hero/site-wide container, card animation, floating value strip and JS integrations are locked.
+   All rules are below fold and scoped to #ppPlusPage (never global). */
+
+/* Shared design rhythm, preserve the site's established 1170px main container. */
+#ppPlusPage .pp-rd-inner{
+  --ppx-ink:#102b3a;--ppx-emerald:#0aa97b;--ppx-gold:#e8be70;
+  --ppx-gold-deep:#a77a2a;--ppx-line:#dfe9e6;
+}
+#ppPlusPage .pp-rd-benefit-section,
+#ppPlusPage .pp-rd-compare-section,
+#ppPlusPage .pp-rd-tracker,
+#ppPlusPage .pp-rd-faq{scroll-margin-top:112px}
+#ppPlusPage .pp-rd-benefit-section{margin-bottom:68px}
+#ppPlusPage .pp-rd-section-head{margin-bottom:23px}
+#ppPlusPage .pp-rd-overline{color:#976a21;letter-spacing:.18em}
+#ppPlusPage .pp-rd-section-head h2{letter-spacing:-.044em}
+
+/* BENEFITS: numbers first, raised surfaces, quiet metallic details and no false promises. */
+#ppPlusPage .pp-rd-benefits{gap:16px}
+#ppPlusPage .pp-rd-benefit{
+  position:relative;isolation:isolate;min-height:298px;
+  padding:21px 21px 19px;overflow:hidden;
+  border:1px solid #dde8e2;border-radius:20px;
+  background:linear-gradient(145deg,#fff 0%,#fbfefd 58%,#f1f8f5 100%);
+  box-shadow:0 17px 34px rgba(6,35,42,.075),0 3px 9px rgba(5,32,41,.035),inset 0 1px 0 #fff;
+  transition:transform .26s ease,border-color .26s ease,box-shadow .26s ease;
+}
+#ppPlusPage .pp-rd-benefit::before{
+  content:"";position:absolute;inset:0 0 auto;height:3px;
+  background:linear-gradient(90deg,rgba(225,179,83,.98),rgba(245,224,169,.85) 56%,rgba(13,177,130,.75));
+}
+#ppPlusPage .pp-rd-benefit::after{
+  content:"";position:absolute;width:142px;height:142px;right:-68px;top:-55px;
+  border-radius:50%;background:radial-gradient(circle,rgba(229,191,108,.13),transparent 70%);
+  pointer-events:none;z-index:-1;
+}
+#ppPlusPage .pp-rd-benefit:hover{
+  transform:translateY(-5px);border-color:#d7b66e;
+  box-shadow:0 24px 48px rgba(6,35,42,.12),0 5px 12px rgba(5,32,41,.045);
+}
+#ppPlusPage .pp-rd-feature-stat{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:37px;
+}
+#ppPlusPage .pp-rd-feature-stat strong{
+  font-size:clamp(24px,2.25vw,31px);letter-spacing:-.055em;
+  line-height:1;font-weight:930;color:#122d3d;
+}
+#ppPlusPage .pp-rd-feature-stat small{
+  max-width:112px;text-align:right;font-size:9px;line-height:1.38;
+  font-weight:900;letter-spacing:.085em;color:#997437;
+}
+#ppPlusPage .pp-rd-icon{
+  width:45px;height:45px;margin-top:12px;border-radius:14px;
+  background:linear-gradient(145deg,#1b4651,#092738);
+  color:#f4d78d;border:1px solid rgba(239,208,134,.23);
+  box-shadow:0 8px 15px rgba(8,45,56,.19),inset 0 1px rgba(255,255,255,.16);
+}
+#ppPlusPage .pp-rd-icon svg{width:25px;height:25px}
+#ppPlusPage .pp-rd-benefit h3{font-size:18px;margin:15px 0 8px;line-height:1.22}
+#ppPlusPage .pp-rd-benefit p{font-size:12.8px;line-height:1.53;margin:0 0 17px}
+#ppPlusPage .pp-rd-benefit-foot{
+  width:100%;text-align:center;margin-top:auto;padding:10px 9px;
+  border:1px solid #d9eee2;background:#eaf8f1;color:#11684d;
+  font-size:11px;font-weight:850;border-radius:11px;
+}
+
+/* COMPARISON: retain the existing 900px comfortable plan width, with premium card depth. */
+#ppPlusPage .pp-rd-compare-section{margin-bottom:69px}
+#ppPlusPage .pp-rd-plan-grid{gap:22px;margin-top:29px}
+#ppPlusPage .pp-rd-plan{
+  border-radius:22px;padding:29px 29px 25px;
+  box-shadow:0 16px 34px rgba(15,48,54,.07),inset 0 1px rgba(255,255,255,.78);
+}
+#ppPlusPage .pp-rd-plan.is-free{
+  background:linear-gradient(145deg,#fff,#f9fcfb);
+  border-color:#dee8e5;
+}
+#ppPlusPage .pp-rd-plan.is-plus{
+  isolation:isolate;overflow:visible;
+  background:radial-gradient(circle at 95% 2%,rgba(41,147,111,.22),transparent 43%),
+    linear-gradient(147deg,#173849 0%,#0d2939 52%,#0d302f 100%);
+  border:2px solid #deb868;
+  box-shadow:0 23px 43px rgba(11,37,45,.2),0 3px 12px rgba(10,37,44,.08),inset 0 1px rgba(255,245,212,.16);
+}
+#ppPlusPage .pp-rd-plan.is-plus::before{
+  content:"";height:2px;position:absolute;top:0;left:22px;right:22px;
+  background:linear-gradient(90deg,transparent,#f5d997,transparent);
+  pointer-events:none;
+}
+#ppPlusPage .pp-rd-plan.is-plus .pp-rd-plan-name{font-size:16px}
+#ppPlusPage .pp-rd-plan.is-free .pp-rd-plan-name{font-size:16px}
+#ppPlusPage .pp-rd-plan-price{margin:14px 0;font-size:48px}
+#ppPlusPage .pp-rd-plan.is-plus .pp-rd-plan-price{color:#f7d889}
+#ppPlusPage .pp-rd-plan ul{gap:11px;margin-bottom:19px}
+#ppPlusPage .pp-rd-plan li{line-height:1.47;min-height:23px;align-items:flex-start}
+#ppPlusPage .pp-rd-plan li svg{flex:0 0 17px;margin-top:1px}
+#ppPlusPage .pp-rd-free-btn{
+  border-radius:12px;background:#eef5f2;border-color:#d5e6de;
+  transition:background .2s ease,transform .2s ease;
+}
+#ppPlusPage .pp-rd-free-btn:hover{background:#e6f0ec;transform:translateY(-1px)}
+#ppPlusPage .pp-rd-plan.is-plus .pp-rd-cta--plan{
+  border-color:#0bba8a;box-shadow:0 9px 24px rgba(0,0,0,.14),inset 0 1px rgba(255,255,255,.26);
+}
+#ppPlusPage .pp-rd-best{
+  box-shadow:0 6px 16px rgba(128,91,22,.19),inset 0 1px rgba(255,255,255,.4);
+  border:1px solid #e7c377;
+}
+#ppPlusPage .pp-rd-full-compare{
+  border-radius:15px;border-color:#dce8e3;
+  box-shadow:0 11px 24px rgba(14,46,54,.04);
+}
+#ppPlusPage .pp-rd-full-compare summary{padding:16px 21px}
+#ppPlusPage .pp-rd-full-compare[open]{border-color:#d8bb7c}
+#ppPlusPage .pp-rd-full-compare summary span{transition:transform .2s ease}
+#ppPlusPage .pp-rd-full-compare[open] summary span{transform:rotate(180deg)}
+
+/* TRACKER: membership economics explained without duplicating hero's ₹1 calculation,
+   real tracked earnings always come from the existing Wallet. */
+#ppPlusPage .pp-rd-tracker{
+  position:relative;overflow:hidden;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);
+  gap:28px;padding:32px 34px;margin-bottom:71px;border-radius:23px;
+  border:1px solid #e3d2a9;
+  background:radial-gradient(circle at 8% 7%,rgba(243,211,138,.21),transparent 44%),
+             linear-gradient(112deg,#fffaf0,#f4faf6 72%,#eef8f3);
+  box-shadow:0 18px 38px rgba(35,52,47,.07),inset 0 1px rgba(255,255,255,.83);
+}
+#ppPlusPage .pp-rd-tracker::before{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:4px;
+  background:linear-gradient(#dba94b,#f6d998 48%,#12a77c);
+}
+#ppPlusPage .pp-rd-tracker h2{font-size:clamp(28px,2.55vw,35px);line-height:1.19}
+#ppPlusPage .pp-rd-tracker>div>p{font-size:13.4px;line-height:1.6}
+#ppPlusPage .pp-rd-track-link{
+  margin-top:9px;gap:9px;min-height:42px;padding:10px 14px;
+  border:1px solid #c8e9d8;border-radius:12px;background:#e9f8f0;color:#067a57;
+  box-shadow:inset 0 1px #fff;
+}
+#ppPlusPage .pp-rd-track-link:hover{background:#daf2e7}
+#ppPlusPage .pp-rd-tracker-math{
+  position:relative;grid-template-columns:minmax(0,1fr) 21px minmax(0,1fr);
+  align-content:center;gap:10px;padding:19px;border:1px solid #e0d2af;
+  border-radius:18px;background:#fff;
+  box-shadow:0 15px 30px rgba(40,57,47,.085),inset 0 1px #fff;
+}
+#ppPlusPage .pp-rd-track-stat{
+  min-width:0;text-align:left;padding:12px 11px;
+  border-radius:13px;background:#f4f7f6;border:1px solid #e7eeea;
+}
+#ppPlusPage .pp-rd-track-stat.is-potential{
+  background:#f0faf5;border-color:#cfeade;
+}
+#ppPlusPage .pp-rd-track-stat small{
+  font-size:9px;letter-spacing:.065em;line-height:1.35;color:#607772;
+}
+#ppPlusPage .pp-rd-track-stat b{margin:7px 0 3px;font-size:clamp(29px,2.5vw,36px)}
+#ppPlusPage .pp-rd-track-stat.is-potential b{color:#078b63}
+#ppPlusPage .pp-rd-track-stat>span{
+  display:block;font-size:10px;line-height:1.4;color:#627575;
+}
+#ppPlusPage .pp-rd-track-arrow{font-size:22px;color:#bd9e5b;text-align:center}
+#ppPlusPage .pp-rd-track-progress{
+  grid-column:1/-1;position:relative;min-height:36px;margin-top:1px;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+}
+#ppPlusPage .pp-rd-track-progress-bar{
+  width:100%;height:7px;border-radius:99px;
+  background:repeating-linear-gradient(90deg,#e7eee9 0,#e7eee9 13px,#f6faf8 13px,#f6faf8 16px);
+  border:1px solid #e2ebe6;
+}
+#ppPlusPage .pp-rd-track-progress-label{
+  font-size:9.5px;line-height:1.3;font-weight:850;letter-spacing:.05em;
+  text-align:center;color:#477565;
+}
+#ppPlusPage .pp-rd-tracker-math>p{
+  margin:2px 0 0;text-align:center;font-size:10px;line-height:1.49;
+  border-top:1px solid #edf1ef;padding-top:9px;
+}
+
+/* FAQ: tidy, native-keyboard-accessible details with no fake UI controls. */
+#ppPlusPage .pp-rd-faq{margin-bottom:67px}
+#ppPlusPage .pp-rd-faq-list{gap:11px}
+#ppPlusPage .pp-rd-faq details{
+  position:relative;border-radius:15px;
+  background:linear-gradient(120deg,#fff,#fbfdfc);
+  border:1px solid #dce8e2;
+  box-shadow:0 7px 19px rgba(18,46,53,.035);
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+#ppPlusPage .pp-rd-faq details:hover{border-color:#cdded5}
+#ppPlusPage .pp-rd-faq details[open]{
+  border-color:#dec38b;box-shadow:0 12px 24px rgba(49,55,37,.075);
+}
+#ppPlusPage .pp-rd-faq summary{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  list-style:none;padding:19px 22px;line-height:1.4;font-size:14px;
+}
+#ppPlusPage .pp-rd-faq summary::-webkit-details-marker{display:none}
+#ppPlusPage .pp-rd-faq summary::after{
+  content:"";flex:0 0 9px;width:9px;height:9px;
+  border-right:2px solid #9e7a32;border-bottom:2px solid #9e7a32;
+  transform:rotate(45deg);transition:transform .2s ease;
+}
+#ppPlusPage .pp-rd-faq details[open] summary::after{transform:rotate(225deg)}
+#ppPlusPage .pp-rd-faq details[open] summary{
+  background:linear-gradient(90deg,#fff9ed,#fff);
+}
+#ppPlusPage .pp-rd-faq details p{padding:0 22px 21px;animation:ppxFaqReveal .2s ease-out}
+@keyframes ppxFaqReveal{from{opacity:.2;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+
+/* END CTA: hero-relative navy/gold/emerald identity, not a disconnected ad. */
+#ppPlusPage .pp-rd-final{
+  border:1px solid rgba(221,182,102,.45);
+  border-radius:23px;padding:45px 28px 44px;gap:12px;
+  background:radial-gradient(ellipse at 78% 12%,rgba(227,181,89,.17),transparent 36%),
+    radial-gradient(ellipse at 12% 95%,rgba(4,191,134,.16),transparent 47%),
+    linear-gradient(120deg,#0b2231,#123b3d);
+  box-shadow:0 24px 48px rgba(12,48,55,.16),inset 0 1px rgba(255,255,255,.1);
+}
+#ppPlusPage .pp-rd-final::before{
+  content:"";position:absolute;inset:14px;border-radius:16px;
+  border:1px solid rgba(237,203,130,.12);pointer-events:none;
+}
+#ppPlusPage .pp-rd-final .pp-rd-final-crown{
+  display:grid;place-items:center;width:60px;height:60px;border-radius:18px;
+  color:#f3d080;background:rgba(235,190,108,.08);border:1px solid rgba(237,199,117,.22);
+  box-shadow:0 8px 25px rgba(0,0,0,.1);
+}
+#ppPlusPage .pp-rd-final .pp-rd-final-crown svg{width:35px;height:35px}
+#ppPlusPage .pp-rd-final h2{font-size:clamp(28px,3.1vw,41px)}
+#ppPlusPage .pp-rd-final .pp-rd-cta--final{
+  min-width:min(100%,300px);
+  box-shadow:0 13px 25px rgba(0,0,0,.15),inset 0 1px rgba(255,255,255,.3);
+}
+
+/* Viewport improvements below 1100px without affecting the locked hero. */
+@media(max-width:1100px){
+ #ppPlusPage .pp-rd-benefits{gap:11px}
+ #ppPlusPage .pp-rd-benefit{padding:19px 16px;min-height:302px}
+ #ppPlusPage .pp-rd-feature-stat small{font-size:8.5px}
+}
+@media(max-width:920px){
+ #ppPlusPage .pp-rd-benefits{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ #ppPlusPage .pp-rd-benefit{min-height:262px}
+ #ppPlusPage .pp-rd-tracker{grid-template-columns:1fr;gap:19px}
+ #ppPlusPage .pp-rd-plan-grid{gap:14px}
+}
+@media(max-width:610px){
+ #ppPlusPage .pp-rd-benefit-section,#ppPlusPage .pp-rd-compare-section,
+ #ppPlusPage .pp-rd-tracker,#ppPlusPage .pp-rd-faq{margin-bottom:48px}
+ #ppPlusPage .pp-rd-benefits{grid-template-columns:1fr;gap:12px}
+ #ppPlusPage .pp-rd-benefit{min-height:0;padding:17px 18px 16px}
+ #ppPlusPage .pp-rd-feature-stat strong{font-size:28px}
+ #ppPlusPage .pp-rd-icon{margin-top:8px;width:42px;height:42px}
+ #ppPlusPage .pp-rd-benefit h3{margin:11px 0 7px}
+ #ppPlusPage .pp-rd-benefit p{font-size:13px;margin-bottom:12px}
+ #ppPlusPage .pp-rd-plan{padding:25px 20px 20px;border-radius:18px}
+ #ppPlusPage .pp-rd-plan-grid{gap:22px}
+ #ppPlusPage .pp-rd-plan-price{font-size:43px}
+ #ppPlusPage .pp-rd-tracker{padding:24px 16px}
+ #ppPlusPage .pp-rd-tracker-math{padding:13px 10px;gap:7px}
+ #ppPlusPage .pp-rd-track-stat{padding:10px 7px}
+ #ppPlusPage .pp-rd-track-stat b{font-size:28px}
+ #ppPlusPage .pp-rd-track-stat small{font-size:8px}
+ #ppPlusPage .pp-rd-track-progress-label{font-size:9px}
+ #ppPlusPage .pp-rd-faq summary{padding:16px 16px;font-size:13px}
+ #ppPlusPage .pp-rd-faq details p{padding:0 16px 17px}
+ #ppPlusPage .pp-rd-final{padding:33px 17px 34px;border-radius:19px}
+ #ppPlusPage .pp-rd-final::before{inset:9px}
+ #ppPlusPage .pp-rd-final .pp-rd-cta--final{min-width:0;width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ #ppPlusPage .pp-rd-benefit,#ppPlusPage .pp-rd-free-btn,
+ #ppPlusPage .pp-rd-faq details,#ppPlusPage .pp-rd-faq summary::after{transition:none!important}
+ #ppPlusPage .pp-rd-faq details p{animation:none}
+}

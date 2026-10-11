@@ -1,0 +1,1 @@
+V65: Comparison popup best-price panel polish only. Kept the icon-only PricePulse logo, aligned its column with the retailer logo column used by Flipkart/Amazon/Croma so the best-price row feels integrated instead of pasted, and slightly reduced the Flipkart logo inside the best-price chip. No changes to prices, affiliate links, buttons, layout structure, or other functionality.

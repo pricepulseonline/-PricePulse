@@ -1,0 +1,19 @@
+/* PricePulse Plus V78.8.156.8 — outward horizontal alignment only.
+   Match the desktop hero text / membership card outer edges to the unchanged
+   floating value strip. Undo excessive inset caused by 156.6/156.7 narrow grid.
+   No vertical padding/height, no colors/content, no animation, no JS changes. */
+@media (min-width:1181px) {
+  #ppPlusPage .pp-rd-hero-inner {
+    max-width: 1260px;
+    grid-template-columns: minmax(0,1.09fr) minmax(0,.91fr);
+    column-gap: 24px;
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+  /* The right column is wider than the card, so align the full visual group
+     (card + badges) closer to the value strip's right boundary. */
+  #ppPlusPage .pp-rd-hero-visual {
+    position: relative;
+    left: 20px;
+  }
+}
