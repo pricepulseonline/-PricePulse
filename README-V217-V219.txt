@@ -150,3 +150,27 @@ V229 — Fixes from testing
 - Compare bar: "+ Add one" is no longer cut off.
 - The "N new" tag on the Deals pill now floats on the pill's corner, so the pill is no longer clipped at the end of the bar.
 - The category highlight in the top bar clears on Brands, Stores, Wishlist and other non-product pages.
+
+V230 — All Categories tab
+- The open All Categories tab keeps its soft green box and now shows the same thin green underline as the other tabs (the thick curved bottom line is gone).
+
+V231 — Hero polish + Nykaa Fashion
+- Hero search box: shorter placeholder ("Search or paste a product link") so it is no longer cut off.
+- Hero Plus line now says "first eligible purchase", matching the Plus page.
+- Hero live line: "stores compared" is now "stores covered" (no clash with "Compare all N stores" on the hero card).
+- Nykaa Fashion added to link paste / Compare flow (search link + Cuelinks wrapper) and to the Fashion store list. Its search URL format is not yet verified.
+
+V232 — Hero Plus line fit
+- The hero Plus line was wrapping onto two lines on narrower laptop windows. It now reads "Pays for itself: ₹99 → ₹100 back on first eligible purchase" and stays on one line down to 1181px wide.
+
+V233 — Category pick (top bar + All Categories menu) lands just above the LIVE line under the sticky header.
+
+V234 — Logo tagline matches the PricePulse name width (header + footer), brighter and bolder.
+
+V235 — Local logos for 24 brands + Adidas and 5 stores (Vijay Sales, Nykaa, Purplle, Shopsy, Adidas). Used on brand/store tiles, product cards and the product-page brand badge. Files: logos/brands/, logos/stores/.
+- Tile logo sizes tuned per logo (premium-v200.css, V235 block). Empty padding trimmed from ASUS, OPPO, Sony, JBL, realme logos; Atomberg recoloured dark so it reads on white.
+- Run supabase-add-shopsy-adidas-v235.sql once in Supabase (adds Shopsy store, Adidas store + brand).
+
+V236: Shop by Brand tiles - photo, name, price, discount badge now all come from the same product (the brand cheapest priced one). premium-v200.js (dxBrandList), index.html ?v=236.
+
+V237: Atomberg logo replaced with the new trimmed SVG (logos/brands/atomberg.svg), size rules + slug map updated. premium-v200.js/css ?v=237.

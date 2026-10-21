@@ -3,114 +3,56 @@
 <head>
 <meta name="robots" content="noindex,nofollow"/>
 <meta charset="utf-8">
-<meta name="viewport" content="width=372,initial-scale=1">
+<meta name="viewport" content="width=390,initial-scale=1">
 <link rel="stylesheet" href="pricepulse-v17.css?v=78.8.20">
+<link rel="stylesheet" href="premium-v200.css?v=242">
 <style>
-html,body{margin:0;padding:0;width:372px;min-width:372px;background:#fff;overflow:visible}
-body{font-family:inherit}
-#ppAdminExactMirror{width:372px;min-height:620px;background:#fff;overflow:visible}
-#ppAdminExactMirror .pp-v787-product{width:372px!important;min-width:372px!important;max-width:372px!important;margin:0!important}
-#ppAdminExactMirror .pp-v787-product-stage{overflow:visible!important;position:relative!important}
-#ppAdminExactMirror .pp-v787-product-visual.pp-global-product-surface{overflow:visible!important;position:relative!important;z-index:2!important}
-#ppAdminExactMirror .pp-v787-product-visual.pp-global-product-surface .pp-global-product-image{position:relative!important;z-index:4!important}
-#ppAdminExactMirror .pp-v787-product-copy{position:relative!important;background:transparent!important}
-#ppAdminExactMirror .pp-v78-gallery-rail{position:relative!important;z-index:8!important}
-#ppAdminExactMirror .pp-v78-gallery-thumb{position:relative!important;z-index:9!important;cursor:pointer!important}
-#ppAdminExactMirror .pp-v78-product-actions{position:relative!important;z-index:7!important}
-#ppAdminExactMirror .pp-v78-secondary-action{pointer-events:none}
+/* V240 ADMIN PREVIEW: mirrors the NEW live product-page left column 1:1 (same classes, same stylesheet).
+   The iframe is narrower than 1021px, so the desktop geometry is forced here. */
+html,body{margin:0;padding:0;background:#fff;overflow:visible}
+body{padding:0 8px;width:374px;font-family:var(--ppx-body,inherit)}
+#ppAdminExactMirror{position:relative;padding:60px 0 60px;width:374px}
+#ppAdminExactMirror .ppx-gallery.ppx-panel{position:relative;width:374px;box-sizing:border-box;padding:14px;gap:10px;display:flex;flex-direction:column;overflow-x:clip;overflow-y:visible;border-radius:24px}
+#ppAdminExactMirror .ppx-gallery.is-cut{border:2px solid #e5484d;box-shadow:0 0 0 3px rgba(229,72,77,.18)}
+#ppAdminExactMirror .ppx-brand{display:flex!important;position:relative;z-index:6}
+#ppAdminExactMirror .ppx-stage{aspect-ratio:auto!important;height:258px!important;box-sizing:border-box;padding:12px!important;border-radius:18px;z-index:2}
+#ppAdminExactMirror .ppx-stage.pp-global-product-surface{overflow:visible!important}
+#ppAdminExactMirror .ppx-stage .pp-global-product-image{position:relative!important;z-index:4!important}
+#ppAdminExactMirror .ppx-thumbs{position:relative;z-index:6;gap:8px;min-height:58px}
+#ppAdminExactMirror .ppx-thumb{width:58px;height:58px;padding:6px;border-radius:14px;cursor:pointer}
+#ppAdminExactMirror .ppx-identity h1{order:0;font-size:24px;margin:0}
+#ppAdminExactMirror .ppx-identity .ppx-badges{order:1}
+#ppAdminExactMirror .ppx-identity .ppx-chips{order:2}
+#ppAdminExactMirror .ppx-identity .ppx-id-actions{order:3;gap:8px}
+#ppAdminExactMirror .ppx-identity .ppx-id-actions .ppx-btn{flex:1 1 0;min-width:0;padding:0 8px;gap:6px;font-size:13.5px;pointer-events:none}
+#ppAdminExactMirror .ppx-identity .ppx-advice{order:4}
 #ppAdminExactMirror .pp-preview-empty{height:100%;display:grid;place-items:center;color:#81929e;font-size:12px}
-/* V78.8.13 ADMIN PREVIEW ONLY:
-   force the exact DESKTOP live left-column geometry inside the narrow iframe.
-   The iframe itself is 372px wide, so without these overrides the site's mobile
-   @media rules fire and pull the title/details upward. */
-#ppAdminExactMirror .pp-v787-product{
-  padding:10px 6px 6px!important;
-  padding-right:22px!important;
-  border-right:1px solid #edf1f4!important;
-  border-bottom:0!important;
-}
-#ppAdminExactMirror .pp-v787-brand-logo{
-  height:36px!important;
-  margin:0 0 8px!important;
-  padding:0!important;
-}
-#ppAdminExactMirror .pp-v787-brand-logo .pp-v78-product-brand{
-  width:144px!important;
-  height:34px!important;
-}
-#ppAdminExactMirror .pp-v787-product-stage{
-  padding:0!important;
-  margin:0!important;
-}
-#ppAdminExactMirror .pp-v787-product-visual{
-  height:258px!important;
-  padding:12px!important;
-  border-radius:18px!important;
-}
-#ppAdminExactMirror .pp-v78-gallery-rail{
-  margin-top:9px!important;
-  gap:8px!important;
-}
-#ppAdminExactMirror .pp-v78-gallery-thumb{
-  width:50px!important;
-  height:50px!important;
-  border-radius:11px!important;
-}
-#ppAdminExactMirror .pp-v787-product-copy{
-  padding:8px 0 0!important;
-}
-#ppAdminExactMirror .pp-v787-product-title{
-  font-size:24px!important;
-  margin:5px 0 7px!important;
-}
-#ppAdminExactMirror .pp-v787-direct-values{
-  margin:0 0 9px!important;
-  font-size:12.5px!important;
-  line-height:1.45!important;
-}
-#ppAdminExactMirror .pp-v787-direct-values span:not(:last-child)::after{
-  margin:0 7px!important;
-}
-#ppAdminExactMirror .pp-v78-product-subtitle{
-  font-size:12px!important;
-  margin:0!important;
-}
-#ppAdminExactMirror .pp-v787-product-advice{
-  margin-top:9px!important;
-  padding:9px 10px!important;
-  border-radius:12px!important;
-  font-size:11.5px!important;
-}
-#ppAdminExactMirror .pp-v787-product-actions{
-  margin-top:8px!important;
-}
-#ppAdminExactMirror .pp-v787-wishlist{
-  min-height:38px!important;
-  padding:7px 11px!important;
-  font-size:12px!important;
-}
+#cutWarn{position:absolute;left:0;right:0;top:8px;margin:0;padding:7px 10px;border-radius:10px;background:#fdecec;border:1px solid #f3b4b6;color:#b3262c;font:700 12px/1.35 system-ui,sans-serif}
+#cutWarn[hidden]{display:none}
+#sideNote{position:static;margin:10px 0 0;text-align:center;font:600 11px/1.3 system-ui,sans-serif;color:#7a8b94}
+#ppAdminExactMirror .ppx-advice{font-size:12px;white-space:nowrap}
 </style>
 <script defer src="brand-logo-normalizer.js?v=78.8.20"></script>
 </head>
 <body>
-<div id="ppAdminExactMirror">
-  <section class="pp-v78-product pp-v787-product" aria-label="Product details">
-    <div class="pp-v787-brand-logo" id="brandWrap"><img class="pp-v78-product-brand pp-global-brand-logo" id="brandLogo" alt="Brand logo" hidden></div>
-    <div class="pp-v78-product-stage pp-v787-product-stage">
-      <div class="pp-v78-product-visual pp-v787-product-visual pp-global-product-surface pp-img-bg-original" id="visualStage">
-        <img class="pp-v52-main-image pp-v78-main-image pp-global-product-image" id="mainImage" alt="Product preview" hidden>
-        <div class="pp-preview-empty" id="emptyState">Choose a product image to preview.</div>
-      </div>
+<div id="ppAdminExactMirror" class="ppx-product">
+  <p id="cutWarn" hidden></p>
+  <section class="ppx-panel ppx-gallery" id="galleryPanel" aria-label="Product details">
+    <div class="ppx-brand" id="brandWrap"><img class="pp-global-brand-logo" id="brandLogo" alt="Brand logo" hidden></div>
+    <div class="ppx-stage pp-global-product-surface pp-img-bg-soft" id="visualStage">
+      <img class="pp-global-product-image ppx-main-image" id="mainImage" alt="Product preview" hidden>
+      <div class="pp-preview-empty" id="emptyState">Choose a product image to preview.</div>
     </div>
-    <div class="pp-v52-gallery-rail pp-v78-gallery-rail" id="galleryRail"></div>
-    <div class="pp-v78-product-copy pp-v787-product-copy">
-      <h2 class="pp-v78-product-title pp-v787-product-title" id="productTitle">Product</h2>
-      <div class="pp-v787-direct-values" id="directValues"></div>
-      <p class="pp-v78-product-subtitle" id="listingCount">Retailer listings available</p>
-      <div class="pp-v78-product-advice pp-v787-product-advice"><span aria-hidden="true">✓</span><span>Compare the exact model and variant on the retailer’s website before buying.</span></div>
-      <div class="pp-v78-product-actions pp-v787-product-actions"><button type="button" class="pp-v78-secondary-action pp-v787-wishlist is-saved"><span aria-hidden="true">♥</span><span>Saved in Wishlist</span></button></div>
+    <div class="ppx-thumbs" id="galleryRail"></div>
+    <div class="ppx-identity">
+      <h1 id="productTitle">Product</h1>
+      <div class="ppx-badges"><span class="ppx-badge is-green">Verified product</span><span class="ppx-badge" id="storeCount">stores compared</span></div>
+      <div class="ppx-chips" id="directValues"></div>
+      <div class="ppx-id-actions"><span class="ppx-btn ppx-btn-soft">Save</span><span class="ppx-btn ppx-btn-soft">Share</span><span class="ppx-btn ppx-btn-soft">Compare</span></div>
+      <p class="ppx-advice">Verify exact model &amp; variant on the retailer's page.</p>
     </div>
   </section>
+  <p id="sideNote">Panel edge = where the image is cut at the side on the live site</p>
 </div>
 <script>
 (function(){
@@ -161,11 +103,23 @@ body{font-family:inherit}
       img.style.setProperty('object-fit',fitMode,'important'); img.style.setProperty('object-position',pos(c.position),'important');
       img.style.setProperty('transform',`translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0) rotate(${Number(c.rotate)||0}deg) scale(${applied.toFixed(4)})`,'important');
       img.style.setProperty('transform-origin','center center','important');
+      setTimeout(checkCut,60);
     };
     img.src=c.url; img.hidden=false;
     if(img.complete&&img.naturalWidth)requestAnimationFrame(run);else img.addEventListener('load',()=>requestAnimationFrame(run),{once:true});
   }
   let state=null,activeSlot='primary';
+  /* Side-cut check: the live product page clips the image at the panel's left/right edge (never over the price card). */
+  function checkCut(){
+    const panel=$('galleryPanel'),img=$('mainImage'),warn=$('cutWarn');
+    if(!panel||!img||img.hidden){panel&&panel.classList.remove('is-cut');if(warn)warn.hidden=true;parent.postMessage({type:'pp-admin-live-preview-cut',cut:false},'*');return;}
+    const pr=panel.getBoundingClientRect(),ir=img.getBoundingClientRect();
+    const left=Math.max(0,Math.round(pr.left-ir.left)),right=Math.max(0,Math.round(ir.right-pr.right));
+    const cut=left>2||right>2;
+    panel.classList.toggle('is-cut',cut);
+    if(warn){warn.hidden=!cut;warn.textContent=cut?`Image is cut at the ${left>2&&right>2?'left and right':left>2?'left':'right'} edge on the live site. Lower Scale or move X back toward 0.`:'';}
+    parent.postMessage({type:'pp-admin-live-preview-cut',cut,left,right},'*');
+  }
   function show(item){
     const visual=$('visualStage'),img=$('mainImage'),empty=$('emptyState');
     visual.classList.remove('pp-img-bg-soft','pp-img-bg-white','pp-img-bg-transparent','pp-img-bg-original');
@@ -179,15 +133,15 @@ body{font-family:inherit}
     if(s.brandLogo){brand.src=s.brandLogo;brand.hidden=false;brand.alt=(s.brandName||'Brand')+' logo';}else{brand.hidden=true;brand.removeAttribute('src');}
     $('productTitle').textContent=s.name||'Product';
     $('directValues').innerHTML=(s.details||[]).map(v=>`<span>${String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</span>`).join('');
-    const count=Number(s.listingCount)||0;$('listingCount').textContent=`${count||'—'} retailer ${count===1?'listing':'listings'} available`;
+    const count=Number(s.listingCount)||0;$('storeCount').textContent=`${count||'—'} ${count===1?'store':'stores'} compared`;
     const items=(s.items||[]).map(norm);
     let active=items.find(x=>x.slot===activeSlot)||items.find(x=>x.slot==='primary')||items[0]||null;
     show(active||{});
     const rail=$('galleryRail');rail.innerHTML='';
     items.forEach((item,i)=>{
-      const b=document.createElement('button');b.type='button';b.className='pp-v52-gallery-thumb pp-v78-gallery-thumb '+bgClass(item)+(item===active?' is-active':'');b.setAttribute('aria-label','View product photo '+(i+1));
-      const im=document.createElement('img');im.className='pp-global-product-image';im.alt='';b.appendChild(im);rail.appendChild(b);fitImage(im,item);
-      b.addEventListener('click',()=>{activeSlot=item.slot||'';active=item;show(item);rail.querySelectorAll('button').forEach(x=>x.classList.toggle('is-active',x===b));parent.postMessage({type:'pp-admin-live-preview-slot',slot:activeSlot},'*');});
+      const b=document.createElement('button');b.type='button';b.className='ppx-thumb'+(item===active?' is-active':'');b.setAttribute('aria-label','View product photo '+(i+1));
+      const im=document.createElement('img');im.alt='';im.src=item.url;b.appendChild(im);rail.appendChild(b);
+      b.addEventListener('click',()=>{activeSlot=item.slot||'';active=item;show(item);rail.querySelectorAll('button').forEach(x=>x.classList.toggle('is-active',x===b));setTimeout(checkCut,120);parent.postMessage({type:'pp-admin-live-preview-slot',slot:activeSlot},'*');});
     });
     requestAnimationFrame(()=>parent.postMessage({type:'pp-admin-live-preview-height',height:document.documentElement.scrollHeight},'*'));
   }

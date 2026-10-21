@@ -199,6 +199,10 @@ function priceInsight(productId,current){
 }
 
 /* ---------------- Product page ---------------- */
+const TRUST_IC={
+  ret:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+  match:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></svg>'
+};
 const ICON={
   ext:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>',
   bell:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"/><path d="M10 20h4"/></svg>',
@@ -233,22 +237,95 @@ function chartHTML(series,current){
   const area=`${line} L${x(t1).toFixed(1)} ${Hh} L${x(t0).toFixed(1)} ${Hh} Z`;
   const last=pts[pts.length-1];
   const fmt=t=>new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short'}).format(new Date(t));
-  const ticks=[hi-(hi-lo)*0.15,(hi+lo)/2,lo+(hi-lo)*0.15].map(v=>`<span>${M(Math.round(v/10)*10)}</span>`).join('');
+  /* V244: round y-axis values (e.g. 47,000 / 46,000 / 45,000) placed exactly at their own height */
+  let tickVals=[];
+  {const rng=hi-lo,raw=rng/3,mag=Math.pow(10,Math.floor(Math.log10(Math.max(raw,1))));const step=[1,2,2.5,5,10].map(k=>k*mag).find(v=>v>=raw)||raw;
+   for(let v=Math.ceil((lo+rng*0.05)/step)*step;v<=hi-rng*0.05&&tickVals.length<4;v+=step)tickVals.push(Math.round(v));
+   if(tickVals.length<2)tickVals=[hi-rng*0.15,(hi+lo)/2,lo+rng*0.15].map(v=>Math.round(v/10)*10);}
+  const ticks=tickVals.map(v=>`<span style="top:${(y(v)/Hh*100).toFixed(2)}%">${M(v)}</span>`).join('');
+  const gridLines=tickVals.map(v=>`<line x1="0" x2="${W}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="ppx-grid"/>`).join('');
   const mid=pts[Math.floor(pts.length/2)];
   const aria=`Lowest verified price moved from ${M(pts[0].price)} on ${fmt(pts[0].time)} to ${M(last.price)} on ${fmt(last.time)}`;
+  /* V241 (P1): the line colour follows the price level - low = green, middle = amber, high = red; a tiny range stays one calm colour */
+  const dMin=Math.min(...prices),dMax=Math.max(...prices),dRng=dMin>0?(dMax-dMin)/dMin:0;
+  const LV_G='#2EA06E',LV_A='#F0A020',LV_R='#E5484D',LV_N='#6B7A90';
+  let lvDefs='',lvStroke='',lvFillC=LV_G,lvDot=LV_G;
+  if(dRng>=0.03&&dMax>dMin){
+    const yTop=y(dMax).toFixed(1),yBot=y(dMin).toFixed(1);
+    const stops=`<stop offset="0" stop-color="${LV_R}"/><stop offset=".5" stop-color="${LV_A}"/><stop offset="1" stop-color="${LV_G}"/>`;
+    lvDefs=`<linearGradient id="ppxLv" gradientUnits="userSpaceOnUse" x1="0" y1="${yTop}" x2="0" y2="${yBot}">${stops}</linearGradient>`;
+    lvStroke='url(#ppxLv)';
+    const pos=(last.price-dMin)/(dMax-dMin);
+    lvDot=pos<=.34?LV_G:pos>=.67?LV_R:LV_A;lvFillC=lvDot;
+  }else{
+    const flatTone=last.price<=dMin&&pts.length>2&&pts[0].price>last.price?LV_G:LV_N;
+    lvStroke=flatTone;lvDot=flatTone;lvFillC=flatTone;
+  }
+  /* V242 (T1): fill follows the line colour point by point and fades downwards; histogram strip = price vs average */
+  const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+  const mixC=(a,b,t)=>{const A=hx(a),B=hx(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+  const lvAt=pr=>{const t=Math.max(0,Math.min(1,(pr-dMin)/Math.max(1,dMax-dMin)));return t>=.5?mixC(LV_A,LV_R,(t-.5)*2):mixC(LV_G,LV_A,t*2);};
+  const lvLevels=dRng>=0.03&&dMax>dMin;
+  const fillStops=lvLevels?pts.map(p=>`<stop offset="${((x(p.time)-x(t0))/Math.max(1,x(t1)-x(t0))).toFixed(4)}" stop-color="${lvAt(p.price)}"/>`).join(''):`<stop offset="0" stop-color="${lvFillC}"/><stop offset="1" stop-color="${lvFillC}"/>`;
+  const fillDefs=`<linearGradient id="ppxFillH" x1="0" y1="0" x2="1" y2="0">${fillStops}</linearGradient><linearGradient id="ppxFillV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset=".65" stop-color="#fff" stop-opacity=".07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="ppxFillM" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${Hh}"><rect x="0" y="0" width="${W}" height="${Hh}" fill="url(#ppxFillV)"/></mask>`;
+  const avgP=prices.reduce((a,b)=>a+b,0)/prices.length;
+  const avgLine=dRng>=0.01?`<line x1="0" x2="${W}" y1="${y(avgP).toFixed(1)}" y2="${y(avgP).toFixed(1)}" class="ppx-avgline" vector-effect="non-scaling-stroke"/>`:'';
+  let histHTML='';
+  if(dRng>=0.01&&pts.length>=3){
+    let hp=prices;
+    if(hp.length>40){const k=hp.length/40;hp=Array.from({length:40},(_,i)=>{const a=Math.floor(i*k),b=Math.max(a+1,Math.floor((i+1)*k));const sl=hp.slice(a,b);return sl.reduce((q,r)=>q+r,0)/sl.length;});}
+    const devs=hp.map(v=>(v-avgP)/avgP*100);
+    const mx=Math.max(...devs.map(Math.abs),0.1);
+    const bars=devs.map(d=>{const hh=Math.max(4,Math.abs(d)/mx*100);return `<i class="${d>0.05?'is-up':d<-0.05?'is-down':'is-mid'}" style="--h:${hh.toFixed(0)}%"></i>`;}).join('');
+    const nowD=(last.price-avgP)/avgP*100,ad=Math.abs(nowD);
+    const tone=nowD<=-1?'is-good':'is-flat';
+    const msg=nowD<=-1?'Cheaper than usual · good time to buy':nowD>=1?'Costlier than usual · price was lower earlier':'Close to the usual price';
+    histHTML=`<div class="ppx-hist"><div class="ppx-hist-head"><div class="ppx-hist-l"><b>Price vs average</b><span class="ppx-hist-pill ${tone}">${msg}</span></div><span class="ppx-hist-key">green = cheaper · red = costlier</span></div><div class="ppx-hist-bars" aria-hidden="true">${bars}</div></div>`;
+  }
   return `<div class="ppx-chart"><div class="ppx-chart-y">${ticks}</div><div class="ppx-chart-plot">
     <svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" role="img" aria-label="${H(aria)}">
-      <defs><linearGradient id="ppxFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2EA06E" stop-opacity=".24"/><stop offset="1" stop-color="#2EA06E" stop-opacity="0"/></linearGradient></defs>
-      <line x1="0" x2="${W}" y1="${Hh*0.25}" y2="${Hh*0.25}" class="ppx-grid"/><line x1="0" x2="${W}" y1="${Hh*0.5}" y2="${Hh*0.5}" class="ppx-grid"/><line x1="0" x2="${W}" y1="${Hh*0.75}" y2="${Hh*0.75}" class="ppx-grid"/>
-      <path d="${area}" fill="url(#ppxFill)"/>
-      <path d="${line}" class="ppx-line" vector-effect="non-scaling-stroke"/>
+      <defs>${fillDefs}${lvDefs}</defs>
+      ${gridLines}
+      <path d="${area}" fill="url(#ppxFillH)" mask="url(#ppxFillM)"/>${avgLine}
+      <path d="${line}" class="ppx-line" vector-effect="non-scaling-stroke" style="stroke:${lvStroke}"/>
     </svg>
-    <i class="ppx-chart-dot" style="left:${(x(last.time)/W*100).toFixed(2)}%;top:${(y(last.price)/Hh*100).toFixed(2)}%"></i>
+    <i class="ppx-chart-dot" style="left:${(x(last.time)/W*100).toFixed(2)}%;top:${(y(last.price)/Hh*100).toFixed(2)}%;background:${lvDot}"></i>
     ${ppxTipData(pts.map(p=>[x(p.time)/W,y(p.price)/Hh,p.time,p.price,p.store||'']))}
     </div></div>
-    <div class="ppx-chart-x"><span>${fmt(pts[0].time)}</span>${pts.length>3?`<span>${fmt(mid.time)}</span>`:''}<span class="is-now">${fmt(last.time)} · ${M(last.price)}</span></div>`;
+    <div class="ppx-chart-x"><span>${fmt(pts[0].time)}</span>${pts.length>3?`<span>${fmt(mid.time)}</span>`:''}<span class="is-now">${fmt(last.time)} · ${M(last.price)}</span></div>${histHTML}`;
 }
 
+/* V243 (W1): Lowest / Highest / Verified checks cards - icon, date line, colour only when the price range is meaningful (>=3%, same rule as the graph) */
+function ppxStatsHTML(ins,statMin,statMax,cur){
+  const statM=v=>Number.isFinite(v)?M(v):'\u2014';
+  const ser=(ins&&ins.series)||[];
+  const fmtD=t=>new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short'}).format(new Date(t));
+  const fmtDT=t=>{const d=new Date(t);return new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short'}).format(d)+', '+new Intl.DateTimeFormat('en-IN',{hour:'numeric',minute:'2-digit',hour12:true}).format(d).toLowerCase();};
+  const ok=Number.isFinite(statMin)&&Number.isFinite(statMax)&&statMin>0;
+  const colour=ok&&(statMax-statMin)/statMin>=0.03;
+  const lowPt=ok?ser.find(x=>x.price===statMin):null;
+  const hiPt=ok?[...ser].reverse().find(x=>x.price===statMax):null;
+  const atLow=ok&&Number.isFinite(cur)&&cur<=statMin;
+  const below=ok&&Number.isFinite(cur)&&cur<statMax?statMax-cur:0;
+  const ic=p=>`<span class="ppx-stat-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${p}</svg></span>`;
+  const n=ser.length,shown=Math.min(n,14);
+  const dots=Array.from({length:shown},()=>'<i></i>').join('')+(n>shown?`<small>+${n-shown}</small>`:'');
+  const lastT=n?ser[n-1].time:0;
+  return `<div class="ppx-stats">
+        <div class="is-lowc${colour?' is-on':''}"><div class="ppx-stat-top">${ic('<path d="M12 5v14M6 13l6 6 6-6"/>')}<span>Lowest</span>${atLow&&colour?'<em class="ppx-stat-pill">Now at lowest</em>':''}</div><b>${statM(statMin)}</b>${lowPt?`<small>on ${fmtD(lowPt.time)}</small>`:''}</div>
+        <div class="is-highc${colour?' is-on':''}"><div class="ppx-stat-top">${ic('<path d="M12 19V5M6 11l6-6 6 6"/>')}<span>Highest</span></div><b>${statM(statMax)}</b>${hiPt?`<small>on ${fmtD(hiPt.time)}${below>0?` · now ${M(below)} lower`:''}</small>`:''}</div>
+        <div><div class="ppx-stat-top">${ic('<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>')}<span>Verified checks</span><span class="ppx-stat-dots" aria-hidden="true">${dots}</span></div><b>${n}</b>${lastT?`<small>Last checked ${fmtDT(lastT)}</small>`:''}</div>
+      </div>`;
+}
+
+function ppxTidyTie(html){
+  if(!html)return html;
+  const ico='<span class="pp-v71-history-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V5M19 20v-6"/></svg></span>';
+  return html
+    .replace(/<span class="pp-v71-history-icon"[^>]*>[^<]*<\/span>/,ico)
+    .replace(/<strong>Price history \(last (\d+) verified (checks?)\)<\/strong>/,'<strong>Last $1 verified $2</strong>')
+    .replace(/<strong>Price history<\/strong>/,'<strong>Store comparison</strong>');
+}
 function productPageHTML(productId){
   const info=productData(productId);
   if(!info)return notFoundHTML();
@@ -278,6 +355,11 @@ function productPageHTML(productId){
   const newest=available.map(o=>o.checkedAt).filter(Boolean).sort().at(-1)||'';
   const saving=selected&&typeof ppOfferSavings==='function'?ppOfferSavings(selected):null;
   const ins=priceInsight(productId,lowest);
+  /* V238: stats never show NaN - fall back to the recorded history, or a dash */
+  const insPrices=ins.series.map(x=>x.price);
+  const statMin=Number.isFinite(ins.min)?ins.min:(insPrices.length?Math.min(...insPrices):NaN);
+  const statMax=Number.isFinite(ins.max)?ins.max:(insPrices.length?Math.max(...insPrices):NaN);
+  const statM=v=>Number.isFinite(v)?M(v):'\u2014';
 
   /* brand + details */
   const brandName=String(brand?.name||card?.dataset.brandName||card?.dataset.brand||catalog?.brand_slug||'').trim();
@@ -299,23 +381,33 @@ function productPageHTML(productId){
   let hero='';
   if(Number.isFinite(lowest)&&selected){
     const v=ins.verdict;
-    const badge=v?`<span class="ppx-verdict is-${v.tone}">${v.tone==='high'?ICON.up:ICON.trend}${H(v.label)}</span>`:`<span class="ppx-verdict is-plain">${ICON.shield}${hasComparison?'Best verified price':'Verified price'}</span>`;
+    const an0=dealAnalysis(productId,lowest,saving,available.filter(o=>o.price!=null&&o.availability!=='out_of_stock').length);
+    const vLabel=v?v.label:'';
+    const badge=v?`<span class="ppx-verdict is-${v.tone}">${v.tone==='high'?ICON.trend:v.tone==='good'&&v.label!=='Stable best price'?ICON.up:ICON.shield}${H(vLabel)}</span>`:`<span class="ppx-verdict is-plain">${ICON.shield}${hasComparison?'Best verified price':'Verified price'}</span>`;
     const tieNames=bestOffers.map(o=>o.name);
     const whereLine=hasComparison?(bestOffers.length>1?`Same lowest price at ${H(tieNames.slice(0,-1).join(', '))} &amp; ${H(tieNames.at(-1))}.`:`Lowest of ${available.length} stores checked.`):`Only ${H(selected.name)} has a verified price right now.`;
     const extra=v?.tone==='good'&&ins.dropSinceStart>0?` <strong>${M(ins.dropSinceStart)} lower</strong> than ${ins.days} days ago.`:v?` ${H(v.note)}.`:'';
     const range=(ins.series.length>=2&&ins.max>ins.min)?(()=>{const pos=Math.max(0,Math.min(100,((lowest-ins.min)/(ins.max-ins.min))*100));return `<div class="ppx-range" aria-label="Today's price within its ${ins.days}-day range"><div class="ppx-range-track"><i style="left:${pos.toFixed(1)}%"></i></div><div class="ppx-range-labels"><span>Low ${M(ins.min)}</span><span>High ${M(ins.max)}</span></div></div>`})():'';
+    const higher=hasComparison?available.filter(o=>o.price>lowest&&o!==selected).sort((a,b)=>a.price-b.price)[0]:null;
+    const vsLine=higher?`<p class="ppx-hero-vs">${ICON.tick}<span><b>${M(higher.price-lowest)} cheaper</b> than ${H(higher.name)}</span></p>`:'';
+    const microBits=[];
+    if(selected.availability==='in_stock')microBits.push('In stock');
+    if(selected.freeDelivery||/free/i.test(selected.deliveryText||''))microBits.push('Free delivery');
+    const microLine=microBits.length?`<p class="ppx-hero-micro">${microBits.map(t=>`<span>${H(t)}</span>`).join('')}</p>`:'';
     const rating=selected.rating?`<span class="ppx-hero-rating">${ICON.star}${H(selected.rating)}${selected.reviewCount?` · ${H(ppFormatCount(selected.reviewCount))} reviews`:''}</span>`:'';
     hero=`<section class="ppx-hero" aria-label="Best price">
       <div class="ppx-hero-top">${badge}<span class="ppx-checked">${newest?`Checked ${H(ppReadableDate(newest))}`:''}</span></div>
       <div class="ppx-hero-kicker">BEST VERIFIED PRICE</div>
       <div class="ppx-hero-price"><b>${M(lowest)}</b>${saving?`<s>${M(saving.mrp)}</s><span class="ppx-save-tag">You save ${M(saving.saving)} · ${saving.percent}% off</span>`:''}</div>
       <p class="ppx-hero-note">${whereLine}${extra}</p>
+      ${vsLine}
       ${range}
       ${dealInsightHTML(dealAnalysis(productId,lowest,saving,available.filter(o=>o.price!=null&&o.availability!=='out_of_stock').length))}
       <div class="ppx-hero-actions">
         <a class="ppx-btn ppx-btn-primary" href="${H(selected.url)}" target="_blank" rel="sponsored noopener noreferrer">Buy at ${M(selected.price)} on ${H(selected.name)} ${ICON.ext}</a>
         <button type="button" class="ppx-btn ppx-btn-ghost" data-ppx-action="alert" data-product-id="${H(productId)}">${ICON.bell}Wait for a lower price</button>
       </div>
+      ${microLine}
       ${rating}
     </section>`;
   }else{
@@ -331,6 +423,7 @@ function productPageHTML(productId){
   const rows=sorted.map(o=>{
     const diff=hasComparison&&o.price!=null&&o.availability!=='out_of_stock'?o.price-lowest:null;
     const isBest=diff===0&&!allSame;
+    const isPick=Boolean(selected&&o===selected&&hasComparison&&diff===0);
     const sav=typeof ppOfferSavings==='function'?ppOfferSavings(o):null;
     const tag=isBest?'<span class="ppx-tag is-low">LOWEST</span>':diff>0?`<span class="ppx-tag is-more">+${M(diff)}</span>`:(diff===0&&allSame?'<span class="ppx-tag is-same">SAME PRICE</span>':'');
     const meta=[];
@@ -339,7 +432,7 @@ function productPageHTML(productId){
     if(o.deliveryText)meta.push(`<span>${H(o.deliveryText)}</span>`);
     if(o.rating)meta.push(`<span class="is-rating">${ICON.star}${H(o.rating)}${o.reviewCount?` (${H(ppFormatCount(o.reviewCount))})`:''}</span>`);
     const logo=typeof ppPopupRetailerRowLogo==='function'?ppPopupRetailerRowLogo(o):H(o.name);
-    return `<article class="ppx-store ${isBest?'is-best':''} ${o.availability==='out_of_stock'?'is-oos':''}" data-retailer="${H(o.name)}">
+    return `<article class="ppx-store ${isBest?'is-best':''} ${isPick?'is-pick':''} ${o.availability==='out_of_stock'?'is-oos':''}" data-retailer="${H(o.name)}">
       <div class="ppx-store-logo" data-store="${H(ppSafeStoreClass(o.name))}">${logo}</div>
       <div class="ppx-store-copy">
         <div class="ppx-store-price">${o.price!=null?`<b>${M(o.price)}</b>`:'<b class="is-na">Check latest price</b>'}${tag}</div>
@@ -347,21 +440,27 @@ function productPageHTML(productId){
         ${meta.length?`<div class="ppx-store-meta">${meta.join('<i aria-hidden="true">·</i>')}</div>`:''}
         ${o.offerText?`<div class="ppx-store-offer">${H(o.offerText)}</div>`:''}
       </div>
-      <a class="ppx-btn ${isBest||(!hasComparison&&o===sorted[0])?'ppx-btn-primary':'ppx-btn-outline'} ppx-store-cta" href="${H(o.url)}" target="_blank" rel="sponsored noopener noreferrer" aria-label="View ${H(displayName)} on ${H(o.name)}">View deal ${ICON.ext}</a>
+      <a class="ppx-btn ${isPick||(!hasComparison&&o===sorted[0])?'ppx-btn-primary':'ppx-btn-outline'} ppx-store-cta" href="${H(o.url)}" target="_blank" rel="sponsored noopener noreferrer" aria-label="View ${H(displayName)} on ${H(o.name)}">View deal ${ICON.ext}</a>
     </article>`;
   }).join('');
 
   /* history */
   const chart=chartHTML(ins.series,lowest);
-  const tieBlock=bestOffers.length>1&&typeof ppTieHistoryHTML==='function'?ppTieHistoryHTML(tie):'';
+  const tieBlock=bestOffers.length>1&&typeof ppTieHistoryHTML==='function'?ppxTidyTie(ppTieHistoryHTML(tie)):'';
+  /* V245 (Y1): big fall badge instead of the thin line; one percent only, with its reference date */
+  let histLine='';
+  if(Number.isFinite(lowest)&&ins.series.length>=3){
+    const f=ins.series[0].price,t0b=ins.series[0].time;
+    const sinceTxt=new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short'}).format(new Date(t0b));
+    const diff=Math.abs(f-lowest),pc=f>0?diff/f*100:0;
+    const tone=pc<1?'is-flat':f>lowest?'is-fall':'is-rise';
+    const arrow=f>lowest?'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>':f<lowest?'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>':'';
+    histLine=(diff>0&&pc>=1)?`<div class="ppx-fall ${tone}" role="status"><b>${arrow}<span>${M(diff)}</span></b><small>${pc.toFixed(1)}% ${f>lowest?'lower':'higher'} since ${H(sinceTxt)}</small></div>`:`<div class="ppx-fall is-flat" role="status"><b><span>Steady</span></b><small>no change since ${H(sinceTxt)}</small></div>`;
+  }
   const history=chart?`<section class="ppx-panel ppx-history" aria-labelledby="ppxHistTitle">
-      <div class="ppx-panel-head"><div><span class="ppx-eyebrow">PRICE INSIGHTS</span><h2 id="ppxHistTitle">Price history</h2></div><span class="ppx-soft-chip">Verified retailer checks only</span></div>
+      <div class="ppx-panel-head ppx-hist-top"><div><span class="ppx-eyebrow">PRICE INSIGHTS</span><h2 id="ppxHistTitle">Price history</h2><span class="ppx-soft-chip ppx-chip-sm">Verified retailer checks only</span></div>${histLine}</div>
       ${chart}
-      <div class="ppx-stats">
-        <div class="is-low"><span>Lowest</span><b>${M(ins.min)}</b></div>
-        <div><span>Highest</span><b>${M(ins.max)}</b></div>
-        <div><span>Verified checks</span><b>${ins.series.length}</b></div>
-      </div>
+      ${ppxStatsHTML(ins,statMin,statMax,lowest)}
       ${tieBlock?`<div class="ppx-tie">${tieBlock}</div>`:''}
       <p class="ppx-fine">Based on recorded verified checks, not guaranteed current offers. Confirm the final price on the retailer's website.</p>
     </section>`:`<section class="ppx-panel ppx-history is-building"><div class="ppx-panel-head"><div><span class="ppx-eyebrow">PRICE INSIGHTS</span><h2>Price history</h2></div></div><p class="ppx-fine">Price history for this product is still building. Each verified check adds a point here.</p></section>`;
@@ -370,10 +469,12 @@ function productPageHTML(productId){
   const plusActive=typeof ppPlusIsActive==='function'&&ppPlusIsActive();
   const atLimit=typeof ppDealAlertAtLimit==='function'&&typeof currentUser!=='undefined'&&currentUser&&ppDealAlertAtLimit();
   const usedLine=typeof currentUser!=='undefined'&&currentUser?`${typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0} of ${typeof ppDealAlertLimit==='function'?ppDealAlertLimit():1} alerts in use`:'Free plan includes 1 active alert';
+  const suggestTarget=Number.isFinite(lowest)?Math.floor((lowest*0.98)/100)*100:0;
   const alertCard=`<section class="ppx-panel ppx-alert">
       <div class="ppx-alert-head"><span class="ppx-icon-tile">${ICON.bell}</span><h2>Price drop alert</h2></div>
       <p>We'll notify you the moment any store drops below your target price.</p>
       <button type="button" class="ppx-btn ppx-btn-primary ppx-block" data-ppx-action="alert" data-product-id="${H(productId)}">Set alert for this product</button>
+      ${suggestTarget?`<p class="ppx-alert-suggest">Suggested target <b>${M(suggestTarget)}</b> <span>(${M(Math.max(0,lowest-suggestTarget))} below today's best)</span></p>`:''}
       <small class="${atLimit&&!plusActive?'is-limit':''}">${H(usedLine)}${atLimit&&!plusActive?' · Plus gives 3':''}</small>
     </section>`;
   const plusCard=plusActive?'':`<section class="ppx-plus-card">
@@ -385,10 +486,10 @@ function productPageHTML(productId){
     </section>`;
 
   const trust=`<section class="ppx-trust" aria-label="Why trust these prices">
-      <div>${ICON.shield}<span>Verified retailer links</span></div>
-      <div>${ICON.clock}<span>${newest?`Prices checked ${H(ppReadableDate(newest))}`:'Prices refresh after each verified check'}</span></div>
-      <div>${ICON.undo}<span>Returns as per retailer policy</span></div>
-      <div>${ICON.check}<span>Exact model &amp; variant matched</span></div>
+      <div class="is-ok"><i class="ppx-tr-ic">${ICON.shield}</i><span>Verified retailer links</span></div>
+      <div><i class="ppx-tr-ic">${ICON.clock}</i><span>${newest?`Prices checked ${H(ppReadableDate(newest))}`:'Prices refresh after each verified check'}</span></div>
+      <div><i class="ppx-tr-ic">${TRUST_IC.ret}</i><span>Returns as per retailer policy</span></div>
+      <div class="is-ok"><i class="ppx-tr-ic">${TRUST_IC.match}</i><span>Exact model &amp; variant matched</span></div>
     </section>`;
 
   return `<div class="ppx-product container" data-product-id="${H(productId)}" data-product-name="${H(displayName)}" data-best-price="${Number.isFinite(lowest)?H(M(lowest)):''}" data-best-store="${selected?H(selected.name):''}">
@@ -407,7 +508,7 @@ function productPageHTML(productId){
             <button type="button" class="ppx-btn ppx-btn-soft" data-ppx-action="share">${ICON.share}<span>Share</span></button>
             ${Number.isFinite(lowest)?(()=>{const on=typeof window.ppCmpHas==='function'&&window.ppCmpHas(productId);return `<button type="button" class="ppx-btn ppx-btn-soft ppx-pp-cmp${on?' is-on':''}" data-pc-cmp="${H(productId)}" data-cmp-style="pp" aria-pressed="${on}">${typeof ppCmpIcon==='string'?ppCmpIcon:''}<span>${on?'Added to compare':'Compare'}</span></button>`;})():''}
           </div>
-          <p class="ppx-advice">Check the exact model and variant on the retailer's page before buying.</p>
+          <p class="ppx-advice">Verify exact model &amp; variant on the retailer's page.</p>
         </div>
       </section>
       <div class="ppx-right">
@@ -487,7 +588,7 @@ pageView.addEventListener('click',async e=>{
     const gallery=typeof ppResolvedProductGallery==='function'?ppResolvedProductGallery(catalog,id,fb):[];
     const item=gallery[+thumb.dataset.ppxThumb];
     const main=shell.querySelector('.ppx-main-image');
-    if(item&&main){main.src=item.url;if(typeof ppApplyGlobalImageToElement==='function')ppApplyGlobalImageToElement(main,item);}
+    if(item&&main){main.dataset.ppxSlot=String(+thumb.dataset.ppxThumb||0);main.src=item.url;if(typeof ppApplyGlobalImageToElement==='function')ppApplyGlobalImageToElement(main,item);}
     shell.querySelectorAll('[data-ppx-thumb]').forEach(b=>{const on=b===thumb;b.classList.toggle('is-active',on);b.setAttribute('aria-pressed',String(on));});
     return;
   }
@@ -508,6 +609,11 @@ pageView.addEventListener('click',async e=>{
     const existing=typeof ppFindDealAlertForProduct==='function'?ppFindDealAlertForProduct(id):null;
     if(!existing&&typeof ppDealAlertAtLimit==='function'&&ppDealAlertAtLimit()){if(typeof ppDealAlertLimitUpsell==='function')ppDealAlertLimitUpsell();return;}
     if(typeof renderDealAlertEditor==='function')await renderDealAlertEditor(id,'product');
+    try{
+      const best=Number(String(document.querySelector('.ppx-product')?.dataset.bestPrice||'').replace(/[^\d]/g,''));
+      const input=document.querySelector('#dealAlertForm input[name="target"]');
+      if(input&&!input.value&&Number.isFinite(best)&&best>0)input.value=String(Math.floor((best*0.98)/100)*100);
+    }catch(_){}
     return;
   }
   if(action==='wishlist'){
@@ -907,7 +1013,17 @@ if(typeof ppPlusPageHTML==='function'){
 }
 
 /* ---------- Mini product cards (similar + recently viewed) ---------- */
-function miniCardHTML(id){
+/* V240: ONE global image setting (Admin scale/rotate/x/y/bg) used on every surface, fitted to each surface's own size */
+function ppxGlobalImg(id,src,alt){
+  try{
+    if(typeof ppGlobalPrimaryImageItem==='function'&&typeof ppGlobalImageDataAttrs==='function'&&typeof ppGlobalImageBgClass==='function'&&typeof ppGlobalImageStyle==='function'){
+      const item=ppGlobalPrimaryImageItem(String(id||''),src||'');
+      if(item&&item.url)return {surface:`pp-global-product-surface ${ppGlobalImageBgClass(item)}`,img:`<img class="pp-global-product-image" src="${H(item.url)}" alt="${H(alt||'')}" loading="lazy" ${ppGlobalImageDataAttrs(item)} style="${H(ppGlobalImageStyle(item))}">`};
+    }
+  }catch(e){}
+  return {surface:'',img:src?`<img src="${H(src)}" alt="${H(alt||'')}" loading="lazy">`:''};
+}
+function miniCardHTML(id,baseNum){
   const card=productCard(id);
   const btn=card?.querySelector('.compare-btn');
   if(!btn)return '';
@@ -916,7 +1032,7 @@ function miniCardHTML(id){
   const st=typeof ppRetailerStripState==='function'?ppRetailerStripState(btn.dataset,id):{offers:[],inStock:[]};
   const price=Number.isFinite(st.lowest)?st.lowest:(st.inStock?.length===1?st.inStock[0].price:null);
   const n=st.offers?.length||0;
-  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(id)}"><span class="ppx-mini-img">${src?`<img src="${H(src)}" alt="" loading="lazy">`:''}</span><span class="ppx-mini-name">${H(btn.dataset.product||'')}</span><span class="ppx-mini-price">${Number.isFinite(price)?`<b>${M(price)}</b><small>best of ${n} ${n===1?'store':'stores'}</small>`:`<small>Compare ${n} ${n===1?'store':'stores'} →</small>`}</span></a>`;
+  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(id)}"><span class="ppx-mini-img ${ppxGlobalImg(id,src).surface}">${ppxGlobalImg(id,src).img}</span>${card.dataset.brandName?`<span class="ppx-mini-brand">${H(card.dataset.brandName)}</span>`:''}<span class="ppx-mini-name">${H(btn.dataset.product||'')}</span><span class="ppx-mini-price">${Number.isFinite(price)?`<b>${M(price)}</b><small>best of ${n} ${n===1?'store':'stores'}</small>${Number.isFinite(baseNum)&&baseNum>0&&price!==baseNum?`<small class="ppx-mini-diff ${price<baseNum?'is-less':'is-more'}">${M(Math.abs(price-baseNum))} ${price<baseNum?'cheaper':'more'}</small>`:''}`:`<small>Compare ${n} ${n===1?'store':'stores'}</small>`}</span><span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
 }
 function similarIds(id){
   const card=productCard(id);
@@ -940,7 +1056,10 @@ function enhanceProduct(id){
   const shell=pageView.querySelector('.ppx-product');
   if(!shell||!productCard(id))return;
   pushRecent(id);
-  const sims=similarIds(id).map(miniCardHTML).filter(Boolean);
+  const baseNum=Number(String(shell.dataset.bestPrice||'').replace(/[^\d]/g,''));
+  const cat0=productCard(id)?.dataset.category||'';
+  /* only compare prices inside the same category (a fryer vs a phone makes no sense) */
+  const sims=similarIds(id).map(x=>miniCardHTML(x,productCard(x)?.dataset.category===cat0?baseNum:NaN)).filter(Boolean);
   if(sims.length){
     shell.insertAdjacentHTML('beforeend',`<section class="ppx-panel ppx-similar" aria-labelledby="ppxSimTitle"><div class="ppx-panel-head"><div><span class="ppx-eyebrow">KEEP COMPARING</span><h2 id="ppxSimTitle">You may also like</h2></div><a class="ppx-link" href="#deals" data-ppx-action="home">All deals →</a></div><div class="ppx-mini-row">${sims.join('')}</div></section>`);
   }
@@ -1214,6 +1333,57 @@ document.addEventListener('click',e=>{
 },true);
 document.getElementById('siteSearch')?.addEventListener('submit',()=>{if(leavePageForHome())setTimeout(()=>document.getElementById('deals')?.scrollIntoView({behavior:'smooth',block:'start'}),60);},true);
 
+/* V233: picking a category (top bar or All Categories menu) lands just above the
+   "LIVE · CHECKED" line, right under the sticky header, so the heading, tabs and cards fit.
+   Works whichever code started the scroll: wait until the page settles, then correct. */
+let landRun=0;
+function dealsLandTop(){
+  const eb=document.querySelector('#deals .deals-title .eyebrow')||document.querySelector('#deals .deals-title')||document.getElementById('deals');
+  if(!eb||(homeMain&&homeMain.hidden))return null;
+  const gap=window.innerWidth<=760?10:14;
+  return Math.max(0,Math.round(eb.getBoundingClientRect().top+window.scrollY-stickyTop()-gap));
+}
+/* One smooth move straight to the right spot (no second correction): while it runs, other scroll
+   calls are ignored, and the target is re-read every frame so the shrinking header is followed. */
+const _siv=Element.prototype.scrollIntoView,_wst=window.scrollTo,_wsc=window.scroll;
+let landLock=false;
+function landDeals(){
+  const run=++landRun;
+  let t0=performance.now(),t1=0,startY=null,moved=false;
+  const DUR=520,HOLD=700;
+  const mv=()=>{moved=true;};
+  const evs=['wheel','touchstart','keydown'];
+  evs.forEach(ev=>window.addEventListener(ev,mv,{passive:true}));
+  landLock=true;
+  Element.prototype.scrollIntoView=function(){if(!landLock)return _siv.apply(this,arguments);};
+  window.scrollTo=function(){if(!landLock)return _wst.apply(window,arguments);};
+  window.scroll=window.scrollTo;
+  const end=()=>{
+    evs.forEach(ev=>window.removeEventListener(ev,mv));
+    if(run!==landRun)return;
+    landLock=false;Element.prototype.scrollIntoView=_siv;window.scrollTo=_wst;window.scroll=_wsc;
+  };
+  const frame=now=>{
+    if(run!==landRun){evs.forEach(ev=>window.removeEventListener(ev,mv));return;}
+    if(moved||now-t0>DUR+HOLD+2500){end();return;}
+    const target=dealsLandTop();
+    if(target!=null){
+      if(startY==null){startY=window.scrollY;t1=now;}
+      const k=Math.min(1,(now-t1)/DUR),e=1-Math.pow(1-k,3);
+      _wst.call(window,{top:startY+(target-startY)*e,behavior:'instant'});
+      if(now-t1>DUR+HOLD){end();return;}
+    }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('.category-nav button[data-cat]');
+  if(!b||b.id==='homeNavBtn'||b.classList.contains('deals-nav')||b.closest('#ppPageView')||!CAT_LABEL[b.dataset.cat])return;
+  if(document.body.dataset.ppPage==='deals')return; /* the Deals page filters itself */
+  landDeals();
+},true);
+
 
 /* =====================================================================
    Section 1 — Header + Hero (V205)
@@ -1403,7 +1573,7 @@ function renderHeroCard(){
     <a class="ppx-hero-card" href="#/product/${encodeURIComponent(p.id)}" aria-label="Compare ${H(p.name)} prices">
       <i class="ppx-hc-shine" aria-hidden="true"></i>
       <div class="ppx-hc-top ppx-z1"><span class="ppx-hc-badge">${badge}</span><span class="ppx-hc-live"><i aria-hidden="true"></i>Verified prices</span></div>
-      <div class="ppx-hc-product ppx-z2"><span class="ppx-hc-img">${photoOf(p)?`<img src="${H(photoOf(p))}" alt="">`:''}</span><span class="ppx-hc-name"><b>${H(p.name)}</b><small>${H([catLabel(p.category),p.brand].filter(Boolean).join(' · '))}</small></span></div>
+      <div class="ppx-hc-product ppx-z2"><span class="ppx-hc-img ${ppxGlobalImg(p.id,photoOf(p)).surface}">${ppxGlobalImg(p.id,photoOf(p)).img}</span><span class="ppx-hc-name"><b>${H(p.name)}</b><small>${H([catLabel(p.category),p.brand].filter(Boolean).join(' · '))}</small></span></div>
       <div class="ppx-hc-rows ppx-z1">${rows}</div>
       <div class="ppx-hc-foot ppx-z1">${foot}<span class="ppx-hc-cta">Compare all ${b.stores} stores →</span></div>
     </a>
@@ -1573,7 +1743,8 @@ function renderDiscover(){
   </div>`;
 }
 /* ---- V210 Discover: spotlight + colour tiles ---- */
-const DX_COLOR={samsung:'#1428A0',boat:'#E21B23',philips:'#0B5ED7',dell:'#007DB8',puma:'#1A1A1A',oneplus:'#EB0028',nutripro:'#2EA06E',dotkey:'#B8862B',amazon:'#FF9900',flipkart:'#2874F0',myntra:'#FF3F6C',ajio:'#2C4154',croma:'#12A88A',meesho:'#9F2089',tatacliq:'#C2185B',reliance:'#0F5BA8',reliancedigital:'#0F5BA8',vijaysales:'#E31E24',jiomart:'#0078AD',nykaa:'#E80071',purplle:'#7B2CBF'};
+const DX_COLOR={samsung:'#1428A0',boat:'#E21B23',philips:'#0B5ED7',dell:'#007DB8',puma:'#1A1A1A',oneplus:'#EB0028',nutripro:'#2EA06E',dotkey:'#B8862B',amazon:'#FF9900',flipkart:'#2874F0',myntra:'#FF3F6C',ajio:'#2C4154',croma:'#12A88A',meesho:'#9F2089',tatacliq:'#C2185B',reliance:'#0F5BA8',reliancedigital:'#0F5BA8',vijaysales:'#E31E24',jiomart:'#0078AD',nykaa:'#E80071',purplle:'#7B2CBF',aosmith:'#C8102E',adidas:'#1A1A1A',apple:'#5F6368',asus:'#00539B',atomberg:'#F26A1B',campus:'#E8402A',casio:'#C8102E',cetaphil:'#0072BC',hp:'#0096D6',hawkins:'#C8102E',jbl:'#F36F21',kent:'#1E4D9B',lg:'#A50034',minimalist:'#3B3B3B',noise:'#1A1A1A',nothing:'#1A1A1A',oppo:'#1D8F5A',pigeon:'#E1262C',prestige:'#C8102E',sony:'#1A1A1A',thedermaco:'#00A19B',whirlpool:'#D99A00',xiaomi:'#FF6900',realme:'#D4A000',vivo:'#415FFF',shopsy:'#5B3FD9'};
+const dxColor=k=>DX_COLOR[k]||DX_COLOR[String(k||'').toLowerCase().replace(/[^a-z0-9]/g,'')]||'';
 const DX_LOGO_FIX={nutripro:'logos/official/nutripro-clean.png',oneplus:'logos/official/oneplus-trim.png',samsung:'logos/official/samsung-trim.png'};
 function dxLiveStats(){
   let deals=0,last=0;
@@ -1609,10 +1780,11 @@ function dxSpotHTML(d,{tag,logoHTML,cta,href}){
     </span></a>`;
 }
 function dxTileHTML({key,attr,color,logoHTML,count,d,emptyText}){
+  if(!color){const m=/#ppc=([0-9a-fA-F]{6})/.exec(String(logoHTML||''));if(m)color='#'+m[1];} /* V241 J1: colour saved from Admin with the logo */
   const price=d&&Number.isFinite(d.price);
   const off=price&&d.sav?.percent?`<span class="ppx-dx-off">-${d.sav.percent}%</span>`:'';
   const img=d&&photoOf(d.p);
-  return `<button type="button" class="ppx-dx-tile" ${attr}="${H(key)}" data-logo="${H(key)}" style="--c:${color||'#B8862B'}">
+  return `<button type="button" class="ppx-dx-tile" ${attr}="${H(key)}" data-logo="${H(key)}" style="--c:${color||'#B8862B'}"${color?'':' data-ppx-autotint="1"'}>
     <span class="ppx-dx-hd"><span class="ppx-dx-pill">${logoHTML}</span><span class="ppx-dx-cnt">${H(count)}</span></span>
     <span class="ppx-dx-pi">${off}${img?`<img src="${H(img)}" alt="" loading="lazy">`:''}</span>
     <span class="ppx-dx-ft">${price?`<span class="ppx-dx-fp"><small>from</small><b>${M(d.price)}</b>${d.sav?`<s>${M(d.sav.mrp)}</s>`:''}</span>`:`<span class="ppx-dx-fp"><small>${H(emptyText||'Price coming soon')}</small><em>${ICON.bell} Track prices</em></span>`}<i class="ppx-dx-go" aria-hidden="true">→</i></span>
@@ -1628,9 +1800,10 @@ function dxBrandList(deals){
     const src=DX_LOGO_FIX[slug]||img?.currentSrc||img?.getAttribute('src')||'';
     const mine=deals.filter(d=>d.p.card.dataset.brand===slug);
     const priced=mine.filter(d=>d.price!=null).sort((x,y)=>(y.sav?.percent||0)-(x.sav?.percent||0)||x.price-y.price);
-    const top=priced[0]||mine.find(d=>photoOf(d.p))||null;
-    const from=priced.length?Math.min(...priced.map(d=>d.price)):null;
-    return {slug,label,src,mine,priced,top:top&&from!=null?{...top,price:from}:top};
+    /* V236: tile photo/price/saving all come from the SAME product (the cheapest one) */
+    const cheapest=[...priced].sort((x,y)=>x.price-y.price||(y.sav?.percent||0)-(x.sav?.percent||0))[0];
+    const top=cheapest||mine.find(d=>photoOf(d.p))||null;
+    return {slug,label,src,mine,priced,top};
   });
 }
 function dxStoreList(deals){
@@ -1647,8 +1820,8 @@ function dxStoreList(deals){
   return {stores,wins};
 }
 const dxLogoImg=b=>b.src?`<img src="${H(b.src)}" alt="${H(b.label)}">`:`<b>${H(b.label)}</b>`;
-function dxBrandTile(b){return dxTileHTML({key:b.slug,attr:'data-ppx-brand',color:DX_COLOR[b.slug],logoHTML:dxLogoImg(b),count:b.mine.length?`${b.mine.length} ${b.mine.length===1?'deal':'deals'}`:'New',d:b.top});}
-function dxStoreTile(s,isTop){return dxTileHTML({key:s.key,attr:'data-ppx-store',color:DX_COLOR[s.key],logoHTML:s.logo,count:s.wins?`Lowest on ${s.wins}`:`${s.n} compared`,d:s.top,emptyText:s.n?`${s.n} ${s.n===1?'product':'products'} listed`:'Coming soon'}).replace('class="ppx-dx-tile"',`class="ppx-dx-tile${isTop?' is-top':''}"`).replace('<span class="ppx-dx-hd">',isTop?`<span class="ppx-dx-crown">${ICON.crown}Most lowest prices</span><span class="ppx-dx-hd">`:'<span class="ppx-dx-hd">');}
+function dxBrandTile(b){return dxTileHTML({key:b.slug,attr:'data-ppx-brand',color:dxColor(b.slug),logoHTML:dxLogoImg(b),count:b.mine.length?`${b.mine.length} ${b.mine.length===1?'deal':'deals'}`:'New',d:b.top});}
+function dxStoreTile(s,isTop){return dxTileHTML({key:s.key,attr:'data-ppx-store',color:dxColor(s.key),logoHTML:s.logo,count:s.wins?`Lowest on ${s.wins}`:`${s.n} compared`,d:s.top,emptyText:s.n?`${s.n} ${s.n===1?'product':'products'} listed`:'Coming soon'}).replace('class="ppx-dx-tile"',`class="ppx-dx-tile${isTop?' is-top':''}"`).replace('<span class="ppx-dx-hd">',isTop?`<span class="ppx-dx-crown">${ICON.crown}Most lowest prices</span><span class="ppx-dx-hd">`:'<span class="ppx-dx-hd">');}
 function dxPageGridHTML(kind){
   const deals=productIndex().map(dxDeal);
   if(kind==='brands'){
@@ -1674,7 +1847,7 @@ function dxBrandsHTML(){
   const hidden=rest.slice(3);
   const logoImg=b=>b.src?`<img src="${H(b.src)}" alt="${H(b.label)}">`:`<b>${H(b.label)}</b>`;
   const spotHTML=spot?dxSpotHTML(spot,{tag:"TODAY'S TOP BRAND",logoHTML:sb?logoImg(sb):H(spot.p.brand),cta:'See best price',href:`#/product/${encodeURIComponent(spot.p.id)}`}):'';
-  const tiles=(spot?shown:rest.slice(0,4)).map(b=>dxTileHTML({key:b.slug,attr:'data-ppx-brand',color:DX_COLOR[b.slug],logoHTML:logoImg(b),count:b.mine.length?`${b.mine.length} ${b.mine.length===1?'deal':'deals'}`:'New',d:b.top})).join('');
+  const tiles=(spot?shown:rest.slice(0,4)).map(b=>dxTileHTML({key:b.slug,attr:'data-ppx-brand',color:dxColor(b.slug),logoHTML:logoImg(b),count:b.mine.length?`${b.mine.length} ${b.mine.length===1?'deal':'deals'}`:'New',d:b.top})).join('');
   const hid=spot?hidden:rest.slice(4);
   return spotHTML+`<div class="ppx-dx-tiles">${tiles}${dxAllHTML('#/brands',hid.slice(0,2).map(b=>b.label.slice(0,4).toUpperCase()),hid.length-2,'View all<br>brands')}</div>`;
 }
@@ -1688,7 +1861,7 @@ function dxStoresHTML(){
   const shown=leadDeal?rest.slice(0,3):rest.slice(0,4);
   const hid=rest.slice(shown.length);
   const spotHTML=leadDeal?dxSpotHTML(leadDeal,{tag:'MOST LOWEST PRICES',logoHTML:lead.logo,cta:`Compare on ${lead.label}`,href:`#/product/${encodeURIComponent(leadDeal.p.id)}`}):'';
-  const tiles=shown.map(s=>dxTileHTML({key:s.key,attr:'data-ppx-store',color:DX_COLOR[s.key],logoHTML:s.logo,count:s.wins?`Lowest on ${s.wins}`:`${s.n} compared`,d:s.top,emptyText:s.n?`${s.n} ${s.n===1?'product':'products'} listed`:'Coming soon'})).join('');
+  const tiles=shown.map(s=>dxTileHTML({key:s.key,attr:'data-ppx-store',color:dxColor(s.key),logoHTML:s.logo,count:s.wins?`Lowest on ${s.wins}`:`${s.n} compared`,d:s.top,emptyText:s.n?`${s.n} ${s.n===1?'product':'products'} listed`:'Coming soon'})).join('');
   return spotHTML+`<div class="ppx-dx-tiles">${tiles}${dxAllHTML('#/stores',hid.slice(0,2).map(s=>s.label.slice(0,4).toUpperCase()),hid.length-2,'View all<br>stores')}</div>`;
 }
 renderDiscover();
@@ -2033,7 +2206,7 @@ const DET_STORES={
   laptops:['Amazon','Flipkart','Croma','Vijay Sales','Reliance Digital','Tata CLiQ'],
   appliances:['Amazon','Flipkart','Croma','Vijay Sales','Reliance Digital','Tata CLiQ'],
   home:['Amazon','Flipkart','Croma','Vijay Sales','Reliance Digital','JioMart','Meesho'],
-  fashion:['Myntra','AJIO','Tata CLiQ','Amazon','Flipkart','Meesho'],
+  fashion:['Myntra','AJIO','Tata CLiQ','Nykaa Fashion','Amazon','Flipkart','Meesho'],
   beauty:['Nykaa','Purplle','Tata CLiQ','Amazon','Flipkart','Myntra'],
   other:['Amazon','Flipkart','JioMart','Meesho']};
 const CAT_LABELS={electronics:'Electronics',mobiles:'Mobiles',laptops:'Laptops',appliances:'Appliances',home:'Home & Kitchen',fashion:'Fashion',beauty:'Beauty',other:'Other'};
@@ -2043,7 +2216,8 @@ STORE_SEARCH.push(
   ['Reliance Digital',q=>`https://www.reliancedigital.in/search?q=${encodeURIComponent(q)}`],
   ['Tata CLiQ',q=>`https://www.tatacliq.com/search/?searchCategory=all&text=${encodeURIComponent(q)}`],
   ['JioMart',q=>`https://www.jiomart.com/search/${encodeURIComponent(q)}`],
-  ['Vijay Sales',q=>`https://www.vijaysales.com/search-listing?q=${encodeURIComponent(q)}`]);
+  ['Vijay Sales',q=>`https://www.vijaysales.com/search-listing?q=${encodeURIComponent(q)}`],
+  ['Nykaa Fashion',q=>`https://www.nykaafashion.com/catalogsearch/result/?q=${encodeURIComponent(q)}`]);
 STORE_HOSTS.push([/(^|\.)purplle\.com$/,'Purplle']);
 /* =====================================================================
    V216 — Product dictionary detection
@@ -2499,7 +2673,7 @@ async function requestTrackUI(link,anchor){
     handleStoreLink(link,anchor);
   },true);
   const heroInput=document.getElementById('ppxHeroSearch');
-  if(heroInput)heroInput.placeholder=window.matchMedia('(max-width:1180px)').matches?'Search or paste a link':'Search or paste an Amazon / Flipkart link';
+  if(heroInput)heroInput.placeholder=window.matchMedia('(max-width:1180px)').matches?'Search or paste a link':'Search or paste a product link';
   [heroInput,headerInput].forEach(inp=>inp?.addEventListener('input',()=>{
     const f=inp.closest('form');
     f?.classList.toggle('is-link',!!parseStoreLink(inp.value));
@@ -2511,7 +2685,7 @@ async function requestTrackUI(link,anchor){
 /* ---------- Plus line ---------- */
 {
   const pl=document.getElementById('ppxHeroPlus');
-  if(pl)pl.innerHTML=`<span class="ppx-hero-plus-new">PLUS</span><span class="ppx-hp-long">Pays for itself: <b>₹99/year</b>, get <b>₹100 back</b> on your first purchase</span><span class="ppx-hp-short">Pays for itself: <b>₹99</b> → <b>₹100 back</b></span><i aria-hidden="true">→</i>`;
+  if(pl)pl.innerHTML=`<span class="ppx-hero-plus-new">PLUS</span><span class="ppx-hp-long">Pays for itself: <b>₹99</b> → <b>₹100 back</b> on first eligible purchase</span><span class="ppx-hp-short">Pays for itself: <b>₹99</b> → <b>₹100 back</b></span><i aria-hidden="true">→</i>`;
 }
 
 /* ---------- Real stats line ---------- */
@@ -2525,7 +2699,7 @@ async function renderHeroStats(){
   const remote=await PPData.siteStats();
   const c30=Number(remote?.price_checks_30d)||checks;
   const alerts=Number(remote?.active_alerts)||0;
-  const items=[[idx.length,idx.length===1?'product tracked':'products tracked'],[stores,'stores compared'],[c30,'price checks this month'],[alerts,alerts===1?'deal alert watching':'deal alerts watching']].filter(([n])=>n>0);
+  const items=[[idx.length,idx.length===1?'product tracked':'products tracked'],[stores,'stores covered'],[c30,'price checks this month'],[alerts,alerts===1?'deal alert watching':'deal alerts watching']].filter(([n])=>n>0);
   el.innerHTML=`<span class="ppx-hs-live"><i aria-hidden="true"></i>LIVE</span>`+items.map(([n,l])=>`<span><b>${Number(n).toLocaleString('en-IN')}</b> ${l}</span>`).join('<span class="ppx-hs-sep" aria-hidden="true">·</span>');
 }
 
@@ -2602,7 +2776,7 @@ function heroCardInner(pick){
   const foot=drop>0?`<span class="ppx-hc-drop">↓ ${M(drop)} in ${ins.days} ${ins.days===1?'day':'days'}</span>`:(sav?`<span class="ppx-hc-drop">Save ${M(sav.saving)} vs MRP</span>`:'<span class="ppx-hc-drop">Compared across stores</span>');
   return `<i class="ppx-hc-shine" aria-hidden="true"></i>
     <div class="ppx-hc-top ppx-z1"><span class="ppx-hc-badge">${badge}</span><span class="ppx-hc-live"><i aria-hidden="true"></i>Verified prices</span></div>
-    <div class="ppx-hc-product ppx-z2"><span class="ppx-hc-img">${photoOf(p)?`<img src="${H(photoOf(p))}" alt="">`:''}</span><span class="ppx-hc-name"><b>${H(p.name)}</b><small>${H([catLabel(p.category),p.brand].filter(Boolean).join(' · '))}</small></span>${a?scoreRing(a.score,46):''}</div>
+    <div class="ppx-hc-product ppx-z2"><span class="ppx-hc-img ${ppxGlobalImg(p.id,photoOf(p)).surface}">${ppxGlobalImg(p.id,photoOf(p)).img}</span><span class="ppx-hc-name"><b>${H(p.name)}</b><small>${H([catLabel(p.category),p.brand].filter(Boolean).join(' · '))}</small></span>${a?scoreRing(a.score,46):''}</div>
     ${a?`<div class="ppx-hc-insight ppx-z1 is-${a.tone}"><b>${H(a.label)}</b><span class="is-${a.real.tone}">${H(a.real.short)} · ${H(a.real.text)}</span>${heroMeterHTML(p,b)}</div>`:''}
     <div class="ppx-hc-rows ppx-z1">${rows}</div>
     <div class="ppx-hc-foot ppx-z1">${foot}<span class="ppx-hc-cta">Compare all ${b.stores} stores →</span></div>`;
@@ -2655,6 +2829,46 @@ renderHeroSlider();renderHeroStats();
 if(typeof window.ppUpdateHomeCardPrices==='function'){
   const orig=window.ppUpdateHomeCardPrices;
   window.ppUpdateHomeCardPrices=function(){const r=orig.apply(this,arguments);try{renderHeroSlider();renderHeroStats();}catch(_){}return r;};
+}
+
+/* V234: logo tagline — same width as the "PricePulse" name, brighter and a little bolder.
+   Width is matched with letter-spacing (measured), so it stays tidy at any font. Header + footer logo. */
+{
+  const st=document.createElement('style');st.id='ppxTaglineStyle';
+  st.textContent='.brand-copy small{font-weight:700!important;color:rgba(255,255,255,.88)!important;white-space:nowrap!important;line-height:1.1!important}';
+  document.head.appendChild(st);
+  const wOf=el=>{const r=document.createRange();r.selectNodeContents(el);return r.getBoundingClientRect().width;};
+  function fitOne(bc){
+    const s=bc.querySelector('strong'),t=bc.querySelector('small');
+    if(!s||!t||getComputedStyle(t).display==='none')return;
+    const ws0=wOf(s);if(!(ws0>20))return;
+    const ws=ws0*0.965;/* match the visible letters, not the glyph side-gaps */
+    const n=(t.textContent||'').length;if(n<2)return;
+    t.style.setProperty('transition','none','important');/* header CSS animates size changes; measure the real size */
+    t.style.setProperty('letter-spacing','0px','important');t.style.setProperty('font-size','10px','important');
+    const w0=wOf(t);if(!(w0>0))return;
+    const WANT=1.6;/* px of letter-spacing we aim for */
+    let fs=10*(ws-(n-1)*WANT)/w0;fs=Math.max(8.5,Math.min(13,fs));
+    t.style.setProperty('font-size',fs.toFixed(2)+'px','important');
+    const w1=wOf(t);
+    const ls=Math.max(0,(ws-w1)/(n-1));
+    t.style.setProperty('letter-spacing',ls.toFixed(2)+'px','important');
+    t.style.setProperty('margin-right',(-ls).toFixed(2)+'px','important');
+    t.style.setProperty('margin-left',(ws0*0.011).toFixed(2)+'px','important');
+    void t.offsetWidth;t.style.removeProperty('transition');
+  }
+  function fitTaglines(){
+    document.querySelectorAll('.brand-copy').forEach(bc=>{
+      if(bc.closest('.site-header')&&document.body.classList.contains('ppx-scrolled'))return;/* header tagline is hidden while scrolled */
+      try{fitOne(bc);}catch(_){}
+    });
+  }
+  window.ppFitTaglines=fitTaglines;
+  fitTaglines();setTimeout(fitTaglines,600);setTimeout(fitTaglines,2000);
+  window.addEventListener('load',fitTaglines);
+  document.fonts?.ready?.then(fitTaglines);
+  let fitT=0;window.addEventListener('resize',()=>{clearTimeout(fitT);fitT=setTimeout(fitTaglines,150);});
+  new MutationObserver(()=>{if(!document.body.classList.contains('ppx-scrolled')){clearTimeout(fitT);fitT=setTimeout(fitTaglines,340);}}).observe(document.body,{attributes:true,attributeFilter:['class']});
 }
 
 /* ---------------- Boot ---------------- */
@@ -2802,7 +3016,7 @@ function cmBuild(menu){
         setTimeout(()=>{
           if(typeof clearSearchResults==='function')clearSearchResults(false);
           if(typeof pickCategory==='function')pickCategory(k,false);else document.querySelector(`.category-nav [data-cat="${k}"]`)?.click();
-          document.getElementById('deals')?.scrollIntoView({behavior:'smooth',block:'start'});
+          landDeals();
           if(typeof showToast==='function')showToast(`Showing ${name}`);
         },200);
         return;
@@ -3275,7 +3489,7 @@ function pcHTML(d,opts={}){
   const lock=opts.locked?`<div class="ppx-pc-lock"><span>${PC_SVG.crown}</span><b>Plus early access</b><small>Opens for everyone ${dlLeft(opts.earlyUntil||0)}</small><a class="ppx-pc-buy" href="#/plus">Unlock with Plus · ₹99/yr</a></div>`:'';
   return `<div class="ppx-pc is-${d.v.k}${opts.locked?' is-locked':''}" data-pc-id="${H(id)}"><div class="ppx-pc-in">
     <div class="ppx-pc-top"><span class="ppx-pc-verdict"><i></i>${pcVerdictHTML(d.v.t)}</span><span class="ppx-pc-icons"><button type="button" class="ppx-pc-ib" data-pc-alert="${H(id)}" ${d.target?`data-pc-target="${d.target}"`:''} aria-label="Price alert for ${H(d.p.name)}">${PC_SVG.bell}</button><button type="button" class="ppx-pc-ib is-heart${saved?' is-on':''}" data-pc-heart="${H(id)}" aria-pressed="${saved}" aria-label="${saved?'Remove from':'Add to'} wishlist">${PC_SVG.heart}</button></span></div>
-    <a class="ppx-pc-prod" href="#/product/${eid}"><span class="ph">${d.photo?`<img src="${H(d.photo)}" alt="" loading="lazy">`:''}</span><span class="nm"><small>${H(cat)}</small><b>${H(d.p.name)}</b>${d.variant?`<em>${H(d.variant)}</em>`:''}</span>${score}</a>
+    <a class="ppx-pc-prod" href="#/product/${eid}"><span class="ph ${ppxGlobalImg(d.p.id,d.photo).surface}">${ppxGlobalImg(d.p.id,d.photo).img}</span><span class="nm"><small>${H(cat)}</small><b>${H(d.p.name)}</b>${d.variant?`<em>${H(d.variant)}</em>`:''}</span>${score}</a>
     ${d.price!=null?`<div class="ppx-pc-price"><div><b>${M(d.price)}</b>${d.sav?.mrp?`<s>${M(d.sav.mrp)}</s>`:''}</div>${d.chg?`<div class="chg is-${d.chg.c}">${H(d.chg.a)}<small>${H(d.chg.b)}</small></div>`:''}</div>`:`<div class="ppx-pc-pending"><i></i>We are checking ${d.stores} ${d.stores===1?'store':'stores'} for this product</div>`}
     ${opts.meter?(()=>{const m=ppMeterHTML(d.price,lowestSeries(d.p.id),d.store,'is-card');return m?`<div class="ppx-pc-meter">${m}</div>`:'';})():pcSpark(d)}${pcLadder(d)}${plus}
     <div class="ppx-pc-btns">${main}<a class="ppx-pc-cmp" href="#/product/${eid}">Details</a></div>
@@ -3512,7 +3726,16 @@ function ccCreate({products=[],brands=[],stores=[],listings=[]}={}){
 window.ppCatalogCardsCreate=ccCreate;
 if(typeof ppApplyCatalogData==='function'){
   const origApply=ppApplyCatalogData;
+  /* V235: local logos for brands/stores (tiles, product cards, product-page badge all read logo_url from this data) */
+  const PP_BRAND_LOGOS={'a-o-smith':'a-o-smith.png','adidas':'adidas.svg','apple':'apple.svg','asus':'asus.svg','atomberg':'atomberg.svg','campus':'campus.svg','casio':'casio.svg','cetaphil':'cetaphil.png','hp':'hp.svg','hawkins':'hawkins.png','jbl':'jbl.svg','kent':'kent.svg','lg':'lg.svg','minimalist':'minimalist.png','noise':'noise.png','nothing':'nothing.svg','oppo':'oppo.svg','pigeon':'pigeon.svg','prestige':'prestige.svg','sony':'sony.svg','the-derma-co':'the-derma-co.png','whirlpool':'whirlpool.svg','xiaomi':'xiaomi.svg','realme':'realme.svg','vivo':'vivo.svg'};
+  const PP_STORE_LOGOS={'vijay-sales':'vijay-sales.svg','nykaa':'nykaa.svg','purplle':'purplle.svg','shopsy':'shopsy.svg','adidas':'adidas.svg'};
+  const ppLocalLogos=data=>{
+    if(!data)return data;
+    const fix=(rows,map,dir)=>(rows||[]).map(r=>{const f=r&&map[String(r.slug||'')];return f?{...r,logo_url:`logos/${dir}/${f}`}:r;});
+    return {...data,brands:fix(data.brands,PP_BRAND_LOGOS,'brands'),stores:fix(data.stores,PP_STORE_LOGOS,'stores')};
+  };
   ppApplyCatalogData=function(data){
+    data=ppLocalLogos(data);arguments[0]=data;
     let n=0;try{n=ccCreate(data||{});}catch(e){console.warn('PricePulse catalog cards',e);}
     const r=origApply.apply(this,arguments);
     if(n){try{typeof ppUpdateHomeCardPrices==='function'&&ppUpdateHomeCardPrices();}catch(_){}try{renderDiscover();}catch(_){}try{homeLayout();}catch(_){}}
@@ -3577,7 +3800,7 @@ function hlMini(p,d){
   const k=d?.v?.k||'pending';
   const lbl=k==='buy'?'Buy now':k==='wait'?'Wait':k==='fair'?'Fair price':'Verifying';
   const sub=d?.price!=null?(d.drop>0?`▼ ${M(d.drop)}`:d.sav?.percent?`${d.sav.percent}% off`:`${d.offers.length} stores`):`${d?.stores||0} stores`;
-  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph">${d?.photo?`<img src="${H(d.photo)}" alt="" loading="lazy">`:''}</span><span class="nm">${H(p.name)}</span><span class="pr">${d?.price!=null?M(d.price):'Price soon'}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}</a>`;
+  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph ${ppxGlobalImg(p.id,d?.photo).surface}">${ppxGlobalImg(p.id,d?.photo).img}</span>${p.brand?`<span class="br">${H(p.brand)}</span>`:''}<span class="nm">${H(p.name)}</span><span class="pr${d?.price!=null?'':' is-soon'}">${d?.price!=null?M(d.price):'Price soon'}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}<span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
 }
 function hlRows(){
   const deals=document.getElementById('deals');if(!deals)return;
@@ -3744,6 +3967,112 @@ navEnsureKey();
 /* refresh: put the reader back where they were */
 {const s=navSnaps[navKey()];if(s&&s.view===navView()&&(s.y||0)>0){setTimeout(()=>navRestore({...s,last:''}),60);}}
 
+/* V240: product-page image box behaves like the old "hero" surface on desktop, so every Admin
+   setting (scale / rotate / X / Y / position) is applied exactly as previewed. Other surfaces use the original fit. */
+(function(){
+  const orig=window.ppFitGlobalImageInHost;
+  if(typeof orig!=='function'||typeof ppNormalizeSiteImageSlot!=='function'||typeof ppImagePositionCSS!=='function')return;
+  window.ppFitGlobalImageInHost=function(img,item){
+    const host=img&&img.parentElement;
+    if(!host||!host.classList.contains('ppx-stage')||!item||!item.url)return orig.apply(this,arguments);
+    const run=()=>{
+      const nw=Number(img.naturalWidth)||0,nh=Number(img.naturalHeight)||0;if(!nw||!nh)return;
+      if(!host.clientWidth||!host.clientHeight){img.dataset.ppFitPending='1';return;}
+      delete img.dataset.ppFitPending;
+      const cs=getComputedStyle(host);
+      const availW=Math.max(20,host.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0));
+      const availH=Math.max(20,host.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0));
+      const c=ppNormalizeSiteImageSlot(item),fitMode=c.fit==='cover'?'cover':'contain';
+      const base=(fitMode==='cover'?Math.max(availW/nw,availH/nh):Math.min(availW/nw,availH/nh));
+      const baseW=nw*base,baseH=nh*base;
+      const rad=(Number(c.rotate)||0)*Math.PI/180,ca=Math.abs(Math.cos(rad)),sa=Math.abs(Math.sin(rad));
+      const rotW=baseW*ca+baseH*sa,rotH=baseW*sa+baseH*ca;
+      const desired=Math.max(.7,Math.min(2.6,(Number(c.scale)||100)/100));
+      const xRate=Math.abs(Number(c.x)||0)/100,yRate=Math.abs(Number(c.y)||0)/100;
+      const free=window.innerWidth>1020||fitMode==='cover'||(Number(img.dataset.ppxSlot)||0)>0;/* V247: Image 2 and 3 behave the same on every screen; Image 1 keeps the fit-inside rule on small screens */
+      const gutter=.96;
+      const applied=free?Math.max(.2,desired):Math.max(.2,Math.min(desired,(availW*gutter)/(rotW+2*xRate*baseW),(availH*gutter)/(rotH+2*yRate*baseH)));
+      const freeX=Math.max(0,(availW-rotW*applied)/2),freeY=Math.max(0,(availH-rotH*applied)/2);
+      const preset=String(c.position||'center');
+      const presetX=preset==='left'?(free?-availW*.12:-freeX):preset==='right'?(free?availW*.12:freeX):0;
+      const presetY=preset==='top'?(free?-availH*.12:-freeY):preset==='bottom'?(free?availH*.12:freeY):0;
+      const rawX=(Number(c.x)||0)/100*(free?availW:baseW*applied),rawY=(Number(c.y)||0)/100*(free?availH:baseH*applied);
+      const tx=free?(presetX+rawX):Math.max(-freeX,Math.min(freeX,presetX+rawX));
+      const ty=free?(presetY+rawY):Math.max(-freeY,Math.min(freeY,presetY+rawY));
+      img.style.setProperty('width',`${baseW.toFixed(2)}px`,'important');
+      img.style.setProperty('height',`${baseH.toFixed(2)}px`,'important');
+      img.style.setProperty('max-width','none','important');img.style.setProperty('max-height','none','important');
+      img.style.setProperty('object-fit',fitMode,'important');img.style.setProperty('object-position',ppImagePositionCSS(c.position||'center'),'important');
+      img.style.setProperty('transform',`translate3d(${tx.toFixed(2)}px,${ty.toFixed(2)}px,0) rotate(${Number(c.rotate)||0}deg) scale(${applied.toFixed(4)})`,'important');
+      img.style.setProperty('transform-origin','center center','important');
+      img.dataset.ppGlobalFitted='1';
+    };
+    if(img.complete&&img.naturalWidth)requestAnimationFrame(run);else img.addEventListener('load',()=>requestAnimationFrame(run),{once:true});
+  };
+})();
+/* V240 (E1): brands/stores that are not in the fixed colour list get their tile colour from their own logo */
+(function(){
+  const cache=new Map();
+  const toHex=(r,g,b)=>'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+  function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;let h=0,s=0;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);h*=60;}return [h,s,l];}
+  function hsl2rgb(h,s,l){h/=360;const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;return t<1/6?p+(q-p)*6*t:t<1/2?q:t<2/3?p+(q-p)*(2/3-t)*6:p;};if(!s){const v=l*255;return [v,v,v];}const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;return [f(p,q,h+1/3)*255,f(p,q,h)*255,f(p,q,h-1/3)*255];}
+  function dominant(img){
+    const w=48,h=48,c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,w,h);
+    const d=x.getImageData(0,0,w,h).data,bins=new Array(12).fill(0).map(()=>({n:0,r:0,g:0,b:0}));
+    let dark={n:0,r:0,g:0,b:0};
+    for(let i=0;i<d.length;i+=4){
+      const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a<128)continue;
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+      if(mn>225)continue;                       /* white / paper */
+      if(mx-mn<28){dark.n++;dark.r+=r;dark.g+=g;dark.b+=b;continue;} /* grey / black ink */
+      const [hh,ss]=rgb2hsl(r,g,b),k=Math.floor(hh/30)%12,wgt=0.4+ss;
+      const bin=bins[k];bin.n+=wgt;bin.r+=r*wgt;bin.g+=g*wgt;bin.b+=b*wgt;
+    }
+    let best=null;for(const b of bins)if(b.n>0&&(!best||b.n>best.n))best=b;
+    if(best&&best.n>=3){const r=best.r/best.n,g=best.g/best.n,b=best.b/best.n;let [hh,ss,ll]=rgb2hsl(r,g,b);ss=Math.max(ss,.45);ll=Math.max(.32,Math.min(.52,ll));const o=hsl2rgb(hh,ss,ll);return toHex(...o);}
+    if(dark.n>=3)return toHex(dark.r/dark.n*.6,dark.g/dark.n*.6,dark.b/dark.n*.6);
+    return '';
+  }
+  function colorFor(src){
+    if(cache.has(src))return cache.get(src);
+    const pr=new Promise(res=>{
+      const im=new Image();im.crossOrigin='anonymous';
+      im.onload=()=>{try{res(dominant(im));}catch(e){res('');}};
+      im.onerror=()=>res('');im.src=src;
+    });
+    cache.set(src,pr);return pr;
+  }
+  async function tintTile(tile){
+    if(!tile||tile.dataset.ppxAutotint!=='1')return;
+    const im=tile.querySelector('.ppx-dx-pill img');const src=im&&(im.currentSrc||im.getAttribute('src'));
+    if(!src){tile.dataset.ppxAutotint='x';return;}
+    tile.dataset.ppxAutotint='p';
+    const col=await colorFor(src);
+    if(col){tile.style.setProperty('--c',col);tile.dataset.ppxAutotint='done';}else tile.dataset.ppxAutotint='x';
+  }
+  window.ppxAutoTint=function(root){(root||document).querySelectorAll('[data-ppx-autotint="1"]').forEach(tintTile);};
+  if(typeof MutationObserver!=='undefined'){
+    let raf=0;new MutationObserver(()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;window.ppxAutoTint();});}).observe(document.body||document.documentElement,{childList:true,subtree:true});
+  }
+  setTimeout(()=>window.ppxAutoTint(),300);
+})();
+/* V241 (G1): a third product image (Image 3) saved by Admin in metadata.site_images.tertiary */
+(function(){
+  if(typeof window.ppResolvedProductGallery!=='function')return;
+  const orig=window.ppResolvedProductGallery;
+  window.ppResolvedProductGallery=function(catalog,productId,fallbackImage){
+    const out=orig.apply(this,arguments)||[];
+    try{
+      const raw=catalog&&catalog.metadata&&catalog.metadata.site_images;
+      if(raw&&raw.mode==='curated'&&raw.tertiary&&raw.tertiary.url&&typeof window.ppNormalizeSiteImageSlot==='function'){
+        const it=window.ppNormalizeSiteImageSlot(raw.tertiary);
+        if(it&&it.url&&!out.some(x=>x.url===it.url))out.push(it);
+      }
+    }catch(e){}
+    return out.slice(0,4);
+  };
+})();
 window.ppPremiumRoutes=routes;
 window.ppPremiumRoute=route;
 window.ppProductPageHTML=productPageHTML;

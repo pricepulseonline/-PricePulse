@@ -71,7 +71,7 @@ function siteImageConfig(product){
     y:String(ppClampNumber(slot.y,-30,30,0)),
     source:String(slot.source||'').trim()
   });
-  return {mode:raw.mode==='curated'?'curated':'auto',primary:cleanSlot(raw.primary),secondary:cleanSlot(raw.secondary)};
+  return {mode:raw.mode==='curated'?'curated':'auto',primary:cleanSlot(raw.primary),secondary:cleanSlot(raw.secondary),tertiary:cleanSlot(raw.tertiary)};
 }
 function verifiedImageCandidates(product){
   const out=[],seen=new Set();
@@ -93,9 +93,10 @@ function populateSiteImageSources(product){
   const html=['<option value="">Choose source…</option>',...candidates.map(c=>`<option value="${esc(c.url)}" data-source="${esc(c.source)}">${esc(c.label)}</option>`)].join('');
   f.elements.site_primary_source.innerHTML=html;
   f.elements.site_secondary_source.innerHTML=html;
+  if(f.elements.site_tertiary_source)f.elements.site_tertiary_source.innerHTML=html;
   const cards=byId('siteImageSourceCards');
   if(cards){
-    cards.innerHTML=candidates.length?candidates.map((c,i)=>`<article class="site-source-card"><img src="${esc(c.url)}" alt="" loading="lazy"><b>${esc(c.label)}</b><small>${esc(c.source)}</small><div class="site-source-actions"><button type="button" class="subtle" data-use-site-image="primary" data-site-image-index="${i}">Use as 1</button><button type="button" class="ghost" data-use-site-image="secondary" data-site-image-index="${i}">Use as 2</button></div></article>`).join(''):'<p class="fine">No verified retailer image is available yet. You can still paste an image URL or upload a local image.</p>';
+    cards.innerHTML=candidates.length?candidates.map((c,i)=>`<article class="site-source-card"><img src="${esc(c.url)}" alt="" loading="lazy"><b>${esc(c.label)}</b><small>${esc(c.source)}</small><div class="site-source-actions"><button type="button" class="subtle" data-use-site-image="primary" data-site-image-index="${i}">Use as 1</button><button type="button" class="ghost" data-use-site-image="secondary" data-site-image-index="${i}">Use as 2</button><button type="button" class="ghost" data-use-site-image="tertiary" data-site-image-index="${i}">Use as 3</button></div></article>`).join(''):'<p class="fine">No verified retailer image is available yet. You can still paste an image URL or upload a local image.</p>';
     cards.querySelectorAll('[data-use-site-image]').forEach(btn=>btn.addEventListener('click',()=>{
       const item=candidates[Number(btn.dataset.siteImageIndex)];if(!item)return;
       const slot=btn.dataset.useSiteImage;
@@ -107,7 +108,7 @@ function populateSiteImageSources(product){
   }
 }
 function sitePositionValue(v){return ({center:'center center',top:'center top',bottom:'center bottom',left:'left center',right:'right center'})[v]||'center center';}
-const sitePreviewObjectUrls={primary:{file:null,url:''},secondary:{file:null,url:''}};
+const sitePreviewObjectUrls={primary:{file:null,url:''},secondary:{file:null,url:''},tertiary:{file:null,url:''}};
 function previewSlotState(slot){
   const f=byId('productForm');if(!f)return null;
   const file=f.elements[`site_${slot}_file`]?.files?.[0];
@@ -178,6 +179,12 @@ function fitPreviewImageInsideHost(img,state){
   img.src=state.src;img.hidden=false;
   if(img.complete&&img.naturalWidth)requestAnimationFrame(run);else img.addEventListener('load',()=>requestAnimationFrame(run),{once:true});
 }
+function ppAdminMarkCut(stage,img){
+  if(!stage)return;
+  if(!img||img.hidden){stage.classList.remove('is-cut');return;}
+  const sr=stage.getBoundingClientRect(),ir=img.getBoundingClientRect();
+  stage.classList.toggle('is-cut',ir.left<sr.left-2||ir.right>sr.right+2||ir.top<sr.top-2||ir.bottom>sr.bottom+2);
+}
 function applyGlobalPreviewImage(img,state){
   if(!img||!state?.src)return;
   fitPreviewImageInsideHost(img,state);
@@ -213,6 +220,7 @@ function updateGlobalSurfacePreviews(primary){
     if(!img)return;
     if(!primary?.src){img.hidden=true;img.removeAttribute('src');return;}
     applyGlobalPreviewImage(img,primary);
+    setTimeout(()=>ppAdminMarkCut(stage,img),160);
   });
 }
 
@@ -232,15 +240,33 @@ function ppAdminExactMirrorState(preferSlot='primary'){
   ppAdminMirrorActiveSlot=items.some(x=>x.slot===preferSlot)?preferSlot:(items.some(x=>x.slot===ppAdminMirrorActiveSlot)?ppAdminMirrorActiveSlot:(items.find(x=>x.slot==='primary')?.slot||items[0]?.slot||'primary'));
   return {name:f.elements.name?.value?.trim()||'Product',brandLogo:String(brand?.logoUrl||'').trim(),brandName,details,listingCount,items,activeSlot:ppAdminMirrorActiveSlot};
 }
+const ppBlobDataCache=new Map();
+function ppBlobToDataUrl(blobUrl){
+  if(ppBlobDataCache.has(blobUrl))return ppBlobDataCache.get(blobUrl);
+  const pr=new Promise(resolve=>{
+    const im=new Image();
+    im.onload=()=>{try{const m=1000,w0=im.naturalWidth||im.width,h0=im.naturalHeight||im.height;const k=Math.min(1,m/Math.max(w0,h0,1));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w0*k));c.height=Math.max(1,Math.round(h0*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/png'));}catch(e){resolve(blobUrl);}};
+    im.onerror=()=>resolve(blobUrl);
+    im.src=blobUrl;
+  });
+  ppBlobDataCache.set(blobUrl,pr);
+  return pr;
+}
+let ppMirrorSeq=0;
 function ppSendExactLiveMirror(preferSlot='primary'){
   const frame=byId('liveExactPreviewFrame');if(!frame?.contentWindow)return;
   const state=ppAdminExactMirrorState(preferSlot);if(!state)return;
-  frame.contentWindow.postMessage({type:'pp-admin-live-preview-state',state},'*');
+  const seq=++ppMirrorSeq;
+  const post=()=>{if(seq!==ppMirrorSeq)return;frame.contentWindow?.postMessage({type:'pp-admin-live-preview-state',state},'*');};
+  const blobs=(state.items||[]).filter(it=>/^blob:/.test(String(it.src||'')));
+  if(!blobs.length){post();return;}
+  Promise.all(blobs.map(async it=>{it.src=await ppBlobToDataUrl(it.src);})).then(post,post);
 }
 window.addEventListener('message',event=>{
   const data=event.data||{};
   if(data.type==='pp-admin-live-preview-ready')ppSendExactLiveMirror(ppAdminMirrorActiveSlot);
   if(data.type==='pp-admin-live-preview-slot'&&data.slot){ppAdminMirrorActiveSlot=String(data.slot);}
+  if(data.type==='pp-admin-live-preview-cut'){const b=byId('previewCutBadge');if(b)b.hidden=!data.cut;}
   if(data.type==='pp-admin-live-preview-height'){
     const frame=byId('liveExactPreviewFrame');const h=Math.max(620,Math.min(860,Number(data.height)||690));if(frame)frame.style.height=h+'px';
   }
@@ -263,11 +289,12 @@ function updateSiteImagePreview(slot){
   updateWebsitePreview(slot);
 }
 function websitePreviewItems(){
-  const primary=previewSlotState('primary'),secondary=previewSlotState('secondary'),f=byId('productForm');
+  const primary=previewSlotState('primary'),secondary=previewSlotState('secondary'),tertiary=previewSlotState('tertiary'),f=byId('productForm');
   const fallback=String(f?.elements.image_url?.value||'').trim();
   const selected=[];
   if(primary?.src)selected.push({slot:'primary',...primary});
   if(secondary?.src&&secondary.src!==primary?.src)selected.push({slot:'secondary',...secondary});
+  if(tertiary?.src&&tertiary.src!==primary?.src&&tertiary.src!==secondary?.src)selected.push({slot:'tertiary',...tertiary});
   if(!selected.length&&fallback)selected.push({slot:'fallback',src:fallback,bg:'original',fit:'contain',position:'center',scale:100,rotate:0,x:0,y:0});
   return selected;
 }
@@ -292,8 +319,9 @@ function loadSiteImageFields(product){
   const f=byId('productForm');if(!f)return;
   const cfg=siteImageConfig(product);
   f.elements.site_image_mode.value=cfg.mode;
-  for(const slot of ['primary','secondary']){
+  for(const slot of ['primary','secondary','tertiary']){
     const c=cfg[slot];
+    if(!f.elements[`site_${slot}_url`])continue;
     f.elements[`site_${slot}_url`].value=c.url;
     f.elements[`site_${slot}_bg`].value=c.bg;
     f.elements[`site_${slot}_fit`].value=c.fit;
@@ -769,8 +797,13 @@ function renderProducts(){
   if(filter==='ready')list=list.filter(x=>x.p.status!=='draft'&&x.s.ready);
   if(filter==='tracking')list=list.filter(x=>x.p.status!=='draft'&&(x.p.status==='tracking'||x.s.tracking||!x.s.total));
   if(filter==='archived')list=list.filter(x=>x.p.status==='draft');
+  /* V241 (H1): search by name / brand / category / model / variant / store - spaces, hyphens and case are ignored */
+  const ppqRaw=String(byId('productSearch')?.value||'').trim();
+  if(ppqRaw){const toks=ppqRaw.toLowerCase().split(/\s+/).map(t=>t.replace(/[^a-z0-9]/g,'')).filter(Boolean);
+    list=list.filter(({p})=>{const hay=[p.name,p.id,p.brand,p.brandSlug,p.category,p.modelCode,p.variant,p.identityKey,...(p.stores||[]).map(st=>st.name)].map(v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'')).join('|');return toks.every(t=>hay.includes(t));});}
+  const ppqClear=byId('productSearchClear');if(ppqClear)ppqClear.hidden=!ppqRaw;
   list.sort((a,b)=>Number(a.s.ready)-Number(b.s.ready)||(b.s.never+b.s.due)-(a.s.never+a.s.due)||a.p.name.localeCompare(b.p.name));
-  byId('productList').innerHTML=list.map(({p})=>{const st=statusLabel(p);const active=p.id===selectedId?' active':'';const live=liveStores(p);return `<button class="product-item${active}" type="button" data-product="${esc(p.id)}"><span><b>${esc(p.name)}</b><small>${esc(live.map(x=>x.name).join(' · ')||'No live retailer')}</small></span><span class="badge ${st.cls}">${esc(st.text)}</span></button>`;}).join('')||'<p class="muted empty">No products in this filter.</p>';
+  byId('productList').innerHTML=list.map(({p})=>{const st=statusLabel(p);const active=p.id===selectedId?' active':'';const live=liveStores(p);return `<button class="product-item${active}" type="button" data-product="${esc(p.id)}"><span><b>${esc(p.name)}</b><small>${esc(live.map(x=>x.name).join(' · ')||'No live retailer')}</small></span><span class="badge ${st.cls}">${esc(st.text)}</span></button>`;}).join('')||(ppqRaw?'<p class="muted empty">No product found for "'+esc(ppqRaw)+'".</p>':'<p class="muted empty">No products in this filter.</p>');
   byId('productList').querySelectorAll('.product-item').forEach(btn=>btn.addEventListener('click',()=>selectProduct(btn.dataset.product)));
 }
 function optionalMissing(form){return ['.mrp','.rating','.reviews','.delivery','.offer'].filter(sel=>!String(form.querySelector(sel)?.value||'').trim()).map(sel=>sel.slice(1));}
@@ -962,7 +995,8 @@ async function saveProductForm(e){
   const current=editing?productById(editing):null,button=e.submitter;button&&(button.disabled=true);
   try{
     const slots={};
-    for(const slot of ['primary','secondary']){
+    for(const slot of ['primary','secondary','tertiary']){
+      if(!f.elements[`site_${slot}_url`])continue;
       let url=f.elements[`site_${slot}_url`].value.trim();
       const file=f.elements[`site_${slot}_file`]?.files?.[0];
       if(file){
@@ -983,7 +1017,7 @@ async function saveProductForm(e){
       };
     }
     const existingMetadata=current?.metadata&&typeof current.metadata==='object'?current.metadata:{};
-    const metadata={...existingMetadata,site_images:{version:2,mode:f.elements.site_image_mode.value==='curated'?'curated':'auto',primary:slots.primary,secondary:slots.secondary}};
+    const metadata={...existingMetadata,site_images:{version:2,mode:f.elements.site_image_mode.value==='curated'?'curated':'auto',primary:slots.primary,secondary:slots.secondary,...(slots.tertiary?{tertiary:slots.tertiary}:{})}};
     const mutableValue={name,brand_slug:f.elements.brand_slug.value,category:slugify(f.elements.category.value)||f.elements.category.value.trim().toLowerCase(),identity_key:identity,model_code:f.elements.model_code.value.trim()||null,variant:f.elements.variant.value.trim()||null,image_url:f.elements.image_url.value.trim()||null,metadata,status:f.elements.status.value,updated_at:new Date().toISOString(),updated_by:user.id};
     let saved=null,error=null;
     if(editing){
@@ -999,7 +1033,7 @@ async function saveProductForm(e){
     }
     if(error){byId('productMsg').textContent=error.message;return;}
     byId('productDialog').close();f.reset();f.elements.product_id.disabled=false;selectedId=String(saved?.product_id||editing||id);await refreshAll();
-    msg('saveMsg',`${name} ${editing?'updated':'added'} successfully. ${metadata.site_images.mode==='curated'?'Curated 2-image gallery is active.':'Automatic verified-image mode remains active.'}`);
+    msg('saveMsg',`${name} ${editing?'updated':'added'} successfully. ${metadata.site_images.mode==='curated'?'Curated 3-image gallery is active.':'Automatic verified-image mode remains active.'}`);
   }catch(error){byId('productMsg').textContent=productImageUploadError(error);}
   finally{button&&(button.disabled=false);}
 }
@@ -1017,7 +1051,7 @@ function editSelectedProduct(){
 function newProduct(){
   if(!catalogReady)return openDialog('productDialog');
   const f=byId('productForm');f.reset();f.elements.product_id.disabled=false;f.elements.editing_id.value='';f.elements.brand_slug.innerHTML=brands.filter(b=>b.active!==false).map(b=>`<option value="${esc(b.slug)}">${esc(b.name)}</option>`).join('');ppPopulateProductCategory(f,'');
-  byId('productDialogTitle').textContent='Add Product';populateSiteImageSources(null);f.elements.site_image_mode.value='auto';updateSiteImagePreview('primary');updateSiteImagePreview('secondary');productFormPreview();byId('productMsg').textContent='';byId('productDialog').showModal();
+  byId('productDialogTitle').textContent='Add Product';populateSiteImageSources(null);f.elements.site_image_mode.value='auto';updateSiteImagePreview('primary');updateSiteImagePreview('secondary');updateSiteImagePreview('tertiary');productFormPreview();byId('productMsg').textContent='';byId('productDialog').showModal();
 }
 function newListing(){if(!catalogReady)return openDialog('listingDialog');const p=productById(selectedId);if(!p)return;byId('listingProductName').textContent=p.name;byId('listingForm').reset();byId('listingDialog').showModal();}
 function renderBrandManagement(){const list=byId('brandsManageList');if(!list)return;list.innerHTML=brands.map(b=>{const n=products.filter(p=>p.brandSlug===b.slug).length;const logo=b.logoUrl?`<img class="manage-logo" src="${esc(b.logoUrl)}" alt="">`:'';return `<div class="manage-item"><div class="manage-item-main${b.logoUrl?' has-logo':''}">${logo}<div><b>${esc(b.name)}</b><small>${esc(b.slug)} · ${n} product${n===1?'':'s'} · ${b.logoUrl?'logo saved':'no logo'}</small><span class="manage-state ${b.active===false?'inactive':'active'}">${b.active===false?'Inactive':'Active'}</span></div></div><div class="manage-item-actions"><button class="ghost manageEditBrand" type="button" data-slug="${esc(b.slug)}">Edit</button><button class="subtle manageToggleBrand" type="button" data-slug="${esc(b.slug)}">${b.active===false?'Activate':'Deactivate'}</button><button class="danger manageDeleteBrand" type="button" data-slug="${esc(b.slug)}">Delete</button></div></div>`;}).join('')||'<p class="muted">No brands found.</p>';list.querySelectorAll('.manageEditBrand').forEach(x=>x.addEventListener('click',()=>editBrand(x.dataset.slug)));list.querySelectorAll('.manageToggleBrand').forEach(x=>x.addEventListener('click',()=>toggleBrand(x.dataset.slug)));list.querySelectorAll('.manageDeleteBrand').forEach(x=>x.addEventListener('click',()=>deleteBrand(x.dataset.slug)));}
@@ -1283,5 +1317,351 @@ byId('voucherOpenWalletBtn')?.addEventListener('click',ppVoucherOpenWallet);
 
 byId('load').addEventListener('click',refreshAll);byId('filter').addEventListener('change',renderProducts);byId('nextDue').addEventListener('click',()=>{const p=products.find(p=>{if(p.status==='draft')return false;const s=productStats(p);return !s.ready||s.fresh<s.total;});if(p)selectProduct(p.id);else msg('saveMsg','All current retailer checks are fresh.');});
 let ppAdminPreviewResizeTimer=0;window.addEventListener('resize',()=>{clearTimeout(ppAdminPreviewResizeTimer);ppAdminPreviewResizeTimer=setTimeout(()=>updateWebsitePreview(),90);});byId('liveExactPreviewFrame')?.addEventListener('load',()=>ppSendExactLiveMirror(ppAdminMirrorActiveSlot));
-byId('addProduct').addEventListener('click',newProduct);byId('addBrand').addEventListener('click',newBrand);byId('manageBrands').addEventListener('click',openBrandsManagement);byId('addStore').addEventListener('click',newStore);byId('manageStores').addEventListener('click',openStoresManagement);byId('brandForm').elements.logo_file.addEventListener('change',()=>setLogoPreview('brandForm','brandLogoPreview'));byId('brandForm').elements.logo_url.addEventListener('input',()=>setLogoPreview('brandForm','brandLogoPreview'));byId('storeForm').elements.logo_file.addEventListener('change',()=>setLogoPreview('storeForm','storeLogoPreview'));byId('storeForm').elements.logo_url.addEventListener('input',()=>setLogoPreview('storeForm','storeLogoPreview'));byId('editProduct').addEventListener('click',editSelectedProduct);byId('archiveProduct').addEventListener('click',toggleSelectedProductArchive);byId('deleteProduct').addEventListener('click',deleteSelectedProduct);byId('addListing').addEventListener('click',newListing);byId('productForm').elements.image_url.addEventListener('input',productFormPreview);byId('productForm').elements.name.addEventListener('input',()=>updateWebsitePreview());byId('productForm').elements.brand_slug.addEventListener('change',()=>updateWebsitePreview());byId('productForm').elements.site_image_mode.addEventListener('change',()=>updateWebsitePreview());bindSiteImageSource('primary');bindSiteImageSource('secondary');bindPopupIdentityPreview();byId('brandForm').addEventListener('submit',saveBrand);byId('storeForm').addEventListener('submit',saveStoreForm);byId('productForm').addEventListener('submit',saveProductForm);byId('listingForm').addEventListener('submit',saveListingForm);byId('copyHelper').addEventListener('click',copyHelper);document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>byId(b.dataset.closeDialog)?.close()));installBookmarklet();
+byId('addProduct').addEventListener('click',newProduct);byId('addBrand').addEventListener('click',newBrand);byId('manageBrands').addEventListener('click',openBrandsManagement);byId('addStore').addEventListener('click',newStore);byId('manageStores').addEventListener('click',openStoresManagement);byId('brandForm').elements.logo_file.addEventListener('change',()=>setLogoPreview('brandForm','brandLogoPreview'));byId('brandForm').elements.logo_url.addEventListener('input',()=>setLogoPreview('brandForm','brandLogoPreview'));byId('storeForm').elements.logo_file.addEventListener('change',()=>setLogoPreview('storeForm','storeLogoPreview'));byId('storeForm').elements.logo_url.addEventListener('input',()=>setLogoPreview('storeForm','storeLogoPreview'));byId('editProduct').addEventListener('click',editSelectedProduct);byId('archiveProduct').addEventListener('click',toggleSelectedProductArchive);byId('deleteProduct').addEventListener('click',deleteSelectedProduct);byId('addListing').addEventListener('click',newListing);byId('productForm').elements.image_url.addEventListener('input',productFormPreview);byId('productForm').elements.name.addEventListener('input',()=>updateWebsitePreview());byId('productForm').elements.brand_slug.addEventListener('change',()=>updateWebsitePreview());byId('productForm').elements.site_image_mode.addEventListener('change',()=>updateWebsitePreview());bindSiteImageSource('primary');bindSiteImageSource('secondary');
+bindSiteImageSource('tertiary');bindPopupIdentityPreview();byId('brandForm').addEventListener('submit',saveBrand);byId('storeForm').addEventListener('submit',saveStoreForm);byId('productForm').addEventListener('submit',saveProductForm);byId('listingForm').addEventListener('submit',saveListingForm);byId('copyHelper').addEventListener('click',copyHelper);document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>byId(b.dataset.closeDialog)?.close()));installBookmarklet();
 if(!api){msg('authMsg','Supabase library did not load. Try an internet-connected browser.',true);}else{api.auth.onAuthStateChange(()=>setTimeout(checkAccess,0));checkAccess();}
+
+/* ===== V240 · Remove background (runs in the browser, nothing is sent anywhere) =====
+   Works best on product photos with a plain / white studio background.
+   Flood-fills from the image border, so white parts INSIDE the product are kept. */
+(function(){
+  const MAXW=1600,PREVIEW=720;
+  const css=document.createElement('style');
+  css.textContent=`
+.v241-bgnote{margin:6px 0;padding:9px 11px;border-radius:10px;font-size:12px;line-height:1.45}.v241-bgnote.warn{background:#fdecec;color:#8f1d22;border:1px solid #f3c1c3}.v241-bgnote.info{background:#eef5fb;color:#27506e;border:1px solid #cfe1ef}.v241-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:7px}.v241-acts button{border:1px solid currentColor;background:#fff;color:inherit;font:800 12px/1 inherit;padding:7px 10px;border-radius:8px;cursor:pointer}.v241-acts label{font-weight:700;display:flex;align-items:center;gap:5px}
+.bgr-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 4px}.bgr-row button{border:1px solid #bcd9cd;background:#f1faf6;color:#08734d;font:800 12px/1 inherit;padding:8px 12px;border-radius:9px;cursor:pointer}.bgr-row button:disabled{opacity:.5;cursor:default}.bgr-row small{color:#587080;font-size:11.5px}.bgr-panel{margin:6px 0 8px;padding:10px;border:1px solid #d9e8e2;border-radius:12px;background:#fbfdfc}.bgr-panel[hidden]{display:none}.bgr-view{display:grid;place-items:center;min-height:150px;border-radius:10px;background:repeating-conic-gradient(#eef3f1 0 25%,#fff 0 50%) 50%/16px 16px;overflow:hidden}.bgr-view canvas{max-width:100%;max-height:230px}.bgr-ctl{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px;font-weight:700;color:#35505f}.bgr-ctl input{flex:1}.bgr-act{display:flex;gap:8px;margin-top:8px}.bgr-act button{border:0;border-radius:9px;padding:9px 14px;font:800 12.5px/1 inherit;cursor:pointer}.bgr-act .use{background:#0a9d67;color:#fff}.bgr-act .cancel{background:#eef3f1;color:#35505f}.bgr-msg{margin-top:6px;font-size:12px;font-weight:700;color:#35505f}.bgr-msg.bad{color:#b3262c}`;
+  document.head.appendChild(css);
+
+  function loadSource(slot,f){
+    return new Promise((resolve,reject)=>{
+      const file=f.elements[`site_${slot}_file`]?.files?.[0];
+      const url=(f.elements[`site_${slot}_url`]?.value||'').trim();
+      if(!file&&!url){reject(new Error('Choose an image first (upload a file or paste an image link).'));return;}
+      const im=new Image();
+      let obj='';
+      if(file){obj=URL.createObjectURL(file);im.src=obj;}else{im.crossOrigin='anonymous';im.src=url;}
+      im.onload=()=>resolve({im,name:(file?.name||url.split('/').pop()||'image').replace(/\.[a-z0-9]+(\?.*)?$/i,''),obj});
+      im.onerror=()=>reject(new Error(file?'This image file could not be read.':'This image link cannot be read from here (the website blocks it). Download the image and use "Or upload local image" instead.'));
+    });
+  }
+  function process(im,tol,maxSide){
+    const r=Math.min(1,maxSide/Math.max(im.naturalWidth,im.naturalHeight));
+    const w=Math.max(1,Math.round(im.naturalWidth*r)),h=Math.max(1,Math.round(im.naturalHeight*r));
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
+    let img;try{img=x.getImageData(0,0,w,h);}catch(e){throw new Error('This image cannot be processed (blocked by the website). Download it and upload the file instead.');}
+    const d=img.data,N=w*h;
+    /* background colour = most common colour on the border */
+    const cnt=new Map();const addB=(i)=>{if(d[i+3]<200)return;const k=((d[i]>>4)<<8)|((d[i+1]>>4)<<4)|(d[i+2]>>4);cnt.set(k,(cnt.get(k)||0)+1);};
+    for(let xx=0;xx<w;xx++){addB(xx*4);addB(((h-1)*w+xx)*4);}for(let yy=0;yy<h;yy++){addB(yy*w*4);addB((yy*w+w-1)*4);}
+    if(!cnt.size)return {canvas:c,removedPct:0,note:'This image already has a transparent border.'};
+    let bk=0,bn=0;cnt.forEach((n,k)=>{if(n>bn){bn=n;bk=k;}});
+    /* average the actual pixels in that bucket */
+    let sr=0,sg=0,sb=0,sn=0;const acc=(i)=>{if(d[i+3]<200)return;const k=((d[i]>>4)<<8)|((d[i+1]>>4)<<4)|(d[i+2]>>4);if(k===bk){sr+=d[i];sg+=d[i+1];sb+=d[i+2];sn++;}};
+    for(let xx=0;xx<w;xx++){acc(xx*4);acc(((h-1)*w+xx)*4);}for(let yy=0;yy<h;yy++){acc(yy*w*4);acc((yy*w+w-1)*4);}
+    const br=sr/sn,bg=sg/sn,bb=sb/sn,T=tol*2.4;
+    const diff=(i)=>{const a=d[i]-br,b=d[i+1]-bg,e=d[i+2]-bb;return Math.sqrt(a*a+b*b+e*e);};
+    const seen=new Uint8Array(N),stack=new Int32Array(N);let sp=0;
+    const push=(p)=>{if(!seen[p]&&diff(p*4)<=T){seen[p]=1;stack[sp++]=p;}};
+    for(let xx=0;xx<w;xx++){push(xx);push((h-1)*w+xx);}for(let yy=0;yy<h;yy++){push(yy*w);push(yy*w+w-1);}
+    let removed=0;
+    while(sp){const p=stack[--sp];removed++;const px=p%w,py=(p-px)/w;
+      if(px>0)push(p-1);if(px<w-1)push(p+1);if(py>0)push(p-w);if(py<h-1)push(p+w);}
+    for(let p=0;p<N;p++){if(seen[p])d[p*4+3]=0;}
+    /* soft edge: pixels touching the removed area that are close to the background colour fade out */
+    for(let p=0;p<N;p++){
+      if(seen[p])continue;const px=p%w,py=(p-px)/w;
+      const near=(px>0&&seen[p-1])||(px<w-1&&seen[p+1])||(py>0&&seen[p-w])||(py<h-1&&seen[p+w]);
+      if(!near)continue;const dv=diff(p*4);
+      if(dv<T*1.7)d[p*4+3]=Math.max(0,Math.min(255,Math.round(255*((dv-T)/(T*0.7+1)))));
+    }
+    x.putImageData(img,0,0);
+    return {canvas:c,removedPct:Math.round(removed/N*100)};
+  }
+  function build(slot){
+    const art=document.querySelector(`.site-image-slot[data-site-slot="${slot}"]`);if(!art||art.querySelector('.bgr-row'))return;
+    const fileInput=art.querySelector('.site-image-file');if(!fileInput)return;
+    const row=document.createElement('div');row.className='bgr-row';
+    row.innerHTML='<button type="button" class="bgr-go">Remove background</button><small>Works best on plain / white backgrounds. Runs in your browser.</small>';
+    const panel=document.createElement('div');panel.className='bgr-panel';panel.hidden=true;
+    panel.innerHTML='<div class="bgr-view"></div><div class="bgr-ctl"><span>Tolerance</span><input type="range" class="bgr-tol" min="4" max="40" step="1" value="14"><b class="bgr-tv">14</b></div><div class="bgr-msg"></div><div class="bgr-act"><button type="button" class="use">Use this image</button><button type="button" class="cancel">Cancel</button></div>';
+    fileInput.insertAdjacentElement('afterend',panel);fileInput.insertAdjacentElement('afterend',row);
+    const f=byId('productForm'),view=panel.querySelector('.bgr-view'),msgEl=panel.querySelector('.bgr-msg'),tol=panel.querySelector('.bgr-tol'),tv=panel.querySelector('.bgr-tv');
+    let src=null,timer=0;
+    const say=(t,bad)=>{msgEl.textContent=t||'';msgEl.classList.toggle('bad',!!bad);};
+    const preview=()=>{
+      try{
+        const res=process(src.im,Number(tol.value),PREVIEW);
+        view.innerHTML='';view.appendChild(res.canvas);
+        if(res.note)say(res.note,false);
+        else if(res.removedPct>85)say(`Removed ${res.removedPct}% of the picture — tolerance is too high, lower it.`,true);
+        else if(res.removedPct<2)say('Almost nothing was removed — raise the tolerance, or this background is not plain.',true);
+        else say(`Background removed (${res.removedPct}% of the picture). Check the edges, then use it.`,false);
+      }catch(e){say(e.message,true);}
+    };
+    row.querySelector('.bgr-go').addEventListener('click',async()=>{
+      const btn=row.querySelector('.bgr-go');btn.disabled=true;say('Loading image…');panel.hidden=false;
+      try{src=await loadSource(slot,f);preview();}catch(e){say(e.message,true);}
+      btn.disabled=false;
+    });
+    tol.addEventListener('input',()=>{tv.textContent=tol.value;if(!src)return;clearTimeout(timer);timer=setTimeout(preview,120);});
+    panel.querySelector('.cancel').addEventListener('click',()=>{panel.hidden=true;src=null;view.innerHTML='';});
+    panel.querySelector('.use').addEventListener('click',()=>{
+      if(!src)return;
+      try{
+        let max=MAXW,res=process(src.im,Number(tol.value),max);
+        const toBlob=(cv)=>new Promise(r=>cv.toBlob(r,'image/png'));
+        (async()=>{
+          let blob=await toBlob(res.canvas);
+          while(blob&&blob.size>4.6*1024*1024&&max>600){max=Math.round(max*0.8);res=process(src.im,Number(tol.value),max);blob=await toBlob(res.canvas);}
+          if(!blob||blob.size>MAX_PRODUCT_IMAGE_BYTES){say('Result is larger than 5 MB. Try a smaller source image.',true);return;}
+          const file=new File([blob],`${src.name||'product'}-nobg.png`,{type:'image/png'});
+          const dt=new DataTransfer();dt.items.add(file);fileInput.files=dt.files;
+          f.elements[`site_${slot}_url`].value=f.elements[`site_${slot}_url`].value;
+          fileInput.dispatchEvent(new Event('input',{bubbles:true}));fileInput.dispatchEvent(new Event('change',{bubbles:true}));
+          try{updateSiteImagePreview(slot);}catch(e){}
+          panel.hidden=true;view.innerHTML='';src=null;
+          const note=row.querySelector('small');note.textContent='Background-free image is ready. It uploads when you save the product.';
+        })();
+      }catch(e){say(e.message,true);}
+    });
+  }
+  build('primary');build('secondary');build('tertiary');
+  /* ===== V241 · Auto-fit (G2) · near-white to pure white (M1) · background notice (K1) ===== */
+  const AF_MARGIN=0.08;
+  function sampleRing(im){
+    const r=Math.min(1,200/Math.max(im.naturalWidth,im.naturalHeight));
+    const w=Math.max(2,Math.round(im.naturalWidth*r)),h=Math.max(2,Math.round(im.naturalHeight*r));
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
+    let d;try{d=x.getImageData(0,0,w,h).data;}catch(e){return null;}
+    let n=0,tr=0,sr=0,sg=0,sb=0,s2=0;const px=[];
+    const take=(xx,yy)=>{const i=(yy*w+xx)*4;n++;if(d[i+3]<200){tr++;return;}px.push(d[i],d[i+1],d[i+2]);};
+    for(let t=0;t<2;t++){for(let xx=0;xx<w;xx++){take(xx,t);take(xx,h-1-t);}for(let yy=0;yy<h;yy++){take(t,yy);take(w-1-t,yy);}}
+    const m=px.length/3;
+    if(!n)return null;
+    if(tr/n>0.9||!m)return {kind:'transparent',rgb:null};
+    for(let i=0;i<px.length;i+=3){sr+=px[i];sg+=px[i+1];sb+=px[i+2];}
+    const mr=sr/m,mg=sg/m,mb=sb/m;let v=0;
+    for(let i=0;i<px.length;i+=3){v+=Math.abs(px[i]-mr)+Math.abs(px[i+1]-mg)+Math.abs(px[i+2]-mb);}
+    const dev=v/m/3,mn=Math.min(mr,mg,mb),mx=Math.max(mr,mg,mb);
+    let kind='colour';
+    if(dev<10&&mn>=247)kind='white';
+    else if(dev<12&&mn>=215&&(mx-mn)<=24)kind='offwhite';
+    return {kind,rgb:[mr,mg,mb]};
+  }
+  function autoFit(im){
+    const r=Math.min(1,MAXW/Math.max(im.naturalWidth,im.naturalHeight));
+    const w=Math.max(1,Math.round(im.naturalWidth*r)),h=Math.max(1,Math.round(im.naturalHeight*r));
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
+    let img;try{img=x.getImageData(0,0,w,h);}catch(e){throw new Error('This image cannot be processed (blocked by the website). Download it and upload the file instead.');}
+    const d=img.data,N=w*h;
+    const ring=sampleRing(im);
+    const kind=ring?ring.kind:'colour';
+    const bgc=ring&&ring.rgb?ring.rgb:[255,255,255];
+    const T=kind==='colour'?34:26;
+    const isBg=(p)=>{const i=p*4;if(kind==='transparent')return d[i+3]<24;if(d[i+3]<24)return true;const a=d[i]-bgc[0],b=d[i+1]-bgc[1],e=d[i+2]-bgc[2];return Math.sqrt(a*a+b*b+e*e)<=T;};
+    const seen=new Uint8Array(N),stack=new Int32Array(N);let sp=0;
+    const push=(p)=>{if(!seen[p]&&isBg(p)){seen[p]=1;stack[sp++]=p;}};
+    for(let xx=0;xx<w;xx++){push(xx);push((h-1)*w+xx);}for(let yy=0;yy<h;yy++){push(yy*w);push(yy*w+w-1);}
+    while(sp){const p=stack[--sp];const px=p%w,py=(p-px)/w;if(px>0)push(p-1);if(px<w-1)push(p+1);if(py>0)push(p-w);if(py<h-1)push(p+w);}
+    let minX=w,minY=h,maxX=-1,maxY=-1,keep=0;
+    for(let p=0;p<N;p++){if(seen[p])continue;keep++;const px=p%w,py=(p-px)/w;if(px<minX)minX=px;if(px>maxX)maxX=px;if(py<minY)minY=py;if(py>maxY)maxY=py;}
+    if(maxX<0||keep<N*0.002)throw new Error('Could not find the product in this picture.');
+    if(kind==='white'||kind==='offwhite'){for(let p=0;p<N;p++){if(seen[p]){const i=p*4;d[i]=255;d[i+1]=255;d[i+2]=255;d[i+3]=255;}}x.putImageData(img,0,0);}
+    const bw=maxX-minX+1,bh=maxY-minY+1;
+    const side=Math.ceil(Math.max(bw,bh)/(1-2*AF_MARGIN));
+    const out=document.createElement('canvas');out.width=side;out.height=side;
+    const ox=out.getContext('2d');
+    if(kind==='white'||kind==='offwhite'){ox.fillStyle='#fff';ox.fillRect(0,0,side,side);}
+    else if(kind==='colour'){ox.fillStyle=`rgb(${bgc.map(v=>Math.round(v)).join(',')})`;ox.fillRect(0,0,side,side);}
+    ox.drawImage(c,minX,minY,bw,bh,Math.round((side-bw)/2),Math.round((side-bh)/2),bw,bh);
+    const trimPct=Math.max(0,Math.round((1-(bw*bh)/N)*100));
+    return {canvas:out,kind,trimPct,box:[bw,bh]};
+  }
+  const KIND_TEXT={
+    transparent:'',white:'',
+    offwhite:'This image has an off-white background (not pure white). It can show as a faint box. Make it pure white first.',
+    colour:'This image has its own background. Remove the background first so every picture looks the same.'
+  };
+  const bgCache=new Map();
+  async function analyzeSlot(slot){
+    const f=byId('productForm');if(!f)return null;
+    const file=f.elements[`site_${slot}_file`]?.files?.[0];
+    const url=(f.elements[`site_${slot}_url`]?.value||'').trim();
+    if(!file&&!url)return {kind:'none'};
+    const key=file?`f:${file.name}:${file.size}:${file.lastModified}`:`u:${url}`;
+    if(bgCache.has(key))return bgCache.get(key);
+    let res;
+    try{const s=await loadSource(slot,f);const ring=sampleRing(s.im);res=ring?{kind:ring.kind}:{kind:'unknown'};if(s.obj)URL.revokeObjectURL(s.obj);}catch(e){res={kind:'unknown'};}
+    bgCache.set(key,res);return res;
+  }
+  function buildV241(slot){
+    const art=document.querySelector(`.site-image-slot[data-site-slot="${slot}"]`);if(!art||art.querySelector('.af-row'))return;
+    const fileInput=art.querySelector('.site-image-file');const bgrRow=art.querySelector('.bgr-row');if(!fileInput||!bgrRow)return;
+    const f=byId('productForm');
+    const row=document.createElement('div');row.className='bgr-row af-row';
+    row.innerHTML='<button type="button" class="af-go">Auto-fit</button><small>Trims empty margin, centres the product, keeps an equal border and turns an off-white background pure white.</small>';
+    const panel=document.createElement('div');panel.className='bgr-panel af-panel';panel.hidden=true;
+    panel.innerHTML='<div class="bgr-view"></div><div class="bgr-msg"></div><div class="bgr-act"><button type="button" class="use">Use this image</button><button type="button" class="cancel">Cancel</button></div>';
+    const note=document.createElement('div');note.className='v241-bgnote';note.hidden=true;
+    bgrRow.insertAdjacentElement('afterend',note);
+    note.insertAdjacentElement('afterend',row);row.insertAdjacentElement('afterend',panel);
+    const view=panel.querySelector('.bgr-view'),msgEl=panel.querySelector('.bgr-msg');
+    let src=null,result=null;
+    const say=(t,bad)=>{msgEl.textContent=t||'';msgEl.classList.toggle('bad',!!bad);};
+    row.querySelector('.af-go').addEventListener('click',async()=>{
+      const btn=row.querySelector('.af-go');btn.disabled=true;panel.hidden=false;say('Loading image…');
+      try{src=await loadSource(slot,f);result=autoFit(src.im);view.innerHTML='';
+        const prev=document.createElement('canvas');const sc=Math.min(1,PREVIEW/result.canvas.width);prev.width=Math.round(result.canvas.width*sc);prev.height=Math.round(result.canvas.height*sc);prev.getContext('2d').drawImage(result.canvas,0,0,prev.width,prev.height);view.appendChild(prev);
+        say(result.kind==='colour'?'Centred with an equal border. This picture still has its own background; use Remove background first for the best result.':`Done: empty margin trimmed (${result.trimPct}%), product centred with an equal border${result.kind==='offwhite'?', background made pure white':''}.`,result.kind==='colour');
+      }catch(e){say(e.message,true);}
+      btn.disabled=false;
+    });
+    panel.querySelector('.cancel').addEventListener('click',()=>{panel.hidden=true;src=null;result=null;view.innerHTML='';});
+    panel.querySelector('.use').addEventListener('click',async()=>{
+      if(!result)return;
+      try{
+        let cv=result.canvas;const toBlob=(c2)=>new Promise(r=>c2.toBlob(r,'image/png'));
+        let blob=await toBlob(cv);
+        while(blob&&blob.size>4.6*1024*1024&&cv.width>600){const nc=document.createElement('canvas');nc.width=Math.round(cv.width*0.8);nc.height=Math.round(cv.height*0.8);nc.getContext('2d').drawImage(cv,0,0,nc.width,nc.height);cv=nc;blob=await toBlob(cv);}
+        if(!blob||blob.size>MAX_PRODUCT_IMAGE_BYTES){say('Result is larger than 5 MB. Try a smaller source image.',true);return;}
+        const file=new File([blob],`${(src&&src.name)||'product'}-fit.png`,{type:'image/png'});
+        const dt=new DataTransfer();dt.items.add(file);fileInput.files=dt.files;
+        fileInput.dispatchEvent(new Event('input',{bubbles:true}));fileInput.dispatchEvent(new Event('change',{bubbles:true}));
+        try{updateSiteImagePreview(slot);}catch(e){}
+        panel.hidden=true;view.innerHTML='';src=null;result=null;
+        row.querySelector('small').textContent='Auto-fitted image is ready. It uploads when you save the product.';
+      }catch(e){say(e.message,true);}
+    });
+  }
+  async function checkSlot(slot){
+    const art=document.querySelector(`.site-image-slot[data-site-slot="${slot}"]`);if(!art)return;
+    const note=art.querySelector('.v241-bgnote');if(!note)return;
+    const res=await analyzeSlot(slot);const kind=res?res.kind:'unknown';
+    art.dataset.v241Kind=kind;
+    const primary=slot==='primary';
+    if(kind==='none'||kind==='transparent'||kind==='white'){note.hidden=true;note.innerHTML='';return;}
+    note.hidden=false;
+    if(kind==='unknown'){
+      note.className='v241-bgnote info';
+      note.innerHTML=primary?'<b>Could not check this image here.</b> If it is a link from another website, download it and use “Or upload local image” so the background can be checked.':'';
+      note.hidden=!primary;return;
+    }
+    const strict=primary;
+    note.className='v241-bgnote '+(strict?'warn':'info');
+    note.innerHTML=`<b>${strict?'Background found':'Note'}</b> ${KIND_TEXT[kind]}<div class="v241-acts">${kind==='colour'?'<button type="button" data-v241="rm">Remove background</button>':''}<button type="button" data-v241="af">${kind==='offwhite'?'Make pure white (Auto-fit)':'Auto-fit'}</button>${strict?'<label><input type="checkbox" class="v241-keep"> Keep as is</label>':''}</div>`;
+    note.querySelector('[data-v241="rm"]')?.addEventListener('click',()=>art.querySelector('.bgr-go')?.click());
+    note.querySelector('[data-v241="af"]')?.addEventListener('click',()=>art.querySelector('.af-go')?.click());
+  }
+  const checkTimers={};
+  function scheduleCheck(slot){clearTimeout(checkTimers[slot]);checkTimers[slot]=setTimeout(()=>checkSlot(slot),350);}
+  ['primary','secondary','tertiary'].forEach(slot=>{
+    buildV241(slot);
+    const f=byId('productForm');if(!f)return;
+    for(const k of ['url','file'])f.elements[`site_${slot}_${k}`]?.addEventListener(k==='url'?'input':'change',()=>scheduleCheck(slot));
+  });
+  const _usip=window.updateSiteImagePreview;
+  if(typeof _usip==='function')window.updateSiteImagePreview=function(slot){const r=_usip.apply(this,arguments);try{scheduleCheck(slot);}catch(e){}return r;};
+  /* K1: Image 1 (the only one the whole site uses) cannot be saved with its own background unless "Keep as is" is ticked */
+  const pf=byId('productForm');
+  pf&&pf.addEventListener('submit',e=>{
+    if(e.submitter&&e.submitter.value==='cancel')return;
+    const art=document.querySelector('.site-image-slot[data-site-slot="primary"]');if(!art)return;
+    const k=art.dataset.v241Kind;
+    if((k==='colour'||k==='offwhite')&&!art.querySelector('.v241-keep')?.checked){
+      e.preventDefault();e.stopImmediatePropagation();
+      const m=byId('productMsg');if(m)m.textContent='Image 1 has its own background. Remove it first (or tick “Keep as is”) so every picture on the site looks the same.';
+      art.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },true);
+  window.ppImgTools={analyze:sampleRing,autoFit};
+})();
+
+/* V241 (H1): product search box wiring */
+(function(){
+  const inp=byId('productSearch'),clr=byId('productSearchClear');if(!inp)return;
+  let t=0;inp.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(renderProducts,80);});
+  inp.addEventListener('keydown',e=>{if(e.key==='Escape'){inp.value='';renderProducts();}});
+  clr&&clr.addEventListener('click',()=>{inp.value='';renderProducts();inp.focus();});
+})();
+
+/* ===== V241 · J1: Brand / Store tile colour saved with the logo ===== */
+(function(){
+  const HEXRE=/#ppc=([0-9a-fA-F]{6})/;
+  const toHex=(r,g,b)=>'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+  function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;let h=0,s=0;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4);h*=60;}return [h,s,l];}
+  function hsl2rgb(h,s,l){h/=360;const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;return t<1/6?p+(q-p)*6*t:t<1/2?q:t<2/3?p+(q-p)*(2/3-t)*6:p;};if(!s){const v=l*255;return [v,v,v];}const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;return [f(p,q,h+1/3)*255,f(p,q,h)*255,f(p,q,h-1/3)*255];}
+  function dominant(img){
+    const w=48,h=48,c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,w,h);
+    const d=x.getImageData(0,0,w,h).data,bins=new Array(12).fill(0).map(()=>({n:0,r:0,g:0,b:0}));let dark={n:0,r:0,g:0,b:0};
+    for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a<128)continue;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);if(mn>225)continue;if(mx-mn<28){dark.n++;dark.r+=r;dark.g+=g;dark.b+=b;continue;}const [hh,ss]=rgb2hsl(r,g,b),k=Math.floor(hh/30)%12,wgt=0.4+ss,bin=bins[k];bin.n+=wgt;bin.r+=r*wgt;bin.g+=g*wgt;bin.b+=b*wgt;}
+    let best=null;for(const b of bins)if(b.n>0&&(!best||b.n>best.n))best=b;
+    if(best&&best.n>=3){const r=best.r/best.n,g=best.g/best.n,b=best.b/best.n;let [hh,ss,ll]=rgb2hsl(r,g,b);ss=Math.max(ss,.45);ll=Math.max(.32,Math.min(.52,ll));return toHex(...hsl2rgb(hh,ss,ll));}
+    if(dark.n>=3)return toHex(dark.r/dark.n*.6,dark.g/dark.n*.6,dark.b/dark.n*.6);
+    return '';
+  }
+  function colourFromSrc(src,cors){return new Promise(res=>{const im=new Image();if(cors)im.crossOrigin='anonymous';im.onload=()=>{try{res(dominant(im));}catch(e){res('');}};im.onerror=()=>res('');im.src=src;});}
+  async function colourFromFile(file){const u=URL.createObjectURL(file);try{return await colourFromSrc(u,false);}finally{URL.revokeObjectURL(u);}}
+  const strip=u=>String(u||'').replace(HEXRE,'');
+  const state={brands:{touched:false},stores:{touched:false}};
+  function setup(formId,kind){
+    const f=byId(formId);if(!f||!f.elements.logo_url||f.querySelector('.ppc-row'))return;
+    const box=f.elements.logo_url.closest('div')||f.elements.logo_url.parentElement;
+    const row=document.createElement('div');row.className='ppc-row';
+    row.innerHTML='<label>Tile colour <small>(Home Shop by Brand / Store)</small></label><div class="ppc-line"><input type="color" name="logo_color" value="#b8862b"><button type="button" class="ppc-auto">Auto from logo</button><small class="ppc-note">Picked automatically from the logo when you upload it. You can change it.</small></div>';
+    box.insertAdjacentElement('afterend',row);
+    const col=f.elements.logo_color,note=row.querySelector('.ppc-note');
+    const mark=()=>{state[kind].touched=true;};
+    col.addEventListener('input',mark);
+    const auto=async()=>{
+      const file=f.elements.logo_file?.files?.[0];const url=strip(f.elements.logo_url.value).trim();
+      let c='';note.textContent='Reading the logo…';
+      try{c=file?await colourFromFile(file):(url?await colourFromSrc(url,true):'');}catch(e){c='';}
+      if(c){col.value=c;state[kind].touched=true;note.textContent='Colour picked from the logo. You can change it.';}
+      else note.textContent=file||url?'Could not read this logo here, so pick a colour yourself.':'Add a logo first.';
+    };
+    row.querySelector('.ppc-auto').addEventListener('click',auto);
+    f.elements.logo_file?.addEventListener('change',()=>{if(f.elements.logo_file.files?.[0])auto();});
+    /* open for edit: take the saved colour out of the URL box */
+    const sync=()=>{const m=HEXRE.exec(f.elements.logo_url.value||'');if(m){col.value='#'+m[1];state[kind].touched=true;f.elements.logo_url.value=strip(f.elements.logo_url.value);}else{state[kind].touched=false;}};
+    new MutationObserver(()=>{}).observe(f,{childList:true});
+    const dlg=f.closest('dialog');
+    if(dlg)new MutationObserver(()=>{if(dlg.open)setTimeout(sync,0);}).observe(dlg,{attributes:true,attributeFilter:['open']});
+    /* URL typed by hand: add the colour on save */
+    f.addEventListener('submit',()=>{
+      if(f.elements.logo_file?.files?.[0])return;
+      if(state[kind].touched&&f.elements.logo_url.value.trim()){f.elements.logo_url.value=strip(f.elements.logo_url.value).trim()+'#ppc='+f.elements.logo_color.value.replace('#','');}
+    },true);
+  }
+  setup('brandForm','brands');setup('storeForm','stores');
+  /* uploads: the colour goes into the saved logo address */
+  const origUp=window.uploadCatalogLogo;
+  if(typeof origUp==='function')window.uploadCatalogLogo=async function(kind,slug,file){
+    const url=await origUp.apply(this,arguments);
+    const f=byId(kind==='stores'?'storeForm':'brandForm');const c=f&&f.elements.logo_color&&state[kind==='stores'?'stores':'brands'].touched?f.elements.logo_color.value.replace('#',''):'';
+    return c&&url?strip(url)+'#ppc='+c:url;
+  };
+  const st=document.createElement('style');st.textContent='.ppc-row{grid-column:1/-1;margin:2px 0}.ppc-row label{display:block;font-weight:800;margin-bottom:5px}.ppc-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ppc-line input[type=color]{width:46px;height:34px;padding:2px;border:1px solid #cfe0d8;border-radius:8px;background:#fff}.ppc-auto{border:1px solid #bcd9cd;background:#f1faf6;color:#08734d;font:800 12px/1 inherit;padding:9px 12px;border-radius:9px;cursor:pointer}.ppc-note{color:#587080}';
+  document.head.appendChild(st);
+})();
+
+/* ===== V241 · N1: Brand / Store tile + Deal Radar previews ===== */
+(function(){
+  const HEXRE=/#ppc=([0-9a-fA-F]{6})/;
+  function tileColor(brand){
+    const m=HEXRE.exec(String(brand&&brand.logoUrl||''));return m?'#'+m[1]:'#B8862B';
+  }
+  function update(primary){
+    const tile=byId('tilePrev'),img=byId('tilePrevImg');if(!tile||!img)return;
+    const f=byId('productForm');const brand=f&&brands.find(b=>b.slug===f.elements.brand_slug?.value)||null;
+    tile.style.setProperty('--c',tileColor(brand));
+    const bl=tile.querySelector('[data-tile-brand]');
+    if(bl){const src=String(brand&&brand.logoUrl||'').replace(HEXRE,'');if(src){bl.src=src;bl.hidden=false;}else bl.hidden=true;}
+    if(primary&&primary.src){img.src=primary.src;img.hidden=false;}else{img.hidden=true;img.removeAttribute('src');}
+  }
+  const orig=window.updateGlobalSurfacePreviews;
+  if(typeof orig==='function')window.updateGlobalSurfacePreviews=function(primary){const r=orig.apply(this,arguments);try{update(primary);}catch(e){}return r;};
+})();

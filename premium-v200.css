@@ -1430,7 +1430,10 @@ body #allCategoriesMenu.ppx-catmenu[hidden]{display:none!important}
 @media (max-width:760px){body #allCategoriesMenu.ppx-catmenu::before,body #allCategoriesMenu.ppx-catmenu::after{display:none!important}}
 @media (max-width:760px){body #allCategoriesMenu.ppx-catmenu{max-height:90vh!important;height:auto!important;overflow:visible!important}body #allCategoriesMenu.ppx-catmenu .ppx-cm{max-height:90vh}}
 @media (min-width:761px){body #allCategoriesMenu.ppx-catmenu{height:auto!important}body #allCategoriesMenu.ppx-catmenu .ppx-cm{max-height:calc(100vh - var(--cm-top,120px) - 26px)}}
-body #allCategoriesBtn[aria-expanded="true"]{background:#E6F4EE!important;color:#13805A!important;border-radius:12px;box-shadow:inset 0 -3px 0 #1F9D74}
+body #allCategoriesBtn[aria-expanded="true"]{background:#E6F4EE!important;color:#13805A!important;border-radius:12px;box-shadow:none!important}
+body #allCategoriesBtn{position:relative}
+body #allCategoriesBtn::after{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2.5px;border-radius:2px;background:linear-gradient(90deg,#1F9D74,#5EF0C0);transform:scaleX(0);transform-origin:center;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+body #allCategoriesBtn[aria-expanded="true"]::after{transform:scaleX(1)}
 
 /* ===== V218.1: category bar + Popular Deals tabs ===== */
 body .category-nav button.ppx-navcat,body .category-nav #allCategoriesBtn{position:relative;display:inline-flex!important;align-items:center;gap:7px;transition:color .2s ease,background .2s ease}
@@ -2112,3 +2115,370 @@ body .category-nav .deals-nav .ppx-deals-new{position:absolute;top:-7px;right:2p
 .ppx-cmp-items{min-width:auto!important;flex-shrink:0!important}@media (max-width:760px){.ppx-cmp-items{flex-shrink:1!important;min-width:0!important;overflow-x:auto!important}}
 .ppx-cmp-tray{width:min(940px,calc(100vw - 24px))!important}.ppx-cmp-it{max-width:165px!important}
 .ppx-cmp-it{max-width:190px!important}
+
+/* V235: optical size for new brand/store logos in tile pills (equal visual weight, not equal height) */
+.ppx-dx-pill img[src*="logos/brands/a-o-smith.png"]{height:19px;width:68px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/a-o-smith.png"]{height:14px;width:47px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/adidas.svg"]{height:22px;width:32px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/adidas.svg"]{height:17px;width:25px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/apple.svg"]{height:21px;width:62px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/apple.svg"]{height:15px;width:43px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/asus.svg"]{height:17px;width:76px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/asus.svg"]{height:12px;width:54px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/atomberg.svg"]{height:17px;width:74px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/atomberg.svg"]{height:12px;width:52px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/campus.svg"]{height:16px;width:81px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/campus.svg"]{height:11px;width:57px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/casio.svg"]{height:16px;width:83px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/casio.svg"]{height:11px;width:58px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/cetaphil.png"]{height:22px;width:47px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/cetaphil.png"]{height:17px;width:36px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/hawkins.png"]{height:22px;width:40px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/hawkins.png"]{height:17px;width:31px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/hp.svg"]{height:22px;width:22px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/hp.svg"]{height:17px;width:17px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/jbl.svg"]{height:22px;width:39px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/jbl.svg"]{height:17px;width:30px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/kent.svg"]{height:22px;width:41px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/kent.svg"]{height:17px;width:32px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/lg.svg"]{height:22px;width:50px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/lg.svg"]{height:17px;width:38px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/minimalist.png"]{height:14px;width:84px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/minimalist.png"]{height:10px;width:61px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/noise.png"]{height:20px;width:67px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/noise.png"]{height:14px;width:47px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/nothing.svg"]{height:15px;width:84px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/nothing.svg"]{height:11px;width:60px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/oppo.svg"]{height:18px;width:72px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/oppo.svg"]{height:13px;width:50px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/pigeon.svg"]{height:20px;width:65px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/pigeon.svg"]{height:14px;width:45px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/prestige.svg"]{height:22px;width:45px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/prestige.svg"]{height:17px;width:35px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/realme.svg"]{height:18px;width:74px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/realme.svg"]{height:12px;width:52px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/sony.svg"]{height:16px;width:82px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/sony.svg"]{height:11px;width:58px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/the-derma-co.png"]{height:20px;width:67px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/the-derma-co.png"]{height:14px;width:47px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/vivo.svg"]{height:18px;width:70px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/vivo.svg"]{height:13px;width:49px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/whirlpool.svg"]{height:21px;width:62px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/whirlpool.svg"]{height:15px;width:44px;max-width:none}
+.ppx-dx-pill img[src*="logos/brands/xiaomi.svg"]{height:19px;width:68px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/brands/xiaomi.svg"]{height:13px;width:48px;max-width:none}
+.ppx-dx-pill img[src*="logos/stores/adidas.svg"]{height:22px;width:32px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/stores/adidas.svg"]{height:17px;width:25px;max-width:none}
+.ppx-dx-pill img[src*="logos/stores/nykaa.svg"]{height:21px;width:62px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/stores/nykaa.svg"]{height:15px;width:44px;max-width:none}
+.ppx-dx-pill img[src*="logos/stores/purplle.svg"]{height:20px;width:65px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/stores/purplle.svg"]{height:14px;width:46px;max-width:none}
+.ppx-dx-pill img[src*="logos/stores/shopsy.svg"]{height:20px;width:65px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/stores/shopsy.svg"]{height:14px;width:45px;max-width:none}
+.ppx-dx-pill img[src*="logos/stores/vijay-sales.svg"]{height:16px;width:81px;max-width:none}
+.ppx-dx-spot-logo img[src*="logos/stores/vijay-sales.svg"]{height:11px;width:57px;max-width:none}
+
+/* =====================================================================
+   V238 — Product page premium polish
+   Rule: green = buy, gold = best, everything else calm grey/ink.
+   ===================================================================== */
+/* 1) BEST PICK: the store behind the hero Buy button */
+.ppx-store{position:relative}
+.ppx-store.is-pick{border-color:var(--ppx-gold);background:linear-gradient(180deg,#FFFBEF 0%,#FFFFFF 100%);box-shadow:0 0 0 1px rgba(232,185,84,.5),0 20px 30px -22px rgba(156,111,34,.65)}
+.ppx-store.is-pick::before{content:"BEST PICK";position:absolute;top:-10px;left:18px;padding:5px 10px;border-radius:8px;background:linear-gradient(100deg,#E8B954,#F6D98A);color:var(--ppx-gold-ink);font:800 11px/1 var(--ppx-body);letter-spacing:.08em;box-shadow:0 6px 12px -6px rgba(156,111,34,.8)}
+.ppx-store.is-best:not(.is-pick){border-color:var(--ppx-line);background:#fff;box-shadow:none}
+.ppx-store.is-pick .ppx-store-save{color:var(--ppx-gold-text)}
+.ppx-stores .ppx-panel-head{margin-bottom:14px}
+.ppx-store{transition:transform .2s ease,box-shadow .2s ease}
+
+/* 2) calm colours inside the rows */
+.ppx-store-save,.ppx-store-save s{color:var(--ppx-muted);font-weight:600}
+.ppx-store.is-pick .ppx-store-save{color:var(--ppx-gold-text)}
+.ppx-store.is-pick .ppx-store-save s{color:var(--ppx-muted)}
+.ppx-store-meta .is-stock{color:var(--ppx-ink-2);font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.ppx-store-meta .is-stock::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ppx-green-2)}
+.ppx-stats div.is-low{background:#F7F6F2;border-color:var(--ppx-line-2)}
+.ppx-stats .is-low b{color:var(--ppx-ink)}
+.ppx-badge.is-green{background:#F1EEE6;color:var(--ppx-ink-2)}
+.ppx-badge.is-green svg{color:var(--ppx-green)}
+.ppx-alert .ppx-btn-primary{background:var(--ppx-ink);border-color:var(--ppx-ink);color:#fff;box-shadow:none}
+.ppx-alert .ppx-btn-primary:hover{background:#1c3140}
+.ppx-similar .ppx-mini-price b{color:var(--ppx-ink)}
+
+/* 3) prices: display font, even digits */
+.ppx-store-price b,.ppx-hero-price b,.ppx-stats b,.ppx-similar .ppx-mini-price b{font-family:var(--ppx-display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ppx-store-price b{font-size:24px}
+
+/* 4) image spotlight + soft ground shadow */
+.ppx-stage{background:radial-gradient(circle at 50% 36%,#FFFFFF 0%,#F4F7F4 46%,#E2EBE5 100%)}
+.ppx-stage::after{content:"";position:absolute;left:50%;bottom:7%;width:46%;height:16px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(10,40,30,.24),rgba(10,40,30,0) 70%);filter:blur(5px);pointer-events:none}
+.ppx-stage .ppx-main-image{position:relative;z-index:1}
+
+/* 5) new lines */
+.ppx-hero-vs{display:flex;align-items:center;gap:8px;margin:8px 0 0;font-size:14.5px;color:#DCE8E3}
+.ppx-hero-vs svg{width:15px;height:15px;color:var(--ppx-gold-l);flex:none}
+.ppx-hero-vs b{color:var(--ppx-gold-l)}
+.ppx-hero-micro{display:flex;flex-wrap:wrap;gap:4px 16px;margin:12px 0 0;font-size:12.5px;font-weight:600;color:#B9CBC4}
+.ppx-hero-micro span::before{content:"\2713";margin-right:6px;color:var(--ppx-mint);font-weight:800}
+.ppx-hero-actions+.ppx-hero-micro{margin-top:12px}
+.ppx-hist-line{margin:2px 0 8px;font-size:15px;color:var(--ppx-ink-2)}
+.ppx-hist-line b{color:var(--ppx-ink)}
+.ppx-alert-suggest{margin:0!important;font-size:13px!important;color:var(--ppx-muted)!important}
+.ppx-alert-suggest b{color:var(--ppx-ink)}
+.ppx-alert-suggest span{font-weight:500}
+.ppx-mini-diff{width:100%;font-size:12px;font-weight:800}
+.ppx-mini-diff.is-less{color:var(--ppx-green)}
+.ppx-mini-diff.is-more{color:var(--ppx-muted)}
+
+/* ---------- V239: tighter product hero (same content, less height) ---------- */
+@media (min-width:1021px){
+  .ppx-product{gap:14px}
+  .ppx-top{gap:16px}
+  .ppx-right{gap:12px}
+  .ppx-hero{padding:18px 24px;gap:8px}
+  .ppx-hero-price b{font-size:clamp(36px,3.8vw,46px)}
+  .ppx-hero-note{font-size:14.5px;line-height:1.45}
+  .ppx-hero-vs{margin-top:4px}
+  .ppx-hero .ppx-deal-insight{margin:6px 0 2px;padding:9px 12px}
+  .ppx-hero-actions .ppx-btn{min-height:48px}
+  .ppx-hero-micro,.ppx-hero-actions+.ppx-hero-micro{margin-top:6px}
+  .ppx-stage{aspect-ratio:1.3}
+  .ppx-gallery{gap:12px}
+  .ppx-panel{padding:18px}
+}
+
+/* ---------- V240: product page = Admin-exact left column (374px: brand row, 344x258 image box, 58px thumbs, title) ---------- */
+@media (min-width:1021px){
+  .ppx-top{grid-template-columns:374px minmax(0,1fr)}
+  .ppx-gallery.ppx-panel{padding:14px;gap:10px;overflow-x:clip;overflow-y:visible}
+  .ppx-gallery .ppx-brand{position:relative;z-index:6}
+  .ppx-gallery .ppx-id-actions{gap:8px}
+  .ppx-gallery .ppx-id-actions .ppx-btn{flex:1 1 0;min-width:0;padding:0 8px;gap:6px;font-size:13.5px}
+  .ppx-stage{aspect-ratio:auto;height:258px;box-sizing:border-box;padding:12px;border-radius:18px;z-index:2}
+  .ppx-thumbs{position:relative;z-index:6;gap:8px}
+  .ppx-thumb{width:58px;height:58px;padding:6px;border-radius:14px}
+  .ppx-identity h1{order:0;font-size:24px}
+  .ppx-identity .ppx-badges{order:1}
+  .ppx-identity .ppx-chips{order:2}
+  .ppx-identity .ppx-id-actions{order:3}
+  .ppx-identity .ppx-advice{order:4}
+}
+.ppx-stage.pp-global-product-surface{overflow:visible!important}
+@media (max-width:1020px){
+  .ppx-stage{aspect-ratio:auto;height:258px;box-sizing:border-box;padding:12px;border-radius:18px}
+  .ppx-stage.pp-global-product-surface{overflow:hidden!important}
+}
+@media (max-width:760px){.ppx-stage{height:212px;padding:8px}}
+/* small surfaces follow the same Admin image setting (bg + fit) */
+.ppx-mini-img.pp-global-product-surface,.ppx-mini .ph.pp-global-product-surface,.ppx-pc-prod .ph.pp-global-product-surface,.ppx-hc-img.pp-global-product-surface{overflow:hidden!important}
+@media (max-width:1020px){
+  .ppx-id-actions{gap:8px}
+  .ppx-id-actions .ppx-btn{flex:1 1 0;min-width:0;padding:0 8px;gap:6px;font-size:13.5px}
+}
+
+/* ===== V241 ===== */
+/* L1: every product-picture background is white (Brand/Store tile bubbles keep their logo colour) */
+body .pp-global-product-surface.pp-img-bg-soft,
+body .pp-img-bg-soft.pp-global-product-surface,
+body .pp-v787-product-visual.pp-img-bg-soft,
+body .pp-v787-gallery-thumb.pp-img-bg-soft,
+body .pp-v787-comparison .pp-v78-gallery-thumb.pp-img-bg-soft{background:#fff!important}
+.ppx-mini-img,.ppx-hc-img,.ppx-pc-prod .ph,.ppx-mini .ph{background:#fff}
+.ppx-dx-spot-img{background:#fff}
+/* I1: the product picture stays fully inside the round bubble (inscribed square ~72% of the bubble) */
+.ppx-dx-pi{container-type:inline-size}
+.ppx-dx-pi::before{width:min(124px,84%)}
+.ppx-dx-pi img{max-width:min(86px,60cqw);max-height:min(86px,60cqw);width:auto;height:auto}
+.ppx-dx-grid .ppx-dx-pi::before{width:min(136px,84%)}
+.ppx-dx-grid .ppx-dx-pi img{max-width:min(94px,60cqw);max-height:min(94px,60cqw)}
+@media (max-width:700px){.ppx-dx-grid .ppx-dx-pi img{max-width:min(78px,60cqw);max-height:min(78px,60cqw)}.ppx-dx-grid .ppx-dx-pi::before{width:min(114px,84%)}}
+/* O1: the model/variant note stays on one line on desktop */
+.ppx-identity .ppx-advice{font-size:12px;white-space:nowrap}
+@media (max-width:760px){.ppx-identity .ppx-advice{white-space:normal}}
+/* G3: a big picture never blocks clicks on the thumbnails/title below it */
+.ppx-stage img,.ppx-stage .pp-global-product-image{pointer-events:none}
+
+/* ===== V242 ===== */
+.ppx-avgline{stroke:#8A97A8;stroke-width:1.2;stroke-dasharray:5 4;opacity:.8}
+.ppx-hist{margin:16px 0 0 64px;padding-top:12px;border-top:1px solid #ECEFF1}
+.ppx-hist-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.ppx-hist-head b{font-size:14px;color:#13233A}
+.ppx-hist-head span{font-size:12px;color:#6B7A90;font-weight:600}
+.ppx-hist-bars{position:relative;display:flex;align-items:stretch;gap:3px;height:64px;margin:8px 0 10px}
+.ppx-hist-bars::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#D9DDE3}
+.ppx-hist-bars i{position:relative;flex:1;min-width:2px;max-width:34px;margin:0 auto}
+.ppx-hist-bars i::after{content:"";position:absolute;left:0;right:0;border-radius:3px}
+.ppx-hist-bars i.is-up::after{bottom:50%;height:calc(var(--h)/2);background:#E5484D;opacity:.85}
+.ppx-hist-bars i.is-down::after{top:50%;height:calc(var(--h)/2);background:#2EA06E;opacity:.95}
+.ppx-hist-bars i.is-mid::after{top:50%;height:2px;background:#9AA5B1}
+.ppx-hist-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800}
+.ppx-hist-pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.ppx-hist-pill.is-good{background:#E9F6EF;color:#1F7A50}
+.ppx-hist-pill.is-flat{background:#EEF1F4;color:#4A5A6E}
+@media(max-width:760px){.ppx-hist{margin-left:0}}
+
+/* ===== V242 · S1 premium small cards ===== */
+.ppx-mini{border:1px solid #EFE6D3;border-radius:20px;box-shadow:0 10px 26px -20px rgba(20,30,40,.4);gap:6px;padding:10px 10px 12px;transition:transform .25s,box-shadow .25s,border-color .25s}
+.ppx-mini:hover{border-color:#E4D8BC;box-shadow:0 22px 36px -22px rgba(20,30,40,.5)}
+.ppx-mini-img,.ppx-mini .ph{box-shadow:inset 0 0 0 1px #F3EEE2;border-radius:14px}
+.ppx-mini-brand,.ppx-mini .br{display:block;margin-top:4px;padding:0 4px;font:800 10.5px/1.2 var(--ppx-body,inherit);letter-spacing:.13em;text-transform:uppercase;color:#8A7A4A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ppx-mini-name,.ppx-mini .nm{padding:0 4px;font-weight:700;color:#13233A}
+.ppx-mini-price{margin-top:auto;padding:10px 46px 0 4px;border-top:1px solid #F0EADC;align-items:center}
+.ppx-mini-price b{font-size:20px;color:#13233A;letter-spacing:-.02em}
+.ppx-mini .pr{margin:auto 0 0;padding:10px 46px 0 4px;border-top:1px solid #F0EADC;font-size:19px;color:#13233A}
+.ppx-mini .pr.is-soon{display:inline-flex;align-self:flex-start;margin:10px 0 0 4px;padding:6px 12px;border:0;border-radius:999px;background:#EEF3F0;color:#3F5A4E;font-size:12.5px;font-weight:800}
+.ppx-mini .ft{padding:6px 46px 0 4px}
+.ppx-mini .ft em{padding:3px 9px;border-radius:999px;background:#F3F1EA;color:#4A5A6E;font-weight:800}
+.ppx-mini{position:relative}
+.ppx-mini-go{position:absolute;right:12px;bottom:12px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#0F1B24;color:#fff;font-size:15px;line-height:1;transition:transform .25s,background .25s}
+.ppx-mini:hover .ppx-mini-go{transform:translateX(2px);background:#1F6F52}
+
+/* ===== V243 · S1 fix: chip never wraps ===== */
+.ppx-mini .ft{flex-wrap:nowrap;gap:5px;min-width:0;padding-right:42px;white-space:nowrap}
+.ppx-mini .ft i{flex:0 0 7px}
+.ppx-mini .ft em{flex:0 0 auto;white-space:nowrap;padding:3px 8px;font-size:11px}
+.ppx-mini .ft{font-size:11.5px}
+.ppx-mini-price small,.ppx-mini-price small.ppx-mini-diff{white-space:nowrap}
+@media(max-width:560px){.ppx-mini .ft{font-size:11px}.ppx-mini .ft em{font-size:10.5px;padding:3px 7px}}
+@media(max-width:640px){.ppx-mini-go{display:none}.ppx-mini .ft{padding-right:4px}.ppx-mini .ft em{margin-left:auto}.ppx-mini-price{padding-right:4px}.ppx-mini .pr{padding-right:4px}}
+
+/* ===== V243 · V1 compact history + W1 stat cards ===== */
+.ppx-chart-plot{height:180px}
+.ppx-chart-y{padding:16px 0}
+.ppx-hist{margin-top:10px;padding-top:8px}
+.ppx-hist-head{align-items:center;gap:8px 14px}
+.ppx-hist-l{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ppx-hist-key{font-size:11.5px;color:#6B7A90;font-weight:600}
+.ppx-hist-bars{height:44px;margin:6px 0 0}
+.ppx-hist-pill{padding:5px 12px;font-size:12.5px}
+.ppx-stats{margin-top:8px;gap:12px}
+.ppx-stats>div{gap:2px;padding:12px 16px;border-radius:16px;background:#F7F5EF;border:0;position:relative}
+.ppx-stat-top{display:flex;align-items:center;gap:10px}
+.ppx-stat-top>span:not(.ppx-stat-ic):not(.ppx-stat-dots){font-size:13px;font-weight:700;color:#55657A}
+.ppx-stat-ic{width:30px;height:30px;border-radius:50%;background:#EEF3F0;color:#2A5A46;display:grid;place-items:center;flex:0 0 30px}
+.ppx-stats b{margin:6px 0 2px;font-size:26px;letter-spacing:-.02em;color:#13233A}
+.ppx-stats small{font-size:12px;font-weight:600;color:#6B7A90}
+.ppx-stat-pill{margin-left:auto;font-style:normal;background:#E9F6EF;color:#1F7A50;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.ppx-stat-dots{margin-left:auto;display:flex;align-items:center;gap:3px;flex-wrap:nowrap}
+.ppx-stat-dots i{width:7px;height:7px;border-radius:50%;background:#9FB4A9;display:inline-block}
+.ppx-stat-dots small{font-size:10.5px;margin-left:2px}
+.ppx-stats .is-lowc.is-on{box-shadow:inset 4px 0 0 #2EA06E}
+.ppx-stats .is-lowc.is-on b{color:#1F7A50}
+.ppx-stats .is-highc.is-on b{color:#C93A40}
+.ppx-tie{margin-top:10px}
+.ppx-tie .pp-v71-history{padding:10px 14px}
+.ppx-tie .pp-v71-history-head{margin-bottom:4px}
+.ppx-tie .pp-v71-history-row{padding:2px 0}
+.ppx-fine{margin-top:10px}
+@media(max-width:760px){.ppx-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.ppx-stats>div{padding:10px 10px 10px 12px;border-radius:14px}.ppx-stats b{font-size:17px;margin:4px 0 2px}.ppx-stats small{font-size:10.5px;line-height:1.3}.ppx-stat-ic,.ppx-stat-pill,.ppx-stat-dots{display:none}.ppx-stat-top>span:not(.ppx-stat-ic):not(.ppx-stat-dots){font-size:12px;white-space:normal}.ppx-hist-key{display:none}}
+.ppx-stats .ppx-stat-top{display:flex;flex-direction:row;align-items:center;gap:10px;padding:0;margin:0;background:none;border:0;border-radius:0;box-shadow:none}
+.ppx-stat-top>span:not(.ppx-stat-ic):not(.ppx-stat-dots){white-space:nowrap}
+.ppx-stat-dots{min-width:0;overflow:hidden;flex:0 1 auto}
+@media(max-width:1100px){.ppx-stat-dots{display:none}}
+
+/* ===== V244 · X1 ===== */
+.ppx-chart-y{position:relative;display:block;padding:0;min-width:46px}
+.ppx-chart-y span{position:absolute;right:0;transform:translateY(-50%)}
+.ppx-mini-price{min-height:40px;box-sizing:border-box;align-items:center}
+.ppx-mini .ft{min-height:36px;box-sizing:border-box;align-items:center}
+@media (max-width:620px){.ppx-chart-y{display:none}}
+
+/* ===== V245 · Y1 + Z1 + AA1 ===== */
+.ppx-hist-top{align-items:flex-start;flex-wrap:wrap}
+.ppx-chip-sm{display:inline-block;margin-top:8px;padding:4px 10px;font-size:11px}
+.ppx-fall{margin-left:auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.ppx-fall b{display:inline-flex;align-items:center;gap:4px;font:800 34px/1.05 var(--ppx-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ppx-fall small{font-size:13px;font-weight:700;color:#55657A}
+.ppx-fall.is-fall b{color:#1F7A50}
+.ppx-fall.is-rise b{color:#C93A40}
+.ppx-fall.is-flat b{color:#4A5A6E}
+.ppx-hist-pill.is-good,.ppx-hist-pill.is-flat{background:#F3F1EA;color:#3F4F5E;font-weight:700}
+.ppx-hist-pill.is-good::before{background:#2EA06E}
+.ppx-hist-pill.is-flat::before{background:#9AA5B1}
+.ppx-trust .ppx-tr-ic{width:30px;height:30px;flex:0 0 30px;border-radius:50%;display:grid;place-items:center;background:#EEF3F0;color:#5B6E66;font-style:normal}
+.ppx-trust .ppx-tr-ic svg{width:16px;height:16px;color:inherit}
+.ppx-trust .is-ok .ppx-tr-ic{color:#1F7A50;background:#E6F3EC}
+@media(max-width:620px){.ppx-fall{margin-left:0;width:100%;align-items:flex-start;text-align:left;flex-direction:row;align-items:baseline;gap:10px;flex-wrap:wrap}.ppx-fall b{font-size:28px}}
+
+@media(min-width:1180px){.ppx-trust{grid-template-columns:repeat(4,auto);justify-content:space-between}.ppx-trust span{white-space:nowrap}}
+
+/* ===== V246 (AB1-AF1): mobile/tablet batch. Desktop (>1100px) is not touched except the brand logo box (AF1) ===== */
+/* AB1: product picture box on mobile + tablet = same box and same pop-out as desktop */
+@media (max-width:1020px){
+  .ppx-stage{height:258px;padding:12px;max-width:344px;width:100%;margin-left:auto;margin-right:auto}
+  .ppx-stage.pp-global-product-surface{overflow:visible!important}
+  .ppx-stage{z-index:2}
+  .ppx-thumbs{position:relative;z-index:6}
+}
+/* AC1: hero benefits - the 3rd card (Save Time) stays in the same row */
+@media (max-width:760px){
+  body .ppx-hero-v2 .ppx-hero-trust > div:last-child{grid-column:auto}
+}
+/* AD1 (V247: now up to 1100px): Shop by Brand / Store = ONE swipe row, spotlight card first, every card the same size */
+@media (max-width:1100px){
+  .ppx-dx-row{display:flex;gap:10px;height:auto;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:4px 16px 8px;scrollbar-width:none}
+  .ppx-dx-row::-webkit-scrollbar{display:none}
+  .ppx-dx-tiles{display:contents}
+  .ppx-dx-row{--n:3}
+  .ppx-dx-spot,.ppx-dx-tile{flex:0 0 calc((100% - (var(--n) - 1)*10px)/var(--n));width:calc((100% - (var(--n) - 1)*10px)/var(--n));height:360px;scroll-snap-align:start;box-sizing:border-box;container-type:inline-size}
+  .ppx-dx-all{flex:0 0 min(30%,170px);scroll-snap-align:start;height:360px}
+  .ppx-dx-spot{flex-direction:column;gap:6px;padding:11px}
+  .ppx-dx-spot-img{flex:none;height:96px;border-radius:13px}
+  .ppx-dx-spot-img img{max-height:68px;margin-top:20px}
+  .ppx-dx-low{left:6px;top:6px;font-size:10px;padding:3px 7px;border-radius:8px}
+  .ppx-dx-spot-info{justify-content:flex-start;flex:1}
+  .ppx-dx-tag{font-size:9px;padding:3px 7px;letter-spacing:.05em}
+  .ppx-dx-spot-logo{margin:7px 0 4px}
+  .ppx-dx-pn{font-size:12.5px;line-height:1.2}
+  .ppx-dx-pr{display:block;margin-top:2px}
+  .ppx-dx-pr b{font-size:21px;display:block}
+  .ppx-dx-pr s{font-size:11px;display:block;margin-top:1px}
+  .ppx-dx-save{font-size:11.5px}
+  .ppx-dx-btn{margin-top:auto;font-size:12px;padding:9px 6px}
+  .ppx-dx-pi::before{width:min(128px,86%)}
+  .ppx-dx-pi img{max-width:min(82px,56cqw);max-height:min(82px,56cqw)}
+  .ppx-dx-fp small{white-space:normal;line-height:1.15}
+  .ppx-dx-fp em{font-size:11px;gap:0}
+  .ppx-dx-fp em svg{display:none}
+}
+/* AE1: price history header - fall badge on the right, like desktop */
+@media (max-width:620px){
+  .ppx-hist-top{flex-wrap:nowrap}
+  .ppx-hist-top > div:first-child{min-width:0;flex:1 1 auto}
+  .ppx-fall{margin-left:auto;width:auto;flex:none;align-items:flex-end;text-align:right;flex-direction:column;gap:2px}
+  .ppx-fall b{font-size:26px}
+  .ppx-fall small{font-size:11.5px;line-height:1.2;max-width:130px}
+}
+/* AF1: spotlight brand logo = original colours inside a white box (same as store logos) */
+.ppx-dx-spot-logo:has(>img:not([data-pp-small-store])){background:#fff;border-radius:8px;padding:0 9px;height:24px;width:max-content;max-width:100%;box-sizing:border-box}
+.ppx-dx-spot-logo>img:not([data-pp-small-store]){filter:none}
+
+/* ===== V247: mobile/tablet. Desktop (>1100px) is not touched ===== */
+/* V247-3/4: bigger text that scales with the card width; phones show 2 cards, tablets 3 */
+@media (max-width:1100px){
+  .ppx-dx-row{scroll-padding-inline:16px}
+  .ppx-dx-spot-img{height:clamp(96px,50cqw,150px)}
+  .ppx-dx-spot-img img{max-height:clamp(68px,36cqw,112px)}
+  .ppx-dx-low{font-size:clamp(10px,6cqw,12px)}
+  .ppx-dx-tag{font-size:clamp(9px,5.4cqw,11px)}
+  .ppx-dx-spot-logo:has(>img:not([data-pp-small-store])){height:clamp(24px,14cqw,30px)}
+  .ppx-dx-pn{font-size:clamp(13px,9.4cqw,17px)}
+  .ppx-dx-pr b{font-size:clamp(21px,15.5cqw,30px)}
+  .ppx-dx-pr s{font-size:clamp(11px,7cqw,14px)}
+  .ppx-dx-save{font-size:clamp(12px,7.6cqw,14.5px)}
+  .ppx-dx-btn{font-size:clamp(12px,7.4cqw,14.5px)}
+  .ppx-dx-cnt{font-size:clamp(10px,6.4cqw,12px)}
+  .ppx-dx-fp b{font-size:clamp(17px,12.5cqw,22px)}
+  .ppx-dx-fp small{font-size:clamp(11px,7.2cqw,13px)}
+  .ppx-dx-fp em{font-size:clamp(11px,7.6cqw,14px)}
+  .ppx-dx-go{width:clamp(30px,19cqw,36px);height:clamp(30px,19cqw,36px)}
+}
+@media (max-width:700px){
+  .ppx-dx-row{--n:2}
+  .ppx-dx-spot,.ppx-dx-tile,.ppx-dx-all{height:clamp(318px,calc(318px + (100vw - 430px)*.16),362px)}
+}
+/* V247-5: brand logo above the product picture on small phones (was hidden at <=620px) */
+@media (max-width:620px){
+  .ppx-brand{display:flex}
+  .ppx-brand img{height:26px;max-width:120px;padding:5px 10px;border-radius:11px}
+}

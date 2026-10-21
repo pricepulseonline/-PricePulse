@@ -84,9 +84,9 @@
    Do not approximate the Compare Popup preview. Use the exact desktop geometry
    of the live V78.8.7 left product column so Scale/Tilt/X/Y can be judged 1:1. */
 @media(min-width:761px){
-  .global-preview-grid{grid-template-columns:372px minmax(220px,1fr)!important;gap:12px!important;align-items:start!important}
+  .global-preview-grid{grid-template-columns:392px minmax(220px,1fr)!important;gap:12px!important;align-items:start!important}
   .global-preview-surface.is-popup{
-    width:372px!important;max-width:372px!important;
+    width:392px!important;max-width:392px!important;
     padding:10px 22px 6px 6px!important;
     border:0!important;border-right:1px solid #edf1f4!important;
     border-radius:0!important;box-shadow:none!important;background:transparent!important;
@@ -108,14 +108,14 @@
   .global-preview-surface.is-popup .popup-preview-copy h3{font-size:24px!important;margin:5px 0 7px!important}
 }
 @media(max-width:760px){
-  .global-preview-surface.is-popup{width:100%!important;max-width:372px!important;margin-inline:auto!important}
+  .global-preview-surface.is-popup{width:100%!important;max-width:392px!important;margin-inline:auto!important}
 }
 
 
 /* V78.8.10 exact live-site mirror: the admin panel embeds the same live left-column component. */
-.global-preview-surface.is-popup.is-exact-live-mirror{width:398px!important;max-width:398px!important;padding:10px 12px 12px!important;overflow:visible!important;background:#fff!important}
-.live-exact-preview-frame{display:block;width:372px;height:690px;border:0;background:#fff;overflow:visible;margin:0 auto}
-@media(max-width:760px){.global-preview-surface.is-popup.is-exact-live-mirror{width:100%!important;max-width:398px!important}.live-exact-preview-frame{width:372px;max-width:100%;height:690px;transform-origin:top left}}
+.global-preview-surface.is-popup.is-exact-live-mirror{width:410px!important;max-width:410px!important;padding:10px 12px 12px!important;overflow:visible!important;background:#fff!important}
+.live-exact-preview-frame{display:block;width:390px;height:760px;border:0;background:#fff;overflow:visible;margin:0 auto}
+@media(max-width:760px){.global-preview-surface.is-popup.is-exact-live-mirror{width:100%!important;max-width:410px!important}.live-exact-preview-frame{width:390px;max-width:100%;height:690px;transform-origin:top left}}
 
 /* PricePulse V78.8.131 — isolated Plus membership admin controls */
 .plus-admin-card{margin:16px 0 18px;border:1px solid #ead79f;border-radius:16px;background:linear-gradient(135deg,#fffdf6,#fff 58%,#f8fbfa);padding:16px;box-shadow:0 8px 24px rgba(79,57,8,.06)}
@@ -154,6 +154,24 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 @media(max-width:520px){.admin-section-nav{grid-template-columns:1fr}.admin-nav-btn{grid-template-columns:26px minmax(0,1fr)}}
 </style>
 <link rel="stylesheet" href="plus-member-deals-admin.css?v=213">
+<style>
+/* V240: small-card preview + cut warning */
+.global-preview-small-stage{width:170px;aspect-ratio:1.3;border:1px solid #e1ebe7;border-radius:12px;display:grid;place-items:center;overflow:hidden;position:relative;padding:10px;margin:2px 0 8px;box-sizing:border-box}
+.global-preview-small-stage.soft{background:linear-gradient(180deg,#f2f8fb,#edf6f6)}
+.global-preview-small-stage.white{background:#fff}
+.global-preview-small-stage.transparent{background:repeating-conic-gradient(#f6faf8 0 25%,#fff 0 50%) 50%/16px 16px}
+.global-preview-small-stage.original{background:#f5f8f9}
+[data-global-preview-stage].is-cut{outline:2px solid #e5484d;outline-offset:1px}
+[data-global-preview-stage].is-cut::after{content:"Cut";position:absolute;right:4px;top:4px;padding:1px 6px;border-radius:6px;background:#e5484d;color:#fff;font:800 10px/1.4 system-ui,sans-serif}
+</style>
+<style>.psearch{position:relative;margin-bottom:8px}.psearch input{width:100%;box-sizing:border-box;padding:10px 34px 10px 12px;border:1px solid #cfe0d8;border-radius:10px;font:inherit;font-size:13px;background:#fff}.psearch button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:#eef4f1;color:#4b5f59;width:22px;height:22px;border-radius:50%;cursor:pointer;line-height:1;padding:0}.psearch button[hidden]{display:none}</style><style>
+.site-image-preview.soft,.website-preview-stage.soft,.global-preview-small-stage.soft,.global-preview-mini-stage.soft,.global-preview-compact-stage.soft{background:#fff!important}
+.tile-prev{width:176px;height:196px;box-sizing:border-box;border-radius:18px;padding:10px;display:flex;flex-direction:column;border:1px solid #e7e1d3;background:linear-gradient(160deg,#fff,color-mix(in srgb,var(--c) 16%,#fff));margin:6px 0}
+.tile-prev-hd{display:flex;justify-content:space-between;align-items:center}.tile-prev-pill{background:#fff;border-radius:10px;padding:4px 8px;height:26px;display:inline-flex;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}.tile-prev-pill:has(img[hidden]){visibility:hidden}.tile-prev-pill img{height:16px;max-width:90px;object-fit:contain}.tile-prev-hd i{font:800 10px/1 system-ui,sans-serif;font-style:normal;background:#0b1b26;color:#fff;border-radius:99px;padding:5px 8px}
+.tile-prev-pi{position:relative;flex:1;display:grid;place-items:center;container-type:inline-size;margin-top:4px}
+.tile-prev-pi::before{content:"";position:absolute;width:min(124px,84%);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,color-mix(in srgb,var(--c) 18%,#fff) 70%);box-shadow:inset 0 -6px 14px color-mix(in srgb,var(--c) 15%,transparent)}
+.tile-prev-pi img{position:relative;max-width:min(86px,60cqw);max-height:min(86px,60cqw);object-fit:contain;mix-blend-mode:multiply}
+</style>
 </head>
 <body>
 <header class="brand-head-card">
@@ -270,7 +288,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 
     <div class="summary catalog-only"><div><strong id="sumReady">0/0</strong><span>Products with Best Price ready</span></div><div><strong id="sumFresh">0/0</strong><span>Fresh retailer checks</span></div><div><strong id="sumDue">0</strong><span>Checks due / never checked</span></div><div><strong id="sumCatalog">0</strong><span>Catalog products</span></div></div>
     <div class="workspace catalog-only">
-      <aside class="side"><div class="toolbar"><select id="filter" aria-label="Product status filter"><option value="attention">Needs attention</option><option value="all">All products</option><option value="ready">Best Price ready</option><option value="tracking">Tracking / unavailable</option><option value="archived">Archived</option></select></div><div class="product-list" id="productList"></div></aside>
+      <aside class="side"><div class="toolbar"><div class="psearch"><input id="productSearch" type="search" placeholder="Search product, brand, model, store…" autocomplete="off" aria-label="Search products"><button type="button" id="productSearchClear" hidden aria-label="Clear search">×</button></div><select id="filter" aria-label="Product status filter"><option value="attention">Needs attention</option><option value="all">All products</option><option value="ready">Best Price ready</option><option value="tracking">Tracking / unavailable</option><option value="archived">Archived</option></select></div><div class="product-list" id="productList"></div></aside>
       <main class="panel" id="editor">
         <div class="editor-head"><div><h2 id="selectedTitle">Select a product</h2><p id="selectedMeta" class="muted"></p></div><div class="editor-tools"><button id="editProduct" class="ghost" type="button">Edit Product</button><button id="archiveProduct" class="subtle" type="button">Archive Product</button><button id="deleteProduct" class="danger" type="button">Delete Product</button><button id="addListing" class="subtle" type="button">+ Add Retailer Link</button></div></div>
         <p id="selectedStatus" class="selected-note fine"></p><div class="grid" id="stores"></div>
@@ -303,23 +321,26 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
   <div><label>Status</label><select name="status"><option value="active">Active</option><option value="tracking">Tracking</option><option value="draft">Draft</option></select></div>
   <div class="wide"><label>Canonical fallback image URL / local path</label><input name="image_url" placeholder="Current fallback image remains available"><p class="fine fallback-note">Backup only. The Website Preview below shows the curated Primary / Secondary images when selected.</p></div>
   <div class="wide website-preview-card" id="websitePreviewCard">
-    <div class="website-preview-head"><div><b>Global Live Preview</b><small>One image setup is rendered with the same safe-fit rules on Home, Compare Popup, Wishlist and Deal Alerts. Brand logo also comes from the central Admin brand logo.</small></div><span class="preview-mode-badge" id="websitePreviewMode">Auto preview</span></div>
+    <div class="website-preview-head"><div><b>Global Live Preview</b><small>One image setup is rendered with the same fit rules on the Product page, Home card, Small cards (Recently viewed / You may also like), Wishlist and Deal Alerts. Brand logo also comes from the central Admin brand logo.</small></div><span class="preview-mode-badge" id="websitePreviewMode">Auto preview</span><span class="preview-mode-badge" id="previewCutBadge" hidden style="background:#fdecec;color:#b3262c;border-color:#f3b4b6">Cut at side on live site</span></div>
     <div class="global-preview-grid">
       <section class="global-preview-surface is-popup is-exact-live-mirror">
-        <div class="global-preview-label">Compare Popup · exact live website mirror</div>
-        <iframe id="liveExactPreviewFrame" class="live-exact-preview-frame" src="admin-live-preview.html?v=78.8.14" title="Exact live Compare Popup preview" scrolling="no"></iframe>
+        <div class="global-preview-label">Product page · exact live website mirror</div>
+        <iframe id="liveExactPreviewFrame" class="live-exact-preview-frame" src="admin-live-preview.html?v=242" title="Exact live Product page preview" scrolling="no"></iframe>
       </section>
       <section class="global-preview-surface is-home"><div class="global-preview-label">Home / Category Card</div><div class="global-preview-compact-stage original" data-global-preview-stage><img class="global-preview-brand floating" data-global-preview-brand alt="Brand logo" hidden><img data-global-preview-image alt="Home card preview" hidden></div><strong data-global-preview-name>Product</strong></section>
       <section class="global-preview-surface is-wishlist"><div class="global-preview-label">Wishlist</div><div class="global-preview-row"><div class="global-preview-mini-stage original" data-global-preview-stage><img data-global-preview-image alt="Wishlist preview" hidden></div><div><img class="global-preview-brand" data-global-preview-brand alt="Brand logo" hidden><strong data-global-preview-name>Product</strong><small>Best verified price</small></div></div></section>
+      <section class="global-preview-surface is-small"><div class="global-preview-label">Small cards · Recently viewed / You may also like</div><div class="global-preview-small-stage original" data-global-preview-stage><img data-global-preview-image alt="Small card preview" hidden></div><strong data-global-preview-name>Product</strong></section>
       <section class="global-preview-surface is-deal"><div class="global-preview-label">Deal Alerts</div><div class="global-preview-row"><div class="global-preview-mini-stage original" data-global-preview-stage><img data-global-preview-image alt="Deal alert preview" hidden></div><div><strong data-global-preview-name>Product</strong><small>Current Price · Verified</small></div></div></section>
+      <section class="global-preview-surface is-tile"><div class="global-preview-label">Brand / Store tile · round bubble</div><div class="tile-prev" id="tilePrev" style="--c:#B8862B"><div class="tile-prev-hd"><span class="tile-prev-pill"><img data-tile-brand alt="Brand logo" hidden></span><i>3 deals</i></div><div class="tile-prev-pi"><img id="tilePrevImg" alt="Brand tile preview" hidden></div></div><small class="fine">Picture stays inside the bubble. Tile colour comes from the logo.</small></section>
+      <section class="global-preview-surface is-radar"><div class="global-preview-label">Deal Radar / Popular deals card</div><div class="global-preview-row"><div class="global-preview-mini-stage white" data-global-preview-stage><img data-global-preview-image alt="Deal Radar preview" hidden></div><div><strong data-global-preview-name>Product</strong><small>Price soon · Verifying</small></div></div></section>
     </div>
-    <p class="fine global-preview-note">Compare Popup preview now renders the actual live left-side component inside an isolated mirror using the same frontend stylesheet and image-rendering rules. Use it to judge Scale / Tilt / X / Y before saving. Home, Wishlist and Deal Alerts remain compact safe-fit previews.</p>
+    <p class="fine global-preview-note">Product page preview renders the real live left column (same stylesheet and fit rules). The red border means the image is cut at the side on the live site. Small cards, Home, Wishlist and Deal Alerts show how the same setting fits their own smaller boxes.</p>
   </div>
 
   <section class="wide premium-image-manager" aria-labelledby="premiumImageHeading">
     <div class="premium-image-head">
-      <div><h3 id="premiumImageHeading">Premium site images</h3><p class="fine">Optional 2-image gallery. Existing automatic verified-image logic stays unchanged unless you choose Curated 2-image mode.</p></div>
-      <label class="mode-field">Website image mode<select name="site_image_mode"><option value="auto">Auto · verified best-store image</option><option value="curated">Curated · fixed 2-image gallery</option></select></label>
+      <div><h3 id="premiumImageHeading">Premium site images</h3><p class="fine">Optional 3-image gallery (Image 1 is used on the whole site). Existing automatic verified-image logic stays unchanged unless you choose Curated mode.</p></div>
+      <label class="mode-field">Website image mode<select name="site_image_mode"><option value="auto">Auto · verified best-store image</option><option value="curated">Curated · fixed 3-image gallery</option></select></label>
     </div>
 
     <div class="site-image-source-cards" id="siteImageSourceCards" aria-label="Available verified product images"></div>
@@ -332,7 +353,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
         <label>Or upload local image</label>
         <input name="site_primary_file" class="site-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
         <div class="site-image-controls">
-          <label>Background<select name="site_primary_bg"><option value="soft">Soft premium light</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
+          <label>Background<select name="site_primary_bg"><option value="soft">White · default</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
           <label>Fit<select name="site_primary_fit"><option value="contain">Contain · no crop</option><option value="cover">Cover</option></select></label>
           <label>Position preset<select name="site_primary_position"><option value="center">Center</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="left">Left</option><option value="right">Right</option></select></label>
           <label>Scale<div class="range-line"><input name="site_primary_scale" type="range" min="70" max="260" step="1" value="100"><span class="range-value" data-range-value="site_primary_scale">100%</span></div></label>
@@ -351,7 +372,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
         <label>Or upload local image</label>
         <input name="site_secondary_file" class="site-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
         <div class="site-image-controls">
-          <label>Background<select name="site_secondary_bg"><option value="soft">Soft premium light</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
+          <label>Background<select name="site_secondary_bg"><option value="soft">White · default</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
           <label>Fit<select name="site_secondary_fit"><option value="contain">Contain · no crop</option><option value="cover">Cover · premium hero</option></select></label>
           <label>Position preset<select name="site_secondary_position"><option value="center">Center</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="left">Left</option><option value="right">Right</option></select></label>
           <label>Scale<div class="range-line"><input name="site_secondary_scale" type="range" min="70" max="260" step="1" value="100"><span class="range-value" data-range-value="site_secondary_scale">100%</span></div></label>
@@ -360,6 +381,24 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
           <label>Y position<div class="range-line"><input name="site_secondary_y" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_secondary_y">0</span></div></label>
         </div>
         <div class="site-image-preview soft" id="siteSecondaryPreviewBox"><img id="siteSecondaryPreview" alt="Secondary site image preview" hidden><span class="preview-empty">No alternate image selected</span></div>
+      </article>
+      <article class="site-image-slot" data-site-slot="tertiary">
+        <div class="site-image-slot-head"><div><b>Image 3 · Extra</b><small>Another angle or detail shot for the product page thumbnail.</small></div><span class="slot-badge tertiary">Extra</span></div>
+        <select name="site_tertiary_source" class="site-source-select" aria-hidden="true"><option value="">Choose source…</option></select>
+        <label>Image URL</label>
+        <input name="site_tertiary_url" class="site-image-url" placeholder="https://...">
+        <label>Or upload local image</label>
+        <input name="site_tertiary_file" class="site-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <div class="site-image-controls">
+          <label>Background<select name="site_tertiary_bg"><option value="soft">White · default</option><option value="white">Pure white</option><option value="transparent">Transparent</option><option value="original">Original background</option></select></label>
+          <label>Fit<select name="site_tertiary_fit"><option value="contain">Contain · no crop</option><option value="cover">Cover · premium hero</option></select></label>
+          <label>Position preset<select name="site_tertiary_position"><option value="center">Center</option><option value="top">Top</option><option value="bottom">Bottom</option><option value="left">Left</option><option value="right">Right</option></select></label>
+          <label>Scale<div class="range-line"><input name="site_tertiary_scale" type="range" min="70" max="260" step="1" value="100"><span class="range-value" data-range-value="site_tertiary_scale">100%</span></div></label>
+          <label>Tilt / 3D angle<div class="range-line"><input name="site_tertiary_rotate" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_tertiary_rotate">0°</span></div></label>
+          <label>X position<div class="range-line"><input name="site_tertiary_x" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_tertiary_x">0</span></div></label>
+          <label>Y position<div class="range-line"><input name="site_tertiary_y" type="range" min="-30" max="30" step="1" value="0"><span class="range-value" data-range-value="site_tertiary_y">0</span></div></label>
+        </div>
+        <div class="site-image-preview soft" id="siteTertiaryPreviewBox"><img id="siteTertiaryPreview" alt="Tertiary site image preview" hidden><span class="preview-empty">No extra image selected</span></div>
       </article>
     </div>
     <p class="fine premium-image-safety">Retailer choices only use images already saved from exact-match verification. Local uploads use a dedicated public product-image bucket; if upload storage is not enabled yet, URL-based images continue to work normally.</p>
@@ -398,7 +437,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="brand-logo-normalizer.js?v=78.8.20" defer></script>
-<script src="admin-prices.js?v=224" defer></script>
+<script src="admin-prices.js?v=242" defer></script>
 <script src="plus-member-deals-admin.js?v=78.8.145" defer></script>
 <script src="admin-growth-v211.js?v=215" defer></script>
 <script src="admin-links-v212.js?v=222" defer></script>
