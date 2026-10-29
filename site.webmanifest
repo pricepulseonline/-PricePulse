@@ -4,8 +4,8 @@
   "description": "Compare verified prices across Amazon, Flipkart, Croma, Myntra and more. Track price drops, set deal alerts and buy at the right price with PricePulse.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B1B26",
-  "theme_color": "#0B1B26",
+  "background_color": "#0F1F1A",
+  "theme_color": "#0F1F1A",
   "icons": [
     {
       "src": "favicon-v18.png",

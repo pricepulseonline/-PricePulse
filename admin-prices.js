@@ -974,7 +974,8 @@ function ppPopulateProductCategory(form,selected=''){
 }
 function populateDialogs(){
   const productForm=byId('productForm');
-  const brandSel=productForm?.elements.brand_slug;if(brandSel)brandSel.innerHTML=brands.filter(b=>b.active!==false||b.slug===productById(selectedId)?.brandSlug).map(b=>`<option value="${esc(b.slug)}">${esc(b.name)}${b.active===false?' (inactive)':''}</option>`).join('');
+  const brandSel=productForm?.elements.brand_slug;const keepBrand=byId('productDialog')?.open?brandSel?.value:'';if(brandSel)brandSel.innerHTML=brands.filter(b=>b.active!==false||b.slug===productById(selectedId)?.brandSlug).map(b=>`<option value="${esc(b.slug)}">${esc(b.name)}${b.active===false?' (inactive)':''}</option>`).join('');
+  if(brandSel&&keepBrand&&[...brandSel.options].some(o=>o.value===keepBrand))brandSel.value=keepBrand; // a background reload must not reset an open form
   if(productForm)ppPopulateProductCategory(productForm,productForm.elements.category?.value||productById(selectedId)?.category||'');
   const storeSel=byId('listingForm')?.elements.store_slug;if(storeSel)storeSel.innerHTML=stores.filter(s=>s.active!==false).map(s=>`<option value="${esc(s.slug)}">${esc(s.name)}</option>`).join('');
 }

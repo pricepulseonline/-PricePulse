@@ -16,8 +16,8 @@
   border:1px solid rgba(230,207,165,.9);
   background:linear-gradient(180deg,#fffefc 0%,#fff8ef 100%);
   box-shadow:
-    0 28px 52px rgba(10,39,47,.12),
-    0 8px 18px rgba(10,39,47,.06),
+    0 28px 52px rgba(18,39,31,.12),
+    0 8px 18px rgba(18,39,31,.06),
     inset 0 1px 0 rgba(255,255,255,.9);
   transform:perspective(1600px) rotateX(2deg) translateY(-2px);
   transform-origin:center top;
@@ -32,14 +32,14 @@
   position:absolute;
   left:38px;right:38px;bottom:-12px;height:18px;
   border-radius:50%;
-  background:radial-gradient(ellipse at center,rgba(21,42,51,.12),rgba(21,42,51,0) 72%);
+  background:radial-gradient(ellipse at center,rgba(25,47,39,.12),rgba(25,47,39,0) 72%);
   filter:blur(8px);
   pointer-events:none;
   z-index:-1;
 }
 #ppPlusPage .pp-rd-eq-col,#ppPlusPage .pp-rd-eq-result{gap:4px}
 #ppPlusPage .pp-rd-eq-col strong{font-size:35px}
-#ppPlusPage .pp-rd-eq-symbol{font-size:30px;color:#b9c0c2}
+#ppPlusPage .pp-rd-eq-symbol{font-size:30px;color:#BBC0BD}
 #ppPlusPage .pp-rd-eq-result{
   padding:12px 12px;
   border-radius:17px;
@@ -79,7 +79,7 @@
   transform:translateX(-50%);
   width:min(92%,980px);
   height:1px;
-  background:linear-gradient(90deg,transparent,rgba(16,43,58,.08),transparent);
+  background:linear-gradient(90deg,transparent,rgba(24,50,41,.08),transparent);
   pointer-events:none;
 }
 

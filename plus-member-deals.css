@@ -1,18 +1,18 @@
 /* V78.8.144: only the Member Deals content view. Header and popup unchanged. */
 body.pp-member-deals-open main > :not(#ppMemberDeals){display:none!important}
-#ppMemberDeals{padding-top:32px;padding-bottom:48px;color:#172b36;min-height:65vh}
+#ppMemberDeals{padding-top:32px;padding-bottom:48px;color:#1B322A;min-height:65vh}
 #ppMemberDeals[hidden]{display:none!important}
 #ppMemberDeals .pp-md-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px}
 #ppMemberDeals .pp-md-eyebrow{color:#88701d;font-weight:800;letter-spacing:.12em;font-size:12px;margin:0 0 10px}
 #ppMemberDeals h1{font-size:clamp(24px,3vw,34px);line-height:1.2;margin:0 0 10px}
-#ppMemberDeals p{line-height:1.6;color:#61717c;margin:6px 0 0}
+#ppMemberDeals p{line-height:1.6;color:#66776D;margin:6px 0 0}
 #ppMemberDeals button{border:1px solid #d3dedb;border-radius:12px;background:#fff;color:#17644d;padding:12px 16px;font-weight:700;cursor:pointer;flex-shrink:0}
 #ppMemberDeals button:focus-visible{outline:3px solid #19865c;outline-offset:3px}
 #ppMemberDeals .pp-md-status{display:flex;align-items:center;gap:16px;padding:22px;border:1px solid #d6e7dc;border-radius:18px;background:#f1f9f3}
 #ppMemberDeals .pp-md-status>span:first-child{font-size:28px;color:#a88a28}
 #ppMemberDeals .pp-md-status strong{color:#15563e}
 #ppMemberDeals .pp-md-badge{margin-left:auto;background:#dcefe2;color:#175d41;font-size:11px;font-weight:800;border-radius:20px;padding:7px 11px}
-#ppMemberDeals .pp-md-empty{text-align:center;margin:24px 0;padding:35px 20px;border:1px dashed #d8dfda;border-radius:18px;background:#fcfcf9}
+#ppMemberDeals .pp-md-empty{text-align:center;margin:24px 0;padding:35px 20px;border:1px dashed #d8dfda;border-radius:18px;background:#FAFBFA}
 #ppMemberDeals .pp-md-empty>span{font-size:32px;color:#a58a38}
 #ppMemberDeals h2{font-size:18px;line-height:1.4;margin:10px 0}
 #ppMemberDeals .pp-md-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}

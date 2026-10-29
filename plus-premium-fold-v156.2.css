@@ -34,7 +34,7 @@
   background:
     radial-gradient(circle at 85% 8%,rgba(34,197,141,.18),transparent 33%),
     radial-gradient(circle at 14% 18%,rgba(255,255,255,.06),transparent 22%),
-    linear-gradient(145deg,#16384b 0%,#0a2030 57%,#0f3734 100%);
+    linear-gradient(145deg,#1F4235 0%,#132720 57%,#163026 100%);
   transform:perspective(1400px) rotateY(-11deg) rotateX(4deg) rotate(-1.2deg) translateZ(0);
   transform-style:preserve-3d;
   box-shadow:
@@ -68,7 +68,7 @@
 }
 #ppPlusPage .pp-rd-card-caption{
   gap:16px;padding:7px 14px;border-radius:999px;
-  background:rgba(7,20,28,.2);border:1px solid rgba(239,205,128,.13);
+  background:rgba(11,24,19,.2);border:1px solid rgba(239,205,128,.13);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
 #ppPlusPage .pp-rd-equation{
@@ -78,7 +78,7 @@
   border-radius:22px;
   background:linear-gradient(180deg,#fffefb,#fff8ee);
   border:1px solid rgba(228,206,165,.72);
-  box-shadow:0 20px 40px rgba(10,39,47,.12),0 5px 14px rgba(10,39,47,.05);
+  box-shadow:0 20px 40px rgba(18,39,31,.12),0 5px 14px rgba(18,39,31,.05);
 }
 #ppPlusPage .pp-rd-equation::before{
   content:"";position:absolute;left:16px;right:16px;top:0;height:1px;
@@ -97,7 +97,7 @@
   content:"";display:block;width:min(92%,1020px);height:24px;margin:0 auto 8px;
   border-radius:18px 18px 0 0;
   background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,250,.86));
-  box-shadow:0 -8px 24px rgba(10,39,47,.05),0 8px 26px rgba(10,39,47,.04);
+  box-shadow:0 -8px 24px rgba(18,39,31,.05),0 8px 26px rgba(18,39,31,.04);
   transform:perspective(1200px) rotateX(46deg) scaleX(.97);
   transform-origin:center top;
   opacity:.95;

@@ -41,6 +41,7 @@ const tabs=$$('.tab');const panels=$$('.panel');
 function openTab(name){tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab===name));panels.forEach(p=>p.classList.toggle('active',p.dataset.panel===name));const target=$(`[data-panel="${name}"]`);if(target)target.scrollIntoView({behavior:'smooth',block:'start'});}
 tabs.forEach(t=>t.addEventListener('click',()=>openTab(t.dataset.tab)));$$('[data-tab-target]').forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tabTarget)));
 if(location.hash==='#vouchers')setTimeout(()=>openTab('vouchers'),0);
+if(location.hash==='#invite')setTimeout(()=>openTab('invite'),0); /* V277: Account page "Invite friends" opens this tab */
 
 const toast=$('#toast');let toastTimer;function showToast(msg){if(!toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2200)}
 const modal=$('#modal'),modalBody=$('#modalBody');function closeModal(){if(!modal)return;modal.hidden=true;if(modalBody)modalBody.innerHTML=''}$$('[data-close]').forEach(x=>x.addEventListener('click',closeModal));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
@@ -116,7 +117,6 @@ $$('.store-card.eligible').forEach(card=>card.addEventListener('click',()=>openR
 
 // Real-site header behavior on the Wallet page. The header stays visually identical to PricePulse.
 $('#homeNavBtn')?.addEventListener('click',()=>{location.href='index.html#home'});
-$('#siteSearch')?.addEventListener('submit',e=>{e.preventDefault();const q=$('#searchInput')?.value?.trim()||'';const url=new URL('index.html',location.href);if(q)url.searchParams.set('search',q);url.hash='deals';location.href=url.href});
 $$('.category-nav [data-cat]').forEach(btn=>btn.addEventListener('click',()=>{const url=new URL('index.html',location.href);url.searchParams.set('category',btn.dataset.cat||'all');url.hash='deals';location.href=url.href}));
 $('.deals-nav')?.addEventListener('click',()=>{location.href='index.html#deals'});
 $('#wishlistTop')?.addEventListener('click',()=>{location.href='index.html'});$('#dealTop')?.addEventListener('click',()=>{location.href='index.html'});$('#signInBtn')?.addEventListener('click',()=>{location.href='index.html'});

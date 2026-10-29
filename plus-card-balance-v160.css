@@ -91,12 +91,12 @@
   padding:10px 17px;
   border:1px solid rgba(238,198,112,.83);
   border-radius:13px;
-  background:rgba(15,37,59,.52);
+  background:rgba(24,50,41,.52);
   color:#f5d891;
   font-size:14px;
   font-weight:800;
   text-decoration:none;
-  box-shadow:inset 0 1px 0 rgba(255,240,205,.10),0 4px 16px rgba(3,12,25,.11);
+  box-shadow:inset 0 1px 0 rgba(255,240,205,.10),0 4px 16px rgba(9,19,15,.11);
   transition:background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 #ppPlusPage .pp-rd-hero-actions .pp-rd-ghost:hover {

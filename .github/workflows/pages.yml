@@ -1,0 +1,47 @@
+# PricePulse V277 (P27): publish the site with GitHub Pages + make one share page per product
+# (p/<product-id>/index.html + og.png) so WhatsApp / Facebook / X previews show the product, not the site logo.
+# Runs on every push to main, once a day (new products get a page by themselves) and by hand (Actions > Run workflow).
+# ONE-TIME SETUP: GitHub repo > Settings > Pages > Build and deployment > Source = "GitHub Actions".
+name: Deploy site + share pages
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 0 * * *'   # 06:00 India time
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install the card maker (outside the site folder)
+        run: |
+          mkdir -p /tmp/pp && cd /tmp/pp && npm init -y >/dev/null && npm install playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Make share pages
+        # if this step fails the site is still published, only without new share pages
+        continue-on-error: true
+        run: NODE_PATH=/tmp/pp/node_modules node tools/make-share-pages.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

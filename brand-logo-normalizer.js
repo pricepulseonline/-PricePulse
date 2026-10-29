@@ -36,7 +36,8 @@
     master:{w:140,h:58,px:12,py:8,r:12},
     home:{w:108,h:36,px:10,py:6,r:10},
     popup:{w:130,h:40,px:11,py:7,r:10},
-    wishlist:{w:86,h:29,px:8,py:5,r:9}
+    wishlist:{w:86,h:29,px:8,py:5,r:9},
+    product:{w:112,h:40,px:10,py:6,r:10} /* V277: product page gallery - smaller, thin grey border */
   };
 
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -97,6 +98,7 @@
   }
 
   function surfaceFor(img){
+    if(img?.closest?.('.ppx-gallery .ppx-brand'))return'product';
     if(img?.closest?.('.pp-wish-product-main') || img?.matches?.('.pp-wish-brand-logo'))return'wishlist';
 
     if(img?.matches?.('[data-global-preview-brand]')){
@@ -134,9 +136,9 @@
     img.style.setProperty('object-fit','contain','important');
     img.style.setProperty('object-position','center center','important');
     img.style.setProperty('background','#fff','important');
-    img.style.setProperty('border','1px solid rgba(5,191,135,.52)','important');
+    img.style.setProperty('border',surface==='product'?'1px solid #E1E6E3':'1px solid rgba(5,191,135,.52)','important');
     img.style.setProperty('border-radius',`${box.r}px`,'important');
-    img.style.setProperty('box-shadow','0 2px 8px rgba(16,35,49,.055)','important');
+    img.style.setProperty('box-shadow',surface==='product'?'none':'0 2px 8px rgba(16,35,49,.055)','important');
     img.style.setProperty('margin','0','important');
     img.style.setProperty('transform','none','important');
     img.style.setProperty('filter','none','important');

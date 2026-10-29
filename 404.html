@@ -1,5 +1,11 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<html lang="en"><head><meta charset="utf-8"/><script>/* V277: a share link for a product added after the last deploy (p/<id>/) -> its product page */
+(function(){var m=location.pathname.match(/^\/p\/([a-z0-9][a-z0-9-]{1,80})\/?$/);if(m)location.replace('/#/product/'+m[1]);})();</script><script>/* V251: price-pulse.in/<store link> -> Find best price page */
+(function(){try{var p=location.pathname.replace(/^\/+/,'')+location.search+location.hash;p=decodeURIComponent(p);
+p=p.replace(/^(https?):\/+/i,'$1://');
+if(/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}\/./i.test(p)&&!/^(https?:\/\/)?(www\.)?price-pulse\.in\//i.test(p)){if(!/^https?:\/\//i.test(p))p='https://'+p;
+document.documentElement.style.visibility='hidden';location.replace('/#/find/'+encodeURIComponent(p));}}catch(e){}})();</script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="robots" content="noindex"/><title>Page not found | PricePulse</title>
 <link href="favicon-v18.png" rel="icon" type="image/png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&amp;family=Sora:wght@800&amp;display=swap" rel="stylesheet"/>

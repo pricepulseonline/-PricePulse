@@ -153,7 +153,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 @media(max-width:860px){.admin-section-nav{grid-template-columns:repeat(2,minmax(0,1fr));position:static}.admin-view-heading h2{font-size:18px}}
 @media(max-width:520px){.admin-section-nav{grid-template-columns:1fr}.admin-nav-btn{grid-template-columns:26px minmax(0,1fr)}}
 </style>
-<link rel="stylesheet" href="plus-member-deals-admin.css?v=213">
+<link rel="stylesheet" href="plus-member-deals-admin.css?v=276">
 <style>
 /* V240: small-card preview + cut warning */
 .global-preview-small-stage{width:170px;aspect-ratio:1.3;border:1px solid #e1ebe7;border-radius:12px;display:grid;place-items:center;overflow:hidden;position:relative;padding:10px;margin:2px 0 8px;box-sizing:border-box}
@@ -408,7 +408,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 <p class="status fine" id="productMsg"></p>
 </form></dialog>
 
-<dialog id="listingDialog"><form method="dialog" class="dialog-card" id="listingForm"><div class="dialog-head"><div><h2>Add Retailer Link</h2><p class="muted" id="listingProductName"></p></div><button class="dialog-close" value="cancel">×</button></div><div class="dialog-grid"><div><label>Store *</label><select name="store_slug" required></select></div><div><label>Listing status</label><select name="listing_status"><option value="active">Active listing</option><option value="out_of_stock">Out of stock</option><option value="not_listed">Not listed yet</option><option value="track_only">Track only</option></select></div><div class="wide"><label>Affiliate / tracked URL</label><input name="affiliate_url" type="url" placeholder="https://..."></div><div class="wide"><label>Direct retailer URL (optional)</label><input name="direct_url" type="url" placeholder="https://..."></div></div><p class="fine">For <b>Not listed yet</b> or <b>Track only</b>, a URL is optional. These states never count as live offers or Best Price.</p><div class="actions"><button value="save" id="saveListing">Save Retailer Link</button><button class="subtle" value="cancel">Cancel</button></div><p class="status fine" id="listingMsg"></p></form></dialog>
+<dialog id="listingDialog"><form method="dialog" class="dialog-card" id="listingForm"><div class="dialog-head"><div><h2>Add Retailer Link</h2><p class="muted" id="listingProductName"></p></div><button class="dialog-close" value="cancel">×</button></div><div class="dialog-grid"><div><label>Store *</label><select name="store_slug" required></select></div><div><label>Listing status</label><select name="listing_status"><option value="active">Active listing</option><option value="out_of_stock">Out of stock</option><option value="not_listed">Not listed yet</option><option value="track_only">Track only</option></select></div><div class="wide"><label>Affiliate / tracked URL</label><input name="affiliate_url" type="url" placeholder="https://..."></div><div class="wide"><label>Full product URL (Amazon / Flipkart: needed for the PricePulse extension)</label><input name="direct_url" type="url" placeholder="https://www.amazon.in/dp/B0... or https://www.flipkart.com/...?pid=..."></div></div><p class="fine">For <b>Not listed yet</b> or <b>Track only</b>, a URL is optional. These states never count as live offers or Best Price.</p><div class="actions"><button value="save" id="saveListing">Save Retailer Link</button><button class="subtle" value="cancel">Cancel</button></div><p class="status fine" id="listingMsg"></p></form></dialog>
 
 
 <script>
@@ -437,12 +437,16 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="brand-logo-normalizer.js?v=78.8.20" defer></script>
-<script src="admin-prices.js?v=242" defer></script>
+<script src="admin-prices.js?v=261" defer></script>
 <script src="plus-member-deals-admin.js?v=78.8.145" defer></script>
-<script src="admin-growth-v211.js?v=215" defer></script>
+<script src="admin-growth-v211.js?v=277" defer></script>
 <script src="admin-links-v212.js?v=222" defer></script>
 <script src="admin-linkfix-v223.js?v=223" defer></script>
 <script src="admin-review-v224.js?v=224" defer></script>
+<script src="admin-fullurl-v248.js?v=250" defer></script>
+<script src="admin-extension-v250.js?v=267" defer></script>
+<script src="admin-offers-v268.js?v=270" defer></script>
+<script src="admin-cards-v270.js?v=270" defer></script>
 <script src="admin-deals-v219.js?v=220" defer></script>
 </body></html>
 

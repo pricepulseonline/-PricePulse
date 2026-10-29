@@ -107,6 +107,9 @@ function route(){
   if(!sameView)window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('hashchange',route);
+/* V251: other files (compare-v251.js) can add their own pages */
+window.ppRegisterRoute=(name,fn)=>{routes[name]=fn;const r=parseRoute();if(r&&r.name===name)route();};
+window.ppShowPage=showPage;
 window.ppGoPage=(name,param='')=>{
   const target=`#/${name}${param?'/'+encodeURIComponent(param):''}`;
   if(location.hash===target)route();else location.hash=target;
@@ -220,56 +223,121 @@ const ICON={
   star:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 2.8l2.72 5.51 6.08.88-4.4 4.29 1.04 6.06L12 16.68l-5.44 2.86 1.04-6.06-4.4-4.29 6.08-.88L12 2.8z"/></svg>'
 };
 
-function chartHTML(series,current){
+/* V277 (P23): product page price chart = the extension's chart - area + step line, dashed average, range tabs
+   (1M / 3M / 6M / All), hover = price on that day, drag on the chart = alert target (used by "Set alert").
+   Drawn at the real width of its box (text never stretched) by ppxXcMount(); data kept in PPX_XC. */
+const PPX_XC=new Map();
+const XC_RANGES=[['1M',30],['3M',90],['6M',182],['All',100000]];
+function xcAvail(pts){const span=pts.length?(Date.now()-pts[0].time)/DAY:0;return {'1M':true,'3M':span>30,'6M':span>90,'All':span>182};}
+function xcRange(pts,key){const days=(XC_RANGES.find(r=>r[0]===key)||XC_RANGES[0])[1];const from=Date.now()-days*DAY;const out=pts.filter(p=>p.time>=from);const before=pts.filter(p=>p.time<from).pop();if(before)out.unshift({...before,time:from});return out.length?out:pts.slice(-1);}
+function xcRound(v){return v>=5000?Math.round(v/100)*100:v>=500?Math.round(v/10)*10:Math.round(v);}
+function xcK(v){return v>=1000?'₹'+(v/1000).toFixed(v>=100000?0:1).replace(/\.0$/,'')+'k':M(v);}
+function xcSVG(st,W){
+  const pts=xcRange(st.pts,st.range),H=210,L=52,R=10,T=14,B=26;
+  const avg=pts.reduce((a,p)=>a+p.price,0)/pts.length;st.avg=avg;
+  const ps=pts.map(p=>p.price).concat([avg,st.target].filter(Number.isFinite));
+  let lo=Math.min(...ps),hi=Math.max(...ps);
+  if(hi===lo){hi+=Math.max(1,hi*.02);lo-=Math.max(1,lo*.02);}
+  const padY=(hi-lo)*.12;lo-=padY;hi+=padY;
+  const t0=pts[0].time,t1=Math.max(Date.now(),t0+DAY);
+  const X=t=>L+(W-L-R)*((t-t0)/(t1-t0)),Y=p=>T+(H-T-B)*(1-(p-lo)/(hi-lo));
+  let d='';pts.forEach((pt,k)=>{const x=X(pt.time),y=Y(pt.price);d+=k?` H${x.toFixed(1)} V${y.toFixed(1)}`:`M${x.toFixed(1)} ${y.toFixed(1)}`;});
+  d+=` H${X(t1).toFixed(1)}`;
+  const area=`${d} V${(H-B).toFixed(1)} H${L} Z`;
+  const ticks=[hi-padY,(hi+lo)/2,lo+padY].map(v=>`<text x="${L-8}" y="${(Y(v)+3.5).toFixed(1)}" text-anchor="end">${xcK(v)}</text><line class="gl" x1="${L}" x2="${W-R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/>`).join('');
+  const months=[],span=t1-t0,step=span>120*DAY?2:1,m=new Date(t0);m.setDate(1);m.setMonth(m.getMonth()+1);
+  for(let k=0;m.getTime()<t1&&k<24;k++,m.setMonth(m.getMonth()+step))months.push(m.getTime());
+  const dayFmt=t=>new Date(t).toLocaleDateString('en-IN',span<=45*DAY?{day:'numeric',month:'short'}:{month:'short'});
+  const xs=span<=45*DAY?[t0,t0+span/2]:months;
+  const xl=xs.filter(t=>X(t)<W-R-60).map(t=>`<text x="${X(t).toFixed(1)}" y="${H-7}" text-anchor="middle">${dayFmt(t)}</text>`).join('')+`<text x="${W-R}" y="${H-7}" text-anchor="end">Today</text>`;
+  const last=pts[pts.length-1];
+  const yTop=Y(hi-padY),yBot=Y(lo+padY),yAvg=Y(avg);
+  const off=Math.min(.9,Math.max(.1,(yAvg-yTop)/Math.max(1,yBot-yTop))).toFixed(3);
+  st.geo={pts,X,Y,t0,t1,L,R,W,H,T,B,lo,hi};
+  const tg=Number.isFinite(st.target)?`<g class="tgt"><line x1="${L}" x2="${W-R}" y1="${Y(st.target).toFixed(1)}" y2="${Y(st.target).toFixed(1)}"/><rect x="${W-R-104}" y="${(Y(st.target)-10).toFixed(1)}" width="104" height="20" rx="6"/><text x="${W-R-52}" y="${(Y(st.target)+4).toFixed(1)}" text-anchor="middle">TARGET ${M(st.target)}</text></g>`:'';
+  const uid='xc'+Math.random().toString(36).slice(2,7);
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Lowest verified price over time. Average ${H_(M(Math.round(avg)))}, today ${H_(M(last.price))}.">
+    <defs><linearGradient id="${uid}l" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${yTop.toFixed(1)}" y2="${yBot.toFixed(1)}"><stop offset="0" stop-color="#E5484D"/><stop offset="${off}" stop-color="#E8B954"/><stop offset="1" stop-color="#1F9D63"/></linearGradient>
+      <linearGradient id="${uid}a" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${yTop.toFixed(1)}" y2="${(H-B).toFixed(1)}"><stop offset="0" stop-color="#E5484D" stop-opacity=".14"/><stop offset="${off}" stop-color="#E8B954" stop-opacity=".09"/><stop offset="1" stop-color="#1F9D63" stop-opacity=".02"/></linearGradient></defs>
+    ${ticks}
+    <path d="${area}" fill="url(#${uid}a)"/>
+    <path d="${d}" fill="none" stroke="url(#${uid}l)" stroke-width="2.4" stroke-linejoin="round"/>
+    <line class="avg" x1="${L}" x2="${W-R}" y1="${yAvg.toFixed(1)}" y2="${yAvg.toFixed(1)}"/><text class="avgt" x="${L+6}" y="${(yAvg-5).toFixed(1)}">AVG ${M(Math.round(avg))}</text>
+    ${tg}
+    <circle cx="${X(Date.now()).toFixed(1)}" cy="${Y(last.price).toFixed(1)}" r="4.5" fill="#E8B954" stroke="#fff" stroke-width="2"/>
+    ${xl}
+    <g class="hv" style="display:none"><line class="hl" y1="${T}" y2="${H-B}"/><circle class="hd" r="4.5"/><g class="hb"><rect rx="7" height="34"/><text class="h1"></text><text class="h2"></text></g></g>
+  </svg>`;
+}
+const H_=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function xcDraw(box){
+  const st=PPX_XC.get(box.dataset.xc);if(!st)return;
+  const plot=box.querySelector('.ppx-xc-plot');const W=Math.max(300,Math.round(plot.getBoundingClientRect().width||640));
+  plot.innerHTML=xcSVG(st,W);
+  const av=xcAvail(st.pts);
+  box.querySelectorAll('[data-xc-r]').forEach(b=>{const k=b.dataset.xcR;b.classList.toggle('is-on',k===st.range);b.disabled=!av[k];b.title=av[k]?'':'Not enough history yet';});
+  const tv=box.querySelector('.ppx-xc-tv');if(tv)tv.textContent=Number.isFinite(st.target)?M(st.target):'';
+  box.dataset.ready='1';
+}
+function ppxXcMount(){document.querySelectorAll('.ppx-xc[data-xc]').forEach(b=>{if(!b.dataset.ready||b.dataset.w!==String(Math.round(b.getBoundingClientRect().width))){b.dataset.w=String(Math.round(b.getBoundingClientRect().width));xcDraw(b);}});}
+new MutationObserver(()=>{if(document.querySelector('.ppx-xc[data-xc]:not([data-ready])'))ppxXcMount();}).observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener('resize',()=>{clearTimeout(ppxXcMount._t);ppxXcMount._t=setTimeout(ppxXcMount,150);});
+function xcHover(box,clientX){
+  const st=PPX_XC.get(box.dataset.xc),g=box.querySelector('.hv'),svg=box.querySelector('svg');if(!st||!st.geo||!g||!svg)return;
+  const c=st.geo,r=svg.getBoundingClientRect();
+  const x=Math.max(c.L,Math.min(c.W-c.R,(clientX-r.left)*c.W/r.width));
+  const t=c.t0+(x-c.L)/(c.W-c.L-c.R)*(c.t1-c.t0);
+  let pt=c.pts[0];for(const q of c.pts){if(q.time<=t)pt=q;else break;}
+  const y=c.Y(pt.price);g.style.display='';
+  const hl=g.querySelector('.hl');hl.setAttribute('x1',x.toFixed(1));hl.setAttribute('x2',x.toFixed(1));
+  const hd=g.querySelector('.hd');hd.setAttribute('cx',x.toFixed(1));hd.setAttribute('cy',y.toFixed(1));
+  const now=Date.now(),day=Math.min(t,now);
+  const t1=M(pt.price),t2=(now-day<DAY?'Today':new Date(day).toLocaleDateString('en-IN',{day:'numeric',month:'short'}))+(pt.store?' · '+pt.store:'');
+  const w=Math.max(t1.length*8,t2.length*6)+18;let bx=x+12;if(bx+w>c.W-c.R)bx=x-12-w;let by=y-44;if(by<c.T)by=y+12;
+  const rc=g.querySelector('rect');rc.setAttribute('x',bx.toFixed(1));rc.setAttribute('y',by.toFixed(1));rc.setAttribute('width',w.toFixed(1));
+  const a=g.querySelector('.h1'),b=g.querySelector('.h2');a.textContent=t1;a.setAttribute('x',(bx+9).toFixed(1));a.setAttribute('y',(by+15).toFixed(1));b.textContent=t2;b.setAttribute('x',(bx+9).toFixed(1));b.setAttribute('y',(by+28).toFixed(1));
+}
+function xcSetTarget(box,clientY){
+  const st=PPX_XC.get(box.dataset.xc),svg=box.querySelector('svg');if(!st||!st.geo||!svg)return;
+  const c=st.geo,r=svg.getBoundingClientRect();
+  const y=Math.max(c.T,Math.min(c.H-c.B,(clientY-r.top)*c.H/r.height));
+  const v=c.hi-(y-c.T)/(c.H-c.T-c.B)*(c.hi-c.lo);
+  st.target=Math.max(1,xcRound(v));xcDraw(box);box.classList.add('has-target');
+  const s=document.querySelector('.ppx-alert-suggest');if(s)s.innerHTML=`Your target <b>${M(st.target)}</b>${Number.isFinite(st.cur)?` <span>(${st.cur>st.target?M(st.cur-st.target)+' below':'at or above'} today's best)</span>`:''}`;
+}
+document.addEventListener('pointerdown',e=>{
+  const plot=e.target.closest&&e.target.closest('.ppx-xc-plot');if(!plot)return;
+  const box=plot.closest('.ppx-xc');box.__drag=true;try{plot.setPointerCapture(e.pointerId);}catch(_){}
+  xcSetTarget(box,e.clientY);e.preventDefault();
+});
+document.addEventListener('pointermove',e=>{
+  const plot=e.target.closest&&e.target.closest('.ppx-xc-plot');
+  document.querySelectorAll('.ppx-xc').forEach(b=>{if(b.__drag)xcSetTarget(b,e.clientY);});
+  if(plot)xcHover(plot.closest('.ppx-xc'),e.clientX);
+},{passive:true});
+document.addEventListener('pointerup',()=>{document.querySelectorAll('.ppx-xc').forEach(b=>{b.__drag=false;});});
+document.addEventListener('mouseout',e=>{const plot=e.target.closest&&e.target.closest('.ppx-xc-plot');if(plot&&!plot.contains(e.relatedTarget)){const g=plot.querySelector('.hv');if(g)g.style.display='none';}});
+document.addEventListener('click',e=>{
+  const r=e.target.closest&&e.target.closest('[data-xc-r]');
+  if(r){const box=r.closest('.ppx-xc'),st=PPX_XC.get(box.dataset.xc);if(st&&!r.disabled){st.range=r.dataset.xcR;xcDraw(box);}return;}
+  const go=e.target.closest&&e.target.closest('[data-xc-alert]');
+  if(go){const box=go.closest('.ppx-xc'),st=PPX_XC.get(box.dataset.xc);if(st)pcAlert(box.dataset.xc,st.target);}
+});
+function ppxChartTarget(id){const st=PPX_XC.get(String(id));return st&&st.touched!==false&&Number.isFinite(st.target)?st.target:null;}
+function chartHTML(series,current,productId){
   const pts=[...series];
   const lastT=pts.length?pts[pts.length-1].time:0;
   if(Number.isFinite(current)&&(!pts.length||pts[pts.length-1].price!==current||Date.now()-lastT>3600000))pts.push({time:Date.now(),price:current});
-  if(pts.length<2)return '';
-  const W=640,Hh=200,pad=14;
-  const prices=pts.map(p=>p.price);
-  let lo=Math.min(...prices),hi=Math.max(...prices);
-  const spread=Math.max(hi-lo,hi*0.02);
-  lo=lo-spread*0.25;hi=hi+spread*0.25;
-  const t0=pts[0].time,t1=pts[pts.length-1].time||t0+1;
-  const x=t=>pad+((t-t0)/Math.max(1,t1-t0))*(W-pad*2);
-  const y=p=>pad+((hi-p)/Math.max(1,hi-lo))*(Hh-pad*2);
-  const line=pts.map((p,i)=>`${i?'L':'M'}${x(p.time).toFixed(1)} ${y(p.price).toFixed(1)}`).join(' ');
-  const area=`${line} L${x(t1).toFixed(1)} ${Hh} L${x(t0).toFixed(1)} ${Hh} Z`;
-  const last=pts[pts.length-1];
-  const fmt=t=>new Intl.DateTimeFormat('en-IN',{day:'numeric',month:'short'}).format(new Date(t));
-  /* V244: round y-axis values (e.g. 47,000 / 46,000 / 45,000) placed exactly at their own height */
-  let tickVals=[];
-  {const rng=hi-lo,raw=rng/3,mag=Math.pow(10,Math.floor(Math.log10(Math.max(raw,1))));const step=[1,2,2.5,5,10].map(k=>k*mag).find(v=>v>=raw)||raw;
-   for(let v=Math.ceil((lo+rng*0.05)/step)*step;v<=hi-rng*0.05&&tickVals.length<4;v+=step)tickVals.push(Math.round(v));
-   if(tickVals.length<2)tickVals=[hi-rng*0.15,(hi+lo)/2,lo+rng*0.15].map(v=>Math.round(v/10)*10);}
-  const ticks=tickVals.map(v=>`<span style="top:${(y(v)/Hh*100).toFixed(2)}%">${M(v)}</span>`).join('');
-  const gridLines=tickVals.map(v=>`<line x1="0" x2="${W}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="ppx-grid"/>`).join('');
-  const mid=pts[Math.floor(pts.length/2)];
-  const aria=`Lowest verified price moved from ${M(pts[0].price)} on ${fmt(pts[0].time)} to ${M(last.price)} on ${fmt(last.time)}`;
-  /* V241 (P1): the line colour follows the price level - low = green, middle = amber, high = red; a tiny range stays one calm colour */
+  if(pts.length<2)return `<p class="ppx-fine ppx-xc-none">Not enough history yet. Each verified check adds a point here.</p>`;
+  const prices=pts.map(p=>p.price),last=pts[pts.length-1];
   const dMin=Math.min(...prices),dMax=Math.max(...prices),dRng=dMin>0?(dMax-dMin)/dMin:0;
-  const LV_G='#2EA06E',LV_A='#F0A020',LV_R='#E5484D',LV_N='#6B7A90';
-  let lvDefs='',lvStroke='',lvFillC=LV_G,lvDot=LV_G;
-  if(dRng>=0.03&&dMax>dMin){
-    const yTop=y(dMax).toFixed(1),yBot=y(dMin).toFixed(1);
-    const stops=`<stop offset="0" stop-color="${LV_R}"/><stop offset=".5" stop-color="${LV_A}"/><stop offset="1" stop-color="${LV_G}"/>`;
-    lvDefs=`<linearGradient id="ppxLv" gradientUnits="userSpaceOnUse" x1="0" y1="${yTop}" x2="0" y2="${yBot}">${stops}</linearGradient>`;
-    lvStroke='url(#ppxLv)';
-    const pos=(last.price-dMin)/(dMax-dMin);
-    lvDot=pos<=.34?LV_G:pos>=.67?LV_R:LV_A;lvFillC=lvDot;
-  }else{
-    const flatTone=last.price<=dMin&&pts.length>2&&pts[0].price>last.price?LV_G:LV_N;
-    lvStroke=flatTone;lvDot=flatTone;lvFillC=flatTone;
-  }
-  /* V242 (T1): fill follows the line colour point by point and fades downwards; histogram strip = price vs average */
-  const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
-  const mixC=(a,b,t)=>{const A=hx(a),B=hx(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');};
-  const lvAt=pr=>{const t=Math.max(0,Math.min(1,(pr-dMin)/Math.max(1,dMax-dMin)));return t>=.5?mixC(LV_A,LV_R,(t-.5)*2):mixC(LV_G,LV_A,t*2);};
-  const lvLevels=dRng>=0.03&&dMax>dMin;
-  const fillStops=lvLevels?pts.map(p=>`<stop offset="${((x(p.time)-x(t0))/Math.max(1,x(t1)-x(t0))).toFixed(4)}" stop-color="${lvAt(p.price)}"/>`).join(''):`<stop offset="0" stop-color="${lvFillC}"/><stop offset="1" stop-color="${lvFillC}"/>`;
-  const fillDefs=`<linearGradient id="ppxFillH" x1="0" y1="0" x2="1" y2="0">${fillStops}</linearGradient><linearGradient id="ppxFillV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset=".65" stop-color="#fff" stop-opacity=".07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="ppxFillM" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${Hh}"><rect x="0" y="0" width="${W}" height="${Hh}" fill="url(#ppxFillV)"/></mask>`;
   const avgP=prices.reduce((a,b)=>a+b,0)/prices.length;
-  const avgLine=dRng>=0.01?`<line x1="0" x2="${W}" y1="${y(avgP).toFixed(1)}" y2="${y(avgP).toFixed(1)}" class="ppx-avgline" vector-effect="non-scaling-stroke"/>`:'';
+  const id=String(productId||'p');
+  const prev=PPX_XC.get(id);
+  const av=xcAvail(pts);
+  const range=prev&&prev.range&&av[prev.range]?prev.range:(av['6M']?'6M':av['3M']?'3M':'1M');
+  const sugg=Number.isFinite(current)?Math.floor((current*0.98)/100)*100:null;
+  PPX_XC.set(id,{pts,range,cur:current,target:prev&&Number.isFinite(prev.target)?prev.target:(sugg>0?sugg:null)});
   let histHTML='';
   if(dRng>=0.01&&pts.length>=3){
     let hp=prices;
@@ -282,17 +350,11 @@ function chartHTML(series,current){
     const msg=nowD<=-1?'Cheaper than usual · good time to buy':nowD>=1?'Costlier than usual · price was lower earlier':'Close to the usual price';
     histHTML=`<div class="ppx-hist"><div class="ppx-hist-head"><div class="ppx-hist-l"><b>Price vs average</b><span class="ppx-hist-pill ${tone}">${msg}</span></div><span class="ppx-hist-key">green = cheaper · red = costlier</span></div><div class="ppx-hist-bars" aria-hidden="true">${bars}</div></div>`;
   }
-  return `<div class="ppx-chart"><div class="ppx-chart-y">${ticks}</div><div class="ppx-chart-plot">
-    <svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" role="img" aria-label="${H(aria)}">
-      <defs>${fillDefs}${lvDefs}</defs>
-      ${gridLines}
-      <path d="${area}" fill="url(#ppxFillH)" mask="url(#ppxFillM)"/>${avgLine}
-      <path d="${line}" class="ppx-line" vector-effect="non-scaling-stroke" style="stroke:${lvStroke}"/>
-    </svg>
-    <i class="ppx-chart-dot" style="left:${(x(last.time)/W*100).toFixed(2)}%;top:${(y(last.price)/Hh*100).toFixed(2)}%;background:${lvDot}"></i>
-    ${ppxTipData(pts.map(p=>[x(p.time)/W,y(p.price)/Hh,p.time,p.price,p.store||'']))}
-    </div></div>
-    <div class="ppx-chart-x"><span>${fmt(pts[0].time)}</span>${pts.length>3?`<span>${fmt(mid.time)}</span>`:''}<span class="is-now">${fmt(last.time)} · ${M(last.price)}</span></div>${histHTML}`;
+  return `<div class="ppx-xc" data-xc="${H(id)}">
+    <div class="ppx-xc-top"><div class="ppx-xc-tabs" role="group" aria-label="Chart range">${XC_RANGES.map(([k])=>`<button type="button" data-xc-r="${k}">${k}</button>`).join('')}</div><span class="ppx-xc-hint">Drag on the chart to set your target</span></div>
+    <div class="ppx-xc-plot"></div>
+    <div class="ppx-xc-foot"><span><i class="k-line" aria-hidden="true"></i>Lowest verified price</span><span><i class="k-avg" aria-hidden="true"></i>Average</span><span><i class="k-tgt" aria-hidden="true"></i>Your target <b class="ppx-xc-tv"></b></span><button type="button" class="ppx-xc-go" data-xc-alert>Set alert at this price</button></div>
+  </div>${histHTML}`;
 }
 
 /* V243 (W1): Lowest / Highest / Verified checks cards - icon, date line, colour only when the price range is meaningful (>=3%, same rule as the graph) */
@@ -400,6 +462,7 @@ function productPageHTML(productId){
       <div class="ppx-hero-kicker">BEST VERIFIED PRICE</div>
       <div class="ppx-hero-price"><b>${M(lowest)}</b>${saving?`<s>${M(saving.mrp)}</s><span class="ppx-save-tag">You save ${M(saving.saving)} · ${saving.percent}% off</span>`:''}</div>
       <p class="ppx-hero-note">${whereLine}${extra}</p>
+      ${cbSpan(selected.name,selected.price,catalog?.category||card?.dataset.category||'','hero')}
       ${vsLine}
       ${range}
       ${dealInsightHTML(dealAnalysis(productId,lowest,saving,available.filter(o=>o.price!=null&&o.availability!=='out_of_stock').length))}
@@ -437,6 +500,7 @@ function productPageHTML(productId){
       <div class="ppx-store-copy">
         <div class="ppx-store-price">${o.price!=null?`<b>${M(o.price)}</b>`:'<b class="is-na">Check latest price</b>'}${tag}</div>
         ${sav?`<div class="ppx-store-save">MRP <s>${M(sav.mrp)}</s> · Save ${M(sav.saving)} (${sav.percent}%)</div>`:''}
+        ${o.price!=null&&o.availability!=='out_of_stock'?cbSpan(o.name,o.price,catalog?.category||card?.dataset.category||'','row'):''}
         ${meta.length?`<div class="ppx-store-meta">${meta.join('<i aria-hidden="true">·</i>')}</div>`:''}
         ${o.offerText?`<div class="ppx-store-offer">${H(o.offerText)}</div>`:''}
       </div>
@@ -445,7 +509,7 @@ function productPageHTML(productId){
   }).join('');
 
   /* history */
-  const chart=chartHTML(ins.series,lowest);
+  const chart=chartHTML(ins.series,lowest,productId);
   const tieBlock=bestOffers.length>1&&typeof ppTieHistoryHTML==='function'?ppxTidyTie(ppTieHistoryHTML(tie)):'';
   /* V245 (Y1): big fall badge instead of the thin line; one percent only, with its reference date */
   let histLine='';
@@ -612,7 +676,9 @@ pageView.addEventListener('click',async e=>{
     try{
       const best=Number(String(document.querySelector('.ppx-product')?.dataset.bestPrice||'').replace(/[^\d]/g,''));
       const input=document.querySelector('#dealAlertForm input[name="target"]');
-      if(input&&!input.value&&Number.isFinite(best)&&best>0)input.value=String(Math.floor((best*0.98)/100)*100);
+      const chartT=ppxChartTarget(id); /* V277: target dragged on the chart wins */
+      if(input&&chartT){input.value=String(chartT);input.dispatchEvent(new Event('input',{bubbles:true}));}
+      else if(input&&!input.value&&Number.isFinite(best)&&best>0)input.value=String(Math.floor((best*0.98)/100)*100);
     }catch(_){}
     return;
   }
@@ -633,7 +699,10 @@ pageView.addEventListener('click',async e=>{
     const shell=btn.closest('.ppx-product');
     const nm=shell?.dataset.productName||'PricePulse deal';
     const bp=shell?.dataset.bestPrice||'',bs=shell?.dataset.bestStore||'';
-    const url=location.href;
+    /* V277 (P27): share the product's own share page (p/<id>/) so WhatsApp / Facebook show its picture and name;
+       that page sends the visitor on to #/product/<id>. Local file:// testing keeps the plain link. */
+    const pid=shell?.dataset.productId||'';
+    const url=/^https?:$/.test(location.protocol)&&/^[a-z0-9][a-z0-9-]{1,80}$/.test(pid)?`${location.origin}/p/${pid}/`:location.href;
     const text=bp&&bs?`${nm}: best verified price ${bp} on ${bs} via PricePulse.`:`${nm}: compare verified store prices on PricePulse.`;
     try{
       if(navigator.share)await navigator.share({title:`${nm} | PricePulse`,text,url});
@@ -1239,6 +1308,10 @@ function accountHTML(){
       <a href="#/alerts"><b>${alerts}<small>/${limit}</small></b><span>Active deal alerts</span></a>
       <a href="#/plus"><b>${plus?'Active':'Free'}</b><span>Membership</span></a>
     </div>
+    <section class="pp-refer" aria-label="Invite and earn"><span class="pp-refer-ic" aria-hidden="true">🎁</span>
+      <div><span class="ppx-eyebrow">INVITE &amp; EARN</span><h2>You get ₹100. Your friend gets ₹100.</h2>
+        <p>Both rewards unlock step by step from your friend's confirmed shopping. On your own shopping, ${Math.round(CB_SHARE*100)}% of what the store pays us comes back to you as cashback (not on Amazon).</p></div>
+      <a class="ppx-btn ppx-btn-gold" href="wallet.html#invite">Invite friends →</a></section>
     <div class="ppx-acc-grid">
       <section class="ppx-panel ppx-acc-details"><div class="ppx-panel-head"><h2>Profile details</h2><button type="button" class="ppx-link" data-ppx-acc="edit">Edit</button></div>
         <dl>
@@ -1395,7 +1468,7 @@ const SEARCH_ICON='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" strok
 const dealsNav=document.querySelector('.category-nav .deals-nav');
 if(dealsNav){dealsNav.classList.add('ppx-deals-pill');dealsNav.innerHTML=`${FLAME}<span>Deals</span>`;}
 const headerInput=document.getElementById('searchInput');
-if(headerInput){headerInput.placeholder='Search iPhone, air fryer, earbuds…';headerInput.setAttribute('autocomplete','off');}
+/* V253: the one search box (#siteSearch) lives under the category row in index.html */
 
 /* product index for search + hero */
 function productIndex(){
@@ -1455,6 +1528,8 @@ function attachSuggest(input,{onSubmitAll}){
   };
   const render=()=>{
     const q=input.value;
+    /* V277 (P21): a pasted store link is compared, not searched - no suggestion list for links */
+    if(/^\s*(https?:\/\/|www\.)|\.(com|in|co)\/\S/i.test(q)){close();return;}
     items=rankMatches(q);
     if(String(q).trim().length<2){close();return;}
     const rows=items.map((p,i)=>{
@@ -1498,24 +1573,6 @@ if(hero&&heroCopy){
   plusLine.id='ppxHeroPlus';
   plusLine.innerHTML=`<span class="ppx-hero-plus-new">NEW</span><span>PricePulse <b>Plus</b> · ₹99/year · Get ₹100 back</span><i aria-hidden="true">→</i>`;
   heroCopy.prepend(plusLine);
-  /* 4: hero search + trending chips */
-  const oldBtn=heroCopy.querySelector('.primary');
-  const form=document.createElement('form');
-  form.className='ppx-hero-search';
-  form.setAttribute('role','search');
-  form.innerHTML=`<label for="ppxHeroSearch" class="ppx-sr">Search products</label><span class="ppx-hs-icon">${SEARCH_ICON}</span><input id="ppxHeroSearch" type="search" placeholder="Search any product…" autocomplete="off"><button type="submit" class="ppx-btn ppx-btn-primary">Compare prices</button>`;
-  const chips=document.createElement('div');
-  chips.className='ppx-hero-chips';
-  chips.id='ppxHeroChips';
-  oldBtn?oldBtn.replaceWith(form):heroCopy.appendChild(form);
-  form.after(chips);
-  form.addEventListener('submit',e=>{
-    e.preventDefault();
-    const v=form.querySelector('input').value.trim();
-    if(headerInput)headerInput.value=v;
-    document.getElementById('siteSearch')?.requestSubmit();
-  });
-  attachSuggest(form.querySelector('input'),{onSubmitAll:()=>form.requestSubmit()});
   /* 6: benefits as a clean trust strip */
   const benefits=heroCopy.querySelector('.benefits');
   if(benefits){
@@ -1525,12 +1582,6 @@ if(hero&&heroCopy){
     const icons=[sv('<path d="M7 4 3 8l4 4"/><path d="M3 8h13"/><path d="m17 12 4 4-4 4"/><path d="M21 16H8"/>'),sv('<path d="M12 3 5 6v5c0 4.6 3 8.4 7 10 4-1.6 7-5.4 7-10V6l-7-3Z"/><path d="m9 12 2.2 2.2L15.5 10"/>'),sv('<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.8l2.6 1.6"/><path d="M10 2.5h4"/><path d="M18.4 6.6 20 5"/>')];
     benefits.querySelectorAll(':scope > div').forEach((d,i)=>{const ic=d.querySelector('i');if(ic)ic.outerHTML=`<span class="ppx-ht-icon">${icons[i]||ICON.check}</span>`;});
   }
-}
-function renderHeroChips(){
-  const box=document.getElementById('ppxHeroChips');
-  if(!box)return;
-  const list=productIndex().slice(0,5);
-  box.innerHTML=`<span class="ppx-chip-label">Trending:</span>`+list.map(p=>`<a class="ppx-chip" href="#/product/${encodeURIComponent(p.id)}">${H(p.name.split(/\s+/).slice(0,3).join(' '))}</a>`).join('');
 }
 /* 5 + 10: live comparison card / today's best drop */
 function pickHeroProduct(){
@@ -1611,7 +1662,7 @@ function animateHeroCard(){
   wrap.addEventListener('pointerleave',()=>{stage.classList.remove('is-tilting');stage.style.removeProperty('--ry');stage.style.removeProperty('--rx');});
 }
 function syncHeroPlus(){const el=document.getElementById('ppxHeroPlus');if(el)el.hidden=typeof ppPlusIsActive==='function'&&ppPlusIsActive();}
-renderHeroChips();renderHeroCard();syncHeroPlus();
+renderHeroCard();syncHeroPlus();
 if(typeof window.ppUpdateHomeCardPrices==='function'){
   const orig=window.ppUpdateHomeCardPrices;
   window.ppUpdateHomeCardPrices=function(){const r=orig.apply(this,arguments);try{renderHeroCard()}catch(_){}return r;};
@@ -1743,7 +1794,7 @@ function renderDiscover(){
   </div>`;
 }
 /* ---- V210 Discover: spotlight + colour tiles ---- */
-const DX_COLOR={samsung:'#1428A0',boat:'#E21B23',philips:'#0B5ED7',dell:'#007DB8',puma:'#1A1A1A',oneplus:'#EB0028',nutripro:'#2EA06E',dotkey:'#B8862B',amazon:'#FF9900',flipkart:'#2874F0',myntra:'#FF3F6C',ajio:'#2C4154',croma:'#12A88A',meesho:'#9F2089',tatacliq:'#C2185B',reliance:'#0F5BA8',reliancedigital:'#0F5BA8',vijaysales:'#E31E24',jiomart:'#0078AD',nykaa:'#E80071',purplle:'#7B2CBF',aosmith:'#C8102E',adidas:'#1A1A1A',apple:'#5F6368',asus:'#00539B',atomberg:'#F26A1B',campus:'#E8402A',casio:'#C8102E',cetaphil:'#0072BC',hp:'#0096D6',hawkins:'#C8102E',jbl:'#F36F21',kent:'#1E4D9B',lg:'#A50034',minimalist:'#3B3B3B',noise:'#1A1A1A',nothing:'#1A1A1A',oppo:'#1D8F5A',pigeon:'#E1262C',prestige:'#C8102E',sony:'#1A1A1A',thedermaco:'#00A19B',whirlpool:'#D99A00',xiaomi:'#FF6900',realme:'#D4A000',vivo:'#415FFF',shopsy:'#5B3FD9'};
+const DX_COLOR={samsung:'#1428A0',boat:'#E21B23',philips:'#0B5ED7',dell:'#007DB8',puma:'#1A1A1A',oneplus:'#EB0028',nutripro:'#2EA06E',dotkey:'#B8862B',amazon:'#FF9900',flipkart:'#2874F0',myntra:'#FF3F6C',ajio:'#314F44',croma:'#12A88A',meesho:'#9F2089',tatacliq:'#C2185B',reliance:'#0F5BA8',reliancedigital:'#0F5BA8',vijaysales:'#E31E24',jiomart:'#37765F',nykaa:'#E80071',purplle:'#7B2CBF',aosmith:'#C8102E',adidas:'#1A1A1A',apple:'#616663',asus:'#326955',atomberg:'#F26A1B',campus:'#E8402A',casio:'#C8102E',cetaphil:'#0072BC',hp:'#0096D6',hawkins:'#C8102E',jbl:'#F36F21',kent:'#1E4D9B',lg:'#A50034',minimalist:'#3B3B3B',noise:'#1A1A1A',nothing:'#1A1A1A',oppo:'#1D8F5A',pigeon:'#E1262C',prestige:'#C8102E',sony:'#1A1A1A',thedermaco:'#346D58',whirlpool:'#D99A00',xiaomi:'#FF6900',realme:'#D4A000',vivo:'#415FFF',shopsy:'#5B3FD9'};
 const dxColor=k=>DX_COLOR[k]||DX_COLOR[String(k||'').toLowerCase().replace(/[^a-z0-9]/g,'')]||'';
 const DX_LOGO_FIX={nutripro:'logos/official/nutripro-clean.png',oneplus:'logos/official/oneplus-trim.png',samsung:'logos/official/samsung-trim.png'};
 function dxLiveStats(){
@@ -2144,6 +2195,66 @@ function openStoreHTML(link){
 let linkPanel=null;
 function closeLinkPanel(){linkPanel?.remove();linkPanel=null;}
 const EXTRA_STORE_LOGOS={'Reliance Digital':'logos/reliance-digital-logo.png','Tata CLiQ':'logos/tatacliq-logo.png','JioMart':'logos/jiomart-logo.png'};
+/* V277 (B2): script.js RETAILER_LOGOS knows only 6 stores, so store rows built by ppPopupRetailerRowLogo showed the NAME for
+   Reliance Digital, Vijay Sales, Tata CLiQ, Nykaa... Add the logo files we already ship (script.js itself stays unchanged). */
+try{if(typeof RETAILER_LOGOS==='object'&&RETAILER_LOGOS){Object.entries({'Reliance Digital':'reliance-digital-logo.png','Tata CLiQ':'tatacliq-logo.png','JioMart':'jiomart-logo.png','Vijay Sales':'stores/vijay-sales.svg','Nykaa':'stores/nykaa.svg','Nykaa Fashion':'stores/nykaa-fashion.svg','Purplle':'stores/purplle.svg','Shopsy':'stores/shopsy.svg','Adidas':'stores/adidas.svg'}).forEach(([k,v])=>{if(!RETAILER_LOGOS[k])RETAILER_LOGOS[k]=v;});}}catch(_){}
+/* ---------- V277 (P22): cashback - DISPLAY ONLY (estimate). The real wallet / payouts are Step 4. ----------
+   User gets 40% of PricePulse's affiliate earning. Rates (commission % per store, optional per category) come from
+   Admin > Growth > Cashback rates (RPC pp_cashback_rates_public). No rate = no line. Amazon: never (Associates rules).
+   Templates only drop a <span class="pp-cb" ...> placeholder; cbFill() writes the text once the rates are loaded. */
+const CB_SHARE=0.40,CB_MIN=5;
+let cbRates=null,cbP=null;
+const cbKey=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const cbBlocked=s=>/^amazon/.test(cbKey(s));
+function cbLoad(force){
+  if(cbP&&!force)return cbP;
+  cbP=(async()=>{try{
+    if(typeof supabaseClient==='undefined'||!supabaseClient)return [];
+    const r=await supabaseClient.rpc('pp_cashback_rates_public');
+    return r.error||!Array.isArray(r.data)?[]:r.data;
+  }catch(_){return [];}})().then(l=>{cbRates=l.filter(x=>x&&x.store&&Number(x.commission_pct)>0&&!cbBlocked(x.store));cbDecorate();cbFill(true);try{window.dispatchEvent(new Event('pp-cashback'));}catch(_){}return cbRates;});
+  return cbP;
+}
+function cbRate(store,cat){
+  if(!cbRates||!store||cbBlocked(store))return 0;
+  const k=cbKey(store),c=String(cat||'').toLowerCase(),rs=cbRates.filter(r=>cbKey(r.store)===k);
+  const hit=(c&&rs.find(r=>String(r.category||'*').toLowerCase()===c))||rs.find(r=>!r.category||r.category==='*');
+  return hit?Number(hit.commission_pct):0;
+}
+function cbAmount(store,price,cat){const r=cbRate(store,cat);if(!r||!Number.isFinite(price)||price<=0)return 0;const a=Math.floor(price*r/100*CB_SHARE);return a>=CB_MIN?a:0;}
+function cbSpan(store,price,cat,v){return `<span class="pp-cb pp-cb-${v||'row'}" data-cb-s="${H(store||'')}" data-cb-p="${Number.isFinite(price)?price:''}" data-cb-c="${H(String(cat||'').toLowerCase())}"></span>`;}
+/* V277 (user): show a RANGE, not one exact number - the final amount depends on what the store confirms.
+   Top of the range = our 40% estimate (never promise more than that); bottom = about 60% of it. Small amounts: "up to". */
+function cbRange(a){const hi=a>=25?Math.floor(a/5)*5:a,lo=Math.floor(a*0.6/5)*5;return lo>=10&&lo<hi?[lo,hi]:[0,hi];}
+function cbRangeTxt(a,short){const [lo,hi]=cbRange(a);const f=v=>'₹'+v.toLocaleString('en-IN');return lo?`${f(lo)}–${f(hi)}`:(short?'up to ':'Up to ')+f(hi);}
+function cbText(v,a){
+  if(v==='chip')return '+ Cashback';
+  if(v==='tag')return `+${cbRangeTxt(a,true)} cashback`;
+  if(v==='stack')return `<b>+ ${cbRangeTxt(a,true)} cashback</b><small>in your PricePulse wallet after the return period · est.</small>`;
+  return `<b>+ ${cbRangeTxt(a,true)} cashback</b><small>est. · after the return period</small>`;
+}
+function cbFill(reset){
+  if(reset)document.querySelectorAll('.pp-cb[data-done]').forEach(e=>e.removeAttribute('data-done'));
+  if(!cbRates)return;
+  document.querySelectorAll('.pp-cb:not([data-done])').forEach(e=>{
+    e.dataset.done='1';const v=(e.className.match(/pp-cb-(\w+)/)||[])[1]||'row';
+    const a=v==='chip'?(cbRate(e.dataset.cbS,e.dataset.cbC)>0?1:0):cbAmount(e.dataset.cbS,Number(e.dataset.cbP),e.dataset.cbC);
+    e.innerHTML=a?cbText(v,a):'';e.classList.toggle('is-on',!!a);
+  });
+}
+/* Wishlist cards come from script.js (not changed): add the placeholder under their "Best verified price" box */
+function cbDecorate(){
+  if(!cbRates||!cbRates.length)return;
+  document.querySelectorAll('.pp-wish-track-card[data-wishlist-id] .pp-wish-best-price:not([data-cb])').forEach(box=>{
+    box.dataset.cb='1';
+    try{const id=box.closest('[data-wishlist-id]').dataset.wishlistId;const p=productIndex().find(x=>String(x.id)===String(id));if(!p)return;
+      const b=bestPrice(p);const st=b.state||{};const low=(st.inStock||[]).find(o=>o.price===b.price);if(!low||!Number.isFinite(b.price))return;
+      box.insertAdjacentHTML('beforeend',cbSpan(low.name,b.price,p.category,'row'));}catch(_){}
+  });
+}
+new MutationObserver(()=>{if(!cbRates)return;cbDecorate();if(document.querySelector('.pp-cb:not([data-done])'))cbFill();}).observe(document.documentElement,{childList:true,subtree:true});
+window.ppCashback={load:cbLoad,rate:cbRate,amount:cbAmount,range:cbRange,rangeText:cbRangeTxt,span:cbSpan,fill:cbFill,share:CB_SHARE,blocked:cbBlocked};
+setTimeout(()=>cbLoad(),0);
 function storeLogoFor(store){if(store&&EXTRA_STORE_LOGOS[store])return `<img src="${EXTRA_STORE_LOGOS[store]}" alt="${H(store)} logo" data-extra-store="${H(store)}">`;return store&&typeof retailerLogo==='function'?retailerLogo(store):'';}
 function showLinkPanel(anchor,html){
   closeLinkPanel();
@@ -2434,6 +2545,10 @@ function detectProduct(link){
   return {brand,brandGuessed,model,kind,variant,color,category:cat,categoryLabel:CAT_LABELS[cat]||'Other',empty:false};
 }
 window.ppDetectProduct=detectProduct;window.ppParseStoreLink=parseStoreLink;
+/* V251: helpers for the Find best price page (compare-v251.js) */
+window.ppLinkKit={parseStoreLink,detectProduct,matchStoreLink,productIndex,productData,bestPrice,photoOf,storeLogoFor,storesForCat,detQuery,canSearchStores,STORE_SEARCH,catLabel,crumbs,ICON,M,H,
+  dealAnalysis,dealInsightHTML:(...a)=>dealInsightHTML(...a),requestTrack:(...a)=>PPData.requestTrack(...a),
+  lowestSeries,trackFollowup:(...a)=>PPData.trackFollowup(...a)};
 const CAT_QUERY_WORD={mobiles:'smartphone',laptops:'laptop'};
 function detQuery(d){return [d.brand,d.model,d.kind||(!d.model&&CAT_QUERY_WORD[d.category])||'',d.variant,d.category==='fashion'?d.color:''].filter(Boolean).join(' ').replace(/\s+/g,' ').trim();}
 /* V217: other stores need brand/model + model/type/category word; brand alone mixes printers, laptops, ink… */
@@ -2588,7 +2703,7 @@ function alignAssist(box){
     const first=document.querySelector('.deal-tabs button');const tabs=first?.parentElement;const host=box.parentElement;
     if(!first||!host||window.innerWidth<=700){box.style.removeProperty('--assist-left');box.style.removeProperty('--assist-w');return;}
     const hl=host.getBoundingClientRect().left,fl=first.getBoundingClientRect().left,tr=tabs.getBoundingClientRect().right;
-    box.style.setProperty('--assist-left',Math.max(0,Math.round(fl-hl))+'px');
+    box.style.removeProperty('--assist-left'); /* V277: centred (was: lined up with the first category chip) */
     box.style.setProperty('--assist-w',Math.round(Math.min(tr-fl,980))+'px');
   }catch(_){}
 }
@@ -2611,7 +2726,6 @@ function searchBar(q){
 }
 function clearSearchResults(scrollToDeals){
   if(headerInput)headerInput.value='';
-  const hi=document.getElementById('ppxHeroSearch');if(hi)hi.value='';
   try{typeof filterProducts==='function'&&filterProducts('all','');}catch(_){}
   document.querySelectorAll('.deal-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
   document.getElementById('ppxSearchBar')?.remove();
@@ -2663,23 +2777,20 @@ async function requestTrackUI(link,anchor){
 }
 {
   const siteForm=document.getElementById('siteSearch');
-  let fromHero=false;
-  document.querySelector('.ppx-hero-search')?.addEventListener('submit',()=>{fromHero=true;setTimeout(()=>{fromHero=false},0);},true);
   siteForm?.addEventListener('submit',e=>{
     const link=parseStoreLink(headerInput?.value);
     if(!link)return;
     e.preventDefault();e.stopImmediatePropagation();
-    const anchor=fromHero&&!parseRoute()?document.querySelector('.ppx-hero-search'):siteForm;
-    handleStoreLink(link,anchor);
+    /* V251: a pasted store link opens the Find best price page (old dropdown = fallback) */
+    if(typeof window.ppOpenFind==='function'){window.ppOpenFind(link.url);return;}
+    handleStoreLink(link,siteForm);
   },true);
-  const heroInput=document.getElementById('ppxHeroSearch');
-  if(heroInput)heroInput.placeholder=window.matchMedia('(max-width:1180px)').matches?'Search or paste a link':'Search or paste a product link';
-  [heroInput,headerInput].forEach(inp=>inp?.addEventListener('input',()=>{
+  [headerInput].forEach(inp=>inp?.addEventListener('input',()=>{
     const f=inp.closest('form');
     f?.classList.toggle('is-link',!!parseStoreLink(inp.value));
     if(parseStoreLink(inp.value)){const box=f?.querySelector('.ppx-suggest');if(box)box.hidden=true;}
   }));
-  [heroInput,headerInput].forEach(inp=>inp?.addEventListener('paste',()=>setTimeout(()=>{if(parseStoreLink(inp.value))inp.closest('form')?.requestSubmit();},30)));
+  [headerInput].forEach(inp=>inp?.addEventListener('paste',()=>setTimeout(()=>{if(parseStoreLink(inp.value))inp.closest('form')?.requestSubmit();},30)));
 }
 
 /* ---------- Plus line ---------- */
@@ -2882,24 +2993,24 @@ document.getElementById('homeNavBtn')?.addEventListener('click',()=>{if(parseRou
    - Search inside the menu, staggered animation, bottom sheet on mobile
    ===================================================================== */
 const CM_ART={
-  mobiles:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmA1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B3A47"/><stop offset="1" stop-color="#0B141B"/></linearGradient><linearGradient id="cmA2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EF0C0"/><stop offset=".55" stop-color="#2E8FD8"/><stop offset="1" stop-color="#5B3FD0"/></linearGradient></defs><ellipse cx="32" cy="58" rx="15" ry="2.6" fill="#0B1B22" opacity=".18"/><rect x="18" y="5" width="28" height="50" rx="7" fill="url(#cmA1)"/><rect x="20.5" y="9" width="23" height="42" rx="4.5" fill="url(#cmA2)"/><circle cx="32" cy="12.2" r="1.3" fill="#0B141B"/><path d="M20.5 30 43.5 15v12L20.5 42z" fill="#fff" opacity=".16"/><rect x="27" y="47" width="10" height="1.6" rx=".8" fill="#fff" opacity=".7"/></svg>`,
-  laptops:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmB1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34D399"/><stop offset=".6" stop-color="#2563EB"/><stop offset="1" stop-color="#1E1B4B"/></linearGradient><linearGradient id="cmB2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E5E9EE"/><stop offset="1" stop-color="#9AA6B2"/></linearGradient></defs><ellipse cx="32" cy="56" rx="26" ry="2.6" fill="#0B1B22" opacity=".16"/><rect x="11" y="12" width="42" height="29" rx="3.5" fill="#1F2933"/><rect x="13.5" y="14.5" width="37" height="24" rx="1.8" fill="url(#cmB1)"/><path d="M13.5 30 50.5 18v8l-37 12.5z" fill="#fff" opacity=".14"/><path d="M5 43h54l-4 8H9z" fill="url(#cmB2)"/><rect x="27" y="44" width="10" height="1.8" rx=".9" fill="#7A8794"/></svg>`,
-  electronics:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmC1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A4A57"/><stop offset="1" stop-color="#0E171E"/></linearGradient><linearGradient id="cmC2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5EF0C0"/><stop offset="1" stop-color="#15936A"/></linearGradient></defs><ellipse cx="32" cy="58" rx="20" ry="2.6" fill="#0B1B22" opacity=".16"/><path d="M12 36V30a20 20 0 0 1 40 0v6" fill="none" stroke="url(#cmC1)" stroke-width="5" stroke-linecap="round"/><rect x="8" y="33" width="13" height="20" rx="6" fill="url(#cmC1)"/><rect x="43" y="33" width="13" height="20" rx="6" fill="url(#cmC1)"/><rect x="17" y="36" width="5" height="14" rx="2.5" fill="url(#cmC2)"/><rect x="42" y="36" width="5" height="14" rx="2.5" fill="url(#cmC2)"/><path d="M11 37h4v12h-4z" fill="#fff" opacity=".12"/></svg>`,
-  home:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmD1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A5B"/><stop offset="1" stop-color="#D9381E"/></linearGradient><linearGradient id="cmD2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B4A56"/><stop offset="1" stop-color="#121C24"/></linearGradient></defs><ellipse cx="32" cy="58" rx="22" ry="2.6" fill="#0B1B22" opacity=".16"/><path d="M27 8c-2 3 2 4 0 7M33 6c-2 3 2 4 0 7M39 8c-2 3 2 4 0 7" fill="none" stroke="#9AA6B2" stroke-width="1.8" stroke-linecap="round" opacity=".8"/><path d="M14 27h36v20a8 8 0 0 1-8 8H22a8 8 0 0 1-8-8z" fill="url(#cmD1)"/><rect x="10" y="22" width="44" height="6" rx="3" fill="url(#cmD2)"/><rect x="28" y="17" width="8" height="5" rx="2.5" fill="url(#cmD2)"/><rect x="5" y="31" width="9" height="4" rx="2" fill="url(#cmD2)"/><rect x="50" y="31" width="9" height="4" rx="2" fill="url(#cmD2)"/><path d="M18 31h5v18a4 4 0 0 1-3-3z" fill="#fff" opacity=".22"/></svg>`,
-  fashion:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmE1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D6DDE4"/></linearGradient><linearGradient id="cmE2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5EF0C0"/><stop offset="1" stop-color="#1F9D74"/></linearGradient></defs><ellipse cx="32" cy="55" rx="27" ry="2.6" fill="#0B1B22" opacity=".16"/><path d="M6 44c0-6 2-14 6-17 3-2 7 2 11 2 5 0 7-6 10-6 2 0 3 4 7 7 5 4 12 4 16 7 3 2 3 6 2 9z" fill="url(#cmE1)" stroke="#AEB8C2" stroke-width="1"/><path d="M5 44h53c1 2 0 6-2 6H8c-3 0-4-3-3-6z" fill="#1F2933"/><path d="M5 47h53" stroke="#E8B954" stroke-width="1.6"/><path d="M19 39c8-1 17-5 24-9" fill="none" stroke="url(#cmE2)" stroke-width="4.5" stroke-linecap="round"/><path d="M27 25l3 4M31 24l3 4M35 24.5l3 4" stroke="#7A8794" stroke-width="1.4" stroke-linecap="round"/></svg>`,
-  appliances:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmF1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F4F6F8"/><stop offset=".5" stop-color="#D3DAE1"/><stop offset="1" stop-color="#A9B4BF"/></linearGradient></defs><ellipse cx="32" cy="59" rx="16" ry="2.4" fill="#0B1B22" opacity=".18"/><rect x="17" y="4" width="30" height="53" rx="5" fill="url(#cmF1)" stroke="#9AA6B2"/><path d="M17 23h30" stroke="#8D99A5" stroke-width="1.4"/><rect x="21" y="10" width="2.6" height="9" rx="1.3" fill="#56636D"/><rect x="21" y="28" width="2.6" height="14" rx="1.3" fill="#56636D"/><rect x="36" y="8" width="7" height="4" rx="1.5" fill="#2E8FD8" opacity=".85"/><path d="M41 4h3a3 3 0 0 1 3 3v47a3 3 0 0 1-3 3h-3z" fill="#fff" opacity=".35"/></svg>`,
-  beauty:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmG1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD6E0"/><stop offset="1" stop-color="#F28CA8"/></linearGradient><linearGradient id="cmG2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F5D489"/><stop offset=".5" stop-color="#E8B954"/><stop offset="1" stop-color="#B9852A"/></linearGradient><linearGradient id="cmG3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E2365B"/><stop offset="1" stop-color="#A3123A"/></linearGradient></defs><ellipse cx="32" cy="58" rx="24" ry="2.6" fill="#0B1B22" opacity=".16"/><rect x="10" y="22" width="22" height="34" rx="6" fill="url(#cmG1)"/><rect x="15" y="12" width="12" height="11" rx="2" fill="url(#cmG2)"/><rect x="18.5" y="5" width="5" height="8" rx="2.5" fill="#2B3A47"/><rect x="14" y="32" width="14" height="10" rx="2" fill="#fff" opacity=".65"/><path d="M13 26h3v26h-3z" fill="#fff" opacity=".35"/><rect x="38" y="34" width="14" height="22" rx="2.5" fill="url(#cmG2)"/><path d="M40 34V20l10-5v19z" fill="url(#cmG3)"/><path d="M42 33V21l2-1v13z" fill="#fff" opacity=".3"/></svg>`,
-  watches:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmH1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A4A57"/><stop offset="1" stop-color="#121C24"/></linearGradient></defs><ellipse cx="32" cy="59" rx="12" ry="2.4" fill="#0B1B22" opacity=".16"/><rect x="23" y="3" width="18" height="16" rx="5" fill="url(#cmH1)"/><rect x="23" y="45" width="18" height="13" rx="5" fill="url(#cmH1)"/><rect x="16" y="15" width="32" height="34" rx="9" fill="#1F2933"/><rect x="19" y="18" width="26" height="28" rx="6.5" fill="#0B141B"/><circle cx="32" cy="32" r="9" fill="none" stroke="#FF5A7A" stroke-width="2.6" stroke-dasharray="44 60" stroke-linecap="round" transform="rotate(-90 32 32)"/><circle cx="32" cy="32" r="5.5" fill="none" stroke="#5EF0C0" stroke-width="2.4" stroke-dasharray="25 40" stroke-linecap="round" transform="rotate(-90 32 32)"/><rect x="48" y="26" width="3" height="8" rx="1.5" fill="#56636D"/></svg>`,
-  tv:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmI1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A5B"/><stop offset=".45" stop-color="#C13584"/><stop offset="1" stop-color="#2E3192"/></linearGradient></defs><ellipse cx="32" cy="56" rx="20" ry="2.4" fill="#0B1B22" opacity=".16"/><rect x="4" y="10" width="56" height="35" rx="3.5" fill="#111A21"/><rect x="6.5" y="12.5" width="51" height="30" rx="1.8" fill="url(#cmI1)"/><path d="M6.5 32 57.5 15v9L6.5 42.5z" fill="#fff" opacity=".13"/><path d="M24 45l-4 9h24l-4-9z" fill="#56636D"/><rect x="18" y="52" width="28" height="3" rx="1.5" fill="#2B3A47"/></svg>`,
-  earbuds:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmJ1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#CBD3DB"/></linearGradient></defs><ellipse cx="32" cy="57" rx="20" ry="2.4" fill="#0B1B22" opacity=".16"/><rect x="12" y="30" width="40" height="24" rx="11" fill="url(#cmJ1)" stroke="#AEB8C2"/><path d="M12 39h40" stroke="#AEB8C2"/><circle cx="32" cy="46" r="1.4" fill="#22C38E"/><g transform="rotate(-18 22 20)"><ellipse cx="22" cy="18" rx="7" ry="7.5" fill="url(#cmJ1)" stroke="#AEB8C2"/><rect x="19.5" y="22" width="5" height="12" rx="2.5" fill="url(#cmJ1)" stroke="#AEB8C2"/><circle cx="22" cy="17" r="3" fill="#2B3A47"/></g><g transform="rotate(18 42 20)"><ellipse cx="42" cy="18" rx="7" ry="7.5" fill="url(#cmJ1)" stroke="#AEB8C2"/><rect x="39.5" y="22" width="5" height="12" rx="2.5" fill="url(#cmJ1)" stroke="#AEB8C2"/><circle cx="42" cy="17" r="3" fill="#2B3A47"/></g></svg>`,
-  swatch:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmK1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FE7C4"/><stop offset="1" stop-color="#1F9D74"/></linearGradient><linearGradient id="cmK2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EF0C0"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><ellipse cx="32" cy="59" rx="12" ry="2.4" fill="#0B1B22" opacity=".16"/><rect x="23" y="3" width="18" height="16" rx="5" fill="url(#cmK1)"/><rect x="23" y="45" width="18" height="13" rx="5" fill="url(#cmK1)"/><rect x="15" y="14" width="34" height="36" rx="11" fill="#D6DDE4"/><rect x="18" y="17" width="28" height="30" rx="8.5" fill="#0B141B"/><rect x="21" y="20" width="22" height="24" rx="6" fill="url(#cmK2)" opacity=".9"/><text x="32" y="35" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="9" fill="#fff">10:08</text></svg>`,
-  ac:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmL1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D6DDE4"/></linearGradient></defs><ellipse cx="32" cy="57" rx="24" ry="2.2" fill="#0B1B22" opacity=".12"/><rect x="4" y="12" width="56" height="20" rx="6" fill="url(#cmL1)" stroke="#AEB8C2"/><path d="M8 27h48" stroke="#AEB8C2" stroke-width="1.4"/><circle cx="52" cy="18" r="1.3" fill="#22C38E"/><rect x="10" y="17" width="10" height="2" rx="1" fill="#C6CFD8"/><path d="M16 37c-2 4 2 6 0 10M26 37c-2 4 2 6 0 10M36 37c-2 4 2 6 0 10M46 37c-2 4 2 6 0 10" fill="none" stroke="#5BC0F8" stroke-width="2.2" stroke-linecap="round"/></svg>`,
-  airfryer:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmM1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A4A57"/><stop offset="1" stop-color="#0E171E"/></linearGradient></defs><ellipse cx="32" cy="59" rx="20" ry="2.4" fill="#0B1B22" opacity=".18"/><path d="M14 14c0-5 4-9 9-9h18c5 0 9 4 9 9v38a5 5 0 0 1-5 5H19a5 5 0 0 1-5-5z" fill="url(#cmM1)"/><rect x="22" y="9" width="20" height="7" rx="3.5" fill="#0B141B"/><rect x="25" y="11" width="9" height="3" rx="1.5" fill="#5EF0C0"/><rect x="18" y="26" width="28" height="22" rx="5" fill="#1C2830" stroke="#56636D"/><rect x="21" y="30" width="22" height="9" rx="3" fill="#FFB547" opacity=".9"/><rect x="26" y="41" width="12" height="4" rx="2" fill="#56636D"/><path d="M17 16h3v38h-3z" fill="#fff" opacity=".1"/></svg>`,
-  tablet:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmN1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDE68A"/><stop offset=".5" stop-color="#F472B6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><ellipse cx="30" cy="58" rx="20" ry="2.4" fill="#0B1B22" opacity=".16"/><rect x="9" y="6" width="40" height="50" rx="5" fill="#1F2933"/><rect x="12" y="9" width="34" height="44" rx="2.5" fill="url(#cmN1)"/><path d="M12 34 46 14v10L12 44z" fill="#fff" opacity=".16"/><g transform="rotate(28 52 34)"><rect x="50" y="12" width="4.2" height="40" rx="2.1" fill="#F4F6F8" stroke="#AEB8C2"/><path d="M50 52l2.1 5 2.1-5z" fill="#56636D"/></g></svg>`,
-  trimmer:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmO1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2B3A47"/><stop offset=".5" stop-color="#4A5B68"/><stop offset="1" stop-color="#121C24"/></linearGradient></defs><ellipse cx="32" cy="59" rx="10" ry="2.2" fill="#0B1B22" opacity=".18"/><rect x="24" y="4" width="16" height="7" rx="2" fill="#C6CFD8"/><path d="M24 6h16" stroke="#7A8794" stroke-dasharray="1.5 1.5"/><path d="M22 12h20l-2 42a4 4 0 0 1-4 4h-8a4 4 0 0 1-4-4z" fill="url(#cmO1)"/><rect x="29" y="22" width="6" height="12" rx="3" fill="#0B141B"/><circle cx="32" cy="26" r="1.6" fill="#5EF0C0"/><path d="M25 14h3l-1 40h-2z" fill="#fff" opacity=".14"/><rect x="27" y="44" width="10" height="1.4" rx=".7" fill="#E8B954"/></svg>`,
-  gaming:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmP1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3A4A57"/><stop offset="1" stop-color="#0E171E"/></linearGradient></defs><ellipse cx="32" cy="53" rx="24" ry="2.4" fill="#0B1B22" opacity=".16"/><path d="M18 18h28c7 0 11 6 12 14l2 12c1 6-6 9-10 4l-5-6H19l-5 6c-4 5-11 2-10-4l2-12c1-8 5-14 12-14z" fill="url(#cmP1)"/><rect x="15" y="27" width="10" height="3.4" rx="1.2" fill="#C6CFD8"/><rect x="18.3" y="23.7" width="3.4" height="10" rx="1.2" fill="#C6CFD8"/><circle cx="44" cy="25" r="2.4" fill="#5EF0C0"/><circle cx="49.5" cy="30" r="2.4" fill="#FF5A7A"/><circle cx="38.5" cy="30" r="2.4" fill="#5BC0F8"/><circle cx="44" cy="35" r="2.4" fill="#FFB547"/><path d="M20 20h24" stroke="#fff" opacity=".12" stroke-width="2" stroke-linecap="round"/></svg>`,
-  luggage:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmQ1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EC4F0"/><stop offset="1" stop-color="#1D5FA8"/></linearGradient></defs><ellipse cx="32" cy="60" rx="15" ry="2.2" fill="#0B1B22" opacity=".18"/><path d="M25 14V5h14v9" fill="none" stroke="#56636D" stroke-width="3" stroke-linejoin="round"/><rect x="16" y="13" width="32" height="42" rx="6" fill="url(#cmQ1)"/><path d="M24 17v34M32 17v34M40 17v34" stroke="#0E3F73" stroke-width="1.6" opacity=".45"/><path d="M19 15h4v38h-4z" fill="#fff" opacity=".22"/><circle cx="21" cy="57.5" r="2.6" fill="#1F2933"/><circle cx="43" cy="57.5" r="2.6" fill="#1F2933"/></svg>`,
-  fitness:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmR1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A4A57"/><stop offset="1" stop-color="#0E171E"/></linearGradient></defs><ellipse cx="32" cy="50" rx="26" ry="2.4" fill="#0B1B22" opacity=".16"/><rect x="18" y="29" width="28" height="6" rx="3" fill="#AEB8C2"/><rect x="9" y="17" width="9" height="30" rx="3" fill="url(#cmR1)"/><rect x="46" y="17" width="9" height="30" rx="3" fill="url(#cmR1)"/><rect x="3" y="22" width="7" height="20" rx="2.5" fill="#22C38E"/><rect x="54" y="22" width="7" height="20" rx="2.5" fill="#22C38E"/><path d="M11 19h2v26h-2z" fill="#fff" opacity=".15"/></svg>`
+  mobiles:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmA1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F443C"/><stop offset="1" stop-color="#0D1915"/></linearGradient><linearGradient id="cmA2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EF0C0"/><stop offset=".55" stop-color="#2E8FD8"/><stop offset="1" stop-color="#5B3FD0"/></linearGradient></defs><ellipse cx="32" cy="58" rx="15" ry="2.6" fill="#0E1F19" opacity=".18"/><rect x="18" y="5" width="28" height="50" rx="7" fill="url(#cmA1)"/><rect x="20.5" y="9" width="23" height="42" rx="4.5" fill="url(#cmA2)"/><circle cx="32" cy="12.2" r="1.3" fill="#0D1915"/><path d="M20.5 30 43.5 15v12L20.5 42z" fill="#fff" opacity=".16"/><rect x="27" y="47" width="10" height="1.6" rx=".8" fill="#fff" opacity=".7"/></svg>`,
+  laptops:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmB1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34D399"/><stop offset=".6" stop-color="#2563EB"/><stop offset="1" stop-color="#214538"/></linearGradient><linearGradient id="cmB2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E5E9EE"/><stop offset="1" stop-color="#9FADA5"/></linearGradient></defs><ellipse cx="32" cy="56" rx="26" ry="2.6" fill="#0E1F19" opacity=".16"/><rect x="11" y="12" width="42" height="29" rx="3.5" fill="#22302B"/><rect x="13.5" y="14.5" width="37" height="24" rx="1.8" fill="url(#cmB1)"/><path d="M13.5 30 50.5 18v8l-37 12.5z" fill="#fff" opacity=".14"/><path d="M5 43h54l-4 8H9z" fill="url(#cmB2)"/><rect x="27" y="44" width="10" height="1.8" rx=".9" fill="#7F8F86"/></svg>`,
+  electronics:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmC1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3E534B"/><stop offset="1" stop-color="#101C18"/></linearGradient><linearGradient id="cmC2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5EF0C0"/><stop offset="1" stop-color="#15936A"/></linearGradient></defs><ellipse cx="32" cy="58" rx="20" ry="2.6" fill="#0E1F19" opacity=".16"/><path d="M12 36V30a20 20 0 0 1 40 0v6" fill="none" stroke="url(#cmC1)" stroke-width="5" stroke-linecap="round"/><rect x="8" y="33" width="13" height="20" rx="6" fill="url(#cmC1)"/><rect x="43" y="33" width="13" height="20" rx="6" fill="url(#cmC1)"/><rect x="17" y="36" width="5" height="14" rx="2.5" fill="url(#cmC2)"/><rect x="42" y="36" width="5" height="14" rx="2.5" fill="url(#cmC2)"/><path d="M11 37h4v12h-4z" fill="#fff" opacity=".12"/></svg>`,
+  home:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmD1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A5B"/><stop offset="1" stop-color="#D9381E"/></linearGradient><linearGradient id="cmD2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E534B"/><stop offset="1" stop-color="#14221D"/></linearGradient></defs><ellipse cx="32" cy="58" rx="22" ry="2.6" fill="#0E1F19" opacity=".16"/><path d="M27 8c-2 3 2 4 0 7M33 6c-2 3 2 4 0 7M39 8c-2 3 2 4 0 7" fill="none" stroke="#9FADA5" stroke-width="1.8" stroke-linecap="round" opacity=".8"/><path d="M14 27h36v20a8 8 0 0 1-8 8H22a8 8 0 0 1-8-8z" fill="url(#cmD1)"/><rect x="10" y="22" width="44" height="6" rx="3" fill="url(#cmD2)"/><rect x="28" y="17" width="8" height="5" rx="2.5" fill="url(#cmD2)"/><rect x="5" y="31" width="9" height="4" rx="2" fill="url(#cmD2)"/><rect x="50" y="31" width="9" height="4" rx="2" fill="url(#cmD2)"/><path d="M18 31h5v18a4 4 0 0 1-3-3z" fill="#fff" opacity=".22"/></svg>`,
+  fashion:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmE1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D6DDE4"/></linearGradient><linearGradient id="cmE2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5EF0C0"/><stop offset="1" stop-color="#1F9D74"/></linearGradient></defs><ellipse cx="32" cy="55" rx="27" ry="2.6" fill="#0E1F19" opacity=".16"/><path d="M6 44c0-6 2-14 6-17 3-2 7 2 11 2 5 0 7-6 10-6 2 0 3 4 7 7 5 4 12 4 16 7 3 2 3 6 2 9z" fill="url(#cmE1)" stroke="#B2BEB7" stroke-width="1"/><path d="M5 44h53c1 2 0 6-2 6H8c-3 0-4-3-3-6z" fill="#22302B"/><path d="M5 47h53" stroke="#E8B954" stroke-width="1.6"/><path d="M19 39c8-1 17-5 24-9" fill="none" stroke="url(#cmE2)" stroke-width="4.5" stroke-linecap="round"/><path d="M27 25l3 4M31 24l3 4M35 24.5l3 4" stroke="#7F8F86" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+  appliances:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmF1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F4F6F8"/><stop offset=".5" stop-color="#D3DAE1"/><stop offset="1" stop-color="#ADBBB3"/></linearGradient></defs><ellipse cx="32" cy="59" rx="16" ry="2.4" fill="#0E1F19" opacity=".18"/><rect x="17" y="4" width="30" height="53" rx="5" fill="url(#cmF1)" stroke="#9FADA5"/><path d="M17 23h30" stroke="#92A098" stroke-width="1.4"/><rect x="21" y="10" width="2.6" height="9" rx="1.3" fill="#5B6860"/><rect x="21" y="28" width="2.6" height="14" rx="1.3" fill="#5B6860"/><rect x="36" y="8" width="7" height="4" rx="1.5" fill="#2E8FD8" opacity=".85"/><path d="M41 4h3a3 3 0 0 1 3 3v47a3 3 0 0 1-3 3h-3z" fill="#fff" opacity=".35"/></svg>`,
+  beauty:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmG1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD6E0"/><stop offset="1" stop-color="#F28CA8"/></linearGradient><linearGradient id="cmG2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F5D489"/><stop offset=".5" stop-color="#E8B954"/><stop offset="1" stop-color="#B9852A"/></linearGradient><linearGradient id="cmG3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E2365B"/><stop offset="1" stop-color="#A3123A"/></linearGradient></defs><ellipse cx="32" cy="58" rx="24" ry="2.6" fill="#0E1F19" opacity=".16"/><rect x="10" y="22" width="22" height="34" rx="6" fill="url(#cmG1)"/><rect x="15" y="12" width="12" height="11" rx="2" fill="url(#cmG2)"/><rect x="18.5" y="5" width="5" height="8" rx="2.5" fill="#2F443C"/><rect x="14" y="32" width="14" height="10" rx="2" fill="#fff" opacity=".65"/><path d="M13 26h3v26h-3z" fill="#fff" opacity=".35"/><rect x="38" y="34" width="14" height="22" rx="2.5" fill="url(#cmG2)"/><path d="M40 34V20l10-5v19z" fill="url(#cmG3)"/><path d="M42 33V21l2-1v13z" fill="#fff" opacity=".3"/></svg>`,
+  watches:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmH1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E534B"/><stop offset="1" stop-color="#14221D"/></linearGradient></defs><ellipse cx="32" cy="59" rx="12" ry="2.4" fill="#0E1F19" opacity=".16"/><rect x="23" y="3" width="18" height="16" rx="5" fill="url(#cmH1)"/><rect x="23" y="45" width="18" height="13" rx="5" fill="url(#cmH1)"/><rect x="16" y="15" width="32" height="34" rx="9" fill="#22302B"/><rect x="19" y="18" width="26" height="28" rx="6.5" fill="#0D1915"/><circle cx="32" cy="32" r="9" fill="none" stroke="#FF5A7A" stroke-width="2.6" stroke-dasharray="44 60" stroke-linecap="round" transform="rotate(-90 32 32)"/><circle cx="32" cy="32" r="5.5" fill="none" stroke="#5EF0C0" stroke-width="2.4" stroke-dasharray="25 40" stroke-linecap="round" transform="rotate(-90 32 32)"/><rect x="48" y="26" width="3" height="8" rx="1.5" fill="#5B6860"/></svg>`,
+  tv:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmI1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A5B"/><stop offset=".45" stop-color="#C13584"/><stop offset="1" stop-color="#2E3192"/></linearGradient></defs><ellipse cx="32" cy="56" rx="20" ry="2.4" fill="#0E1F19" opacity=".16"/><rect x="4" y="10" width="56" height="35" rx="3.5" fill="#131F1B"/><rect x="6.5" y="12.5" width="51" height="30" rx="1.8" fill="url(#cmI1)"/><path d="M6.5 32 57.5 15v9L6.5 42.5z" fill="#fff" opacity=".13"/><path d="M24 45l-4 9h24l-4-9z" fill="#5B6860"/><rect x="18" y="52" width="28" height="3" rx="1.5" fill="#2F443C"/></svg>`,
+  earbuds:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmJ1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#CBD3DB"/></linearGradient></defs><ellipse cx="32" cy="57" rx="20" ry="2.4" fill="#0E1F19" opacity=".16"/><rect x="12" y="30" width="40" height="24" rx="11" fill="url(#cmJ1)" stroke="#B2BEB7"/><path d="M12 39h40" stroke="#B2BEB7"/><circle cx="32" cy="46" r="1.4" fill="#22C38E"/><g transform="rotate(-18 22 20)"><ellipse cx="22" cy="18" rx="7" ry="7.5" fill="url(#cmJ1)" stroke="#B2BEB7"/><rect x="19.5" y="22" width="5" height="12" rx="2.5" fill="url(#cmJ1)" stroke="#B2BEB7"/><circle cx="22" cy="17" r="3" fill="#2F443C"/></g><g transform="rotate(18 42 20)"><ellipse cx="42" cy="18" rx="7" ry="7.5" fill="url(#cmJ1)" stroke="#B2BEB7"/><rect x="39.5" y="22" width="5" height="12" rx="2.5" fill="url(#cmJ1)" stroke="#B2BEB7"/><circle cx="42" cy="17" r="3" fill="#2F443C"/></g></svg>`,
+  swatch:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmK1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FE7C4"/><stop offset="1" stop-color="#1F9D74"/></linearGradient><linearGradient id="cmK2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EF0C0"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><ellipse cx="32" cy="59" rx="12" ry="2.4" fill="#0E1F19" opacity=".16"/><rect x="23" y="3" width="18" height="16" rx="5" fill="url(#cmK1)"/><rect x="23" y="45" width="18" height="13" rx="5" fill="url(#cmK1)"/><rect x="15" y="14" width="34" height="36" rx="11" fill="#D6DDE4"/><rect x="18" y="17" width="28" height="30" rx="8.5" fill="#0D1915"/><rect x="21" y="20" width="22" height="24" rx="6" fill="url(#cmK2)" opacity=".9"/><text x="32" y="35" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="9" fill="#fff">10:08</text></svg>`,
+  ac:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmL1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D6DDE4"/></linearGradient></defs><ellipse cx="32" cy="57" rx="24" ry="2.2" fill="#0E1F19" opacity=".12"/><rect x="4" y="12" width="56" height="20" rx="6" fill="url(#cmL1)" stroke="#B2BEB7"/><path d="M8 27h48" stroke="#B2BEB7" stroke-width="1.4"/><circle cx="52" cy="18" r="1.3" fill="#22C38E"/><rect x="10" y="17" width="10" height="2" rx="1" fill="#C6CFD8"/><path d="M16 37c-2 4 2 6 0 10M26 37c-2 4 2 6 0 10M36 37c-2 4 2 6 0 10M46 37c-2 4 2 6 0 10" fill="none" stroke="#5BC0F8" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  airfryer:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmM1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3E534B"/><stop offset="1" stop-color="#101C18"/></linearGradient></defs><ellipse cx="32" cy="59" rx="20" ry="2.4" fill="#0E1F19" opacity=".18"/><path d="M14 14c0-5 4-9 9-9h18c5 0 9 4 9 9v38a5 5 0 0 1-5 5H19a5 5 0 0 1-5-5z" fill="url(#cmM1)"/><rect x="22" y="9" width="20" height="7" rx="3.5" fill="#0D1915"/><rect x="25" y="11" width="9" height="3" rx="1.5" fill="#5EF0C0"/><rect x="18" y="26" width="28" height="22" rx="5" fill="#1E2E28" stroke="#5B6860"/><rect x="21" y="30" width="22" height="9" rx="3" fill="#FFB547" opacity=".9"/><rect x="26" y="41" width="12" height="4" rx="2" fill="#5B6860"/><path d="M17 16h3v38h-3z" fill="#fff" opacity=".1"/></svg>`,
+  tablet:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmN1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDE68A"/><stop offset=".5" stop-color="#F472B6"/><stop offset="1" stop-color="#6366F1"/></linearGradient></defs><ellipse cx="30" cy="58" rx="20" ry="2.4" fill="#0E1F19" opacity=".16"/><rect x="9" y="6" width="40" height="50" rx="5" fill="#22302B"/><rect x="12" y="9" width="34" height="44" rx="2.5" fill="url(#cmN1)"/><path d="M12 34 46 14v10L12 44z" fill="#fff" opacity=".16"/><g transform="rotate(28 52 34)"><rect x="50" y="12" width="4.2" height="40" rx="2.1" fill="#F4F6F8" stroke="#B2BEB7"/><path d="M50 52l2.1 5 2.1-5z" fill="#5B6860"/></g></svg>`,
+  trimmer:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmO1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2F443C"/><stop offset=".5" stop-color="#506258"/><stop offset="1" stop-color="#14221D"/></linearGradient></defs><ellipse cx="32" cy="59" rx="10" ry="2.2" fill="#0E1F19" opacity=".18"/><rect x="24" y="4" width="16" height="7" rx="2" fill="#C6CFD8"/><path d="M24 6h16" stroke="#7F8F86" stroke-dasharray="1.5 1.5"/><path d="M22 12h20l-2 42a4 4 0 0 1-4 4h-8a4 4 0 0 1-4-4z" fill="url(#cmO1)"/><rect x="29" y="22" width="6" height="12" rx="3" fill="#0D1915"/><circle cx="32" cy="26" r="1.6" fill="#5EF0C0"/><path d="M25 14h3l-1 40h-2z" fill="#fff" opacity=".14"/><rect x="27" y="44" width="10" height="1.4" rx=".7" fill="#E8B954"/></svg>`,
+  gaming:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmP1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3E534B"/><stop offset="1" stop-color="#101C18"/></linearGradient></defs><ellipse cx="32" cy="53" rx="24" ry="2.4" fill="#0E1F19" opacity=".16"/><path d="M18 18h28c7 0 11 6 12 14l2 12c1 6-6 9-10 4l-5-6H19l-5 6c-4 5-11 2-10-4l2-12c1-8 5-14 12-14z" fill="url(#cmP1)"/><rect x="15" y="27" width="10" height="3.4" rx="1.2" fill="#C6CFD8"/><rect x="18.3" y="23.7" width="3.4" height="10" rx="1.2" fill="#C6CFD8"/><circle cx="44" cy="25" r="2.4" fill="#5EF0C0"/><circle cx="49.5" cy="30" r="2.4" fill="#FF5A7A"/><circle cx="38.5" cy="30" r="2.4" fill="#5BC0F8"/><circle cx="44" cy="35" r="2.4" fill="#FFB547"/><path d="M20 20h24" stroke="#fff" opacity=".12" stroke-width="2" stroke-linecap="round"/></svg>`,
+  luggage:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmQ1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EC4F0"/><stop offset="1" stop-color="#1D5FA8"/></linearGradient></defs><ellipse cx="32" cy="60" rx="15" ry="2.2" fill="#0E1F19" opacity=".18"/><path d="M25 14V5h14v9" fill="none" stroke="#5B6860" stroke-width="3" stroke-linejoin="round"/><rect x="16" y="13" width="32" height="42" rx="6" fill="url(#cmQ1)"/><path d="M24 17v34M32 17v34M40 17v34" stroke="#295847" stroke-width="1.6" opacity=".45"/><path d="M19 15h4v38h-4z" fill="#fff" opacity=".22"/><circle cx="21" cy="57.5" r="2.6" fill="#22302B"/><circle cx="43" cy="57.5" r="2.6" fill="#22302B"/></svg>`,
+  fitness:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="cmR1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E534B"/><stop offset="1" stop-color="#101C18"/></linearGradient></defs><ellipse cx="32" cy="50" rx="26" ry="2.4" fill="#0E1F19" opacity=".16"/><rect x="18" y="29" width="28" height="6" rx="3" fill="#B2BEB7"/><rect x="9" y="17" width="9" height="30" rx="3" fill="url(#cmR1)"/><rect x="46" y="17" width="9" height="30" rx="3" fill="url(#cmR1)"/><rect x="3" y="22" width="7" height="20" rx="2.5" fill="#22C38E"/><rect x="54" y="22" width="7" height="20" rx="2.5" fill="#22C38E"/><path d="M11 19h2v26h-2z" fill="#fff" opacity=".15"/></svg>`
 };
 const CM_MAIN=[
   ['mobiles','Mobiles','5G phones, iPhone, Samsung & more','#E6F7F0'],
@@ -3025,7 +3136,7 @@ function cmBuild(menu){
       if(pop){cmRunSearch(pop.dataset.cmQ);return;}
       if(e.target.closest('[data-cm-paste]')){
         window.closeCategoriesMenu();leavePageForHome();
-        setTimeout(()=>{const hi=document.getElementById('ppxHeroSearch');window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{(hi||headerInput)?.focus();},350);},200);
+        setTimeout(()=>{window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{headerInput?.focus();},350);},200);
       }
     });
   }
@@ -3130,11 +3241,48 @@ setTimeout(updateDealsBadge,1600);setTimeout(updateDealsBadge,5000);
 }
 const DL_PRICE=[['all','Any price'],['u1k','Under ₹1,000'],['1k5k','₹1,000 – ₹5,000'],['5k20k','₹5,000 – ₹20,000'],['20k','₹20,000+']];
 const DL_OFF=[['0','Any saving'],['10','10%+ cheaper'],['20','20%+ cheaper']];
-const DL_SORT=[['score','Best Deal Score'],['drop','Biggest drop'],['low','Lowest price']];
-let dlState={cat:'all',price:'all',off:'0',sort:'score'};
+const DL_SORT=[['score','Best Deal Score'],['drop','Biggest drop'],['save','Biggest discount'],['low','Lowest price']];
+let dlState={cat:'all',price:'all',off:'0',sort:'score',spec:{},specCat:'all',store:''};
+/* V260: spec filters (RAM, Storage, Processor, Screen...) from the product details the extension read on store
+   pages (pp_ext_details_facets, extension SQL v4). Only shown for one category; a product without that detail
+   is hidden while that filter is on. */
+const DL_SPEC_KEYS=[['ram','RAM'],['storage','Storage'],['processor','Processor'],['screen','Screen'],['os','OS'],['battery','Battery'],['size','Size'],['gender','For'],['material','Material'],['qty','Size / pack'],['color','Colour']];
+let dlSpecs=null,dlSpecsLoading=false;
+function dlSpecNorm(k,v){
+  v=String(v??'').replace(/\s+/g,' ').trim();if(!v)return '';
+  if(k==='screen'){const m=v.match(/(\d+(?:\.\d+)?)\s*(cm|centimet|inch|inches|in\b|")/i);if(!m)return '';let n=+m[1];if(/^c/i.test(m[2]))n=n/2.54;return n>=1&&n<=120?`${(Math.round(n*10)/10)}" screen`:'';}
+  return v.length>40?'':v;
+}
+async function dlLoadSpecs(){
+  if(dlSpecs||dlSpecsLoading)return;
+  if(typeof supabaseClient==='undefined'||!supabaseClient)return;
+  dlSpecsLoading=true;
+  try{
+    const ids=productIndex().map(p=>p.id).filter(Boolean).slice(0,600);
+    const r=await supabaseClient.rpc('pp_ext_details_facets',{p_ids:ids});
+    const out={};
+    if(!r.error&&r.data&&typeof r.data==='object')for(const [id,f] of Object.entries(r.data)){const o={};for(const [k] of DL_SPEC_KEYS){const v=dlSpecNorm(k,f&&f[k]);if(v)o[k]=v;}if(Object.keys(o).length)out[id]=o;}
+    dlSpecs=out;
+  }catch(_){dlSpecs={};}
+  dlSpecsLoading=false;
+  if(document.body.dataset.ppPage==='deals'&&dlState.cat!=='all')dlRerender();
+}
+function dlSpecOk(r){const f=dlState.spec||{};const ks=Object.keys(f);if(!ks.length)return true;const o=(dlSpecs||{})[r.p.id]||{};return ks.every(k=>o[k]===f[k]);}
+function dlSpecFacets(rows){
+  if(!dlSpecs||dlState.cat==='all')return [];
+  const inCat=rows.filter(r=>r.cat===dlState.cat);
+  const out=[];
+  for(const [k,l] of DL_SPEC_KEYS){
+    const cnt=new Map();inCat.forEach(r=>{const v=(dlSpecs[r.p.id]||{})[k];if(v)cnt.set(v,(cnt.get(v)||0)+1);});
+    const n=[...cnt.values()].reduce((a,b)=>a+b,0);
+    if((cnt.size>=2&&n>=2)||dlState.spec[k])out.push([k,l,[...cnt.entries()].sort((a,b)=>String(a[0]).localeCompare(String(b[0]),'en',{numeric:true}))]);
+    if(out.length>=6)break;
+  }
+  return out;
+}
 function dlPriceOk(r,k){const v=r.price;if(k==='all')return true;if(!Number.isFinite(v))return false;return k==='u1k'?v<1000:k==='1k5k'?v>=1000&&v<5000:k==='5k20k'?v>=5000&&v<20000:v>=20000;}
-function dlFilter(rows){return rows.filter(r=>(dlState.cat==='all'||r.cat===dlState.cat)&&dlPriceOk(r,dlState.price)&&r.pctOff>=Number(dlState.off));}
-function dlSort(rows){const s=dlState.sort;return [...rows].sort((a,b)=>s==='drop'?(b.drop-a.drop)||(b.pctOff-a.pctOff):s==='low'?((a.price??1e12)-(b.price??1e12)):((b.score??-1)-(a.score??-1))||(b.pctOff-a.pctOff));}
+function dlFilter(rows){return rows.filter(r=>(dlState.cat==='all'||r.cat===dlState.cat)&&(!dlState.store||cbKey(r.store)===cbKey(dlState.store))&&dlPriceOk(r,dlState.price)&&r.pctOff>=Number(dlState.off)&&dlSpecOk(r));}
+function dlSort(rows){const s=dlState.sort;return [...rows].sort((a,b)=>s==='save'?(b.pctOff-a.pctOff)||((b.score??-1)-(a.score??-1)):s==='drop'?(b.drop-a.drop)||(b.pctOff-a.pctOff):s==='low'?((a.price??1e12)-(b.price??1e12)):((b.score??-1)-(a.score??-1))||(b.pctOff-a.pctOff));}
 function dlBadge(r){
   if(r.drop>0)return `<span class="ppx-dl-badge is-drop">▼ ${M(r.drop)} cheaper</span>`;
   if(r.atLow)return `<span class="ppx-dl-badge is-low">Lowest in ${r.days} days</span>`;
@@ -3171,6 +3319,8 @@ function dlCatList(rows){
   return [['all','All',rows.length],...keys.map(k=>[k,lbl(k),rows.filter(r=>r.cat===k).length])];
 }
 function dealsPageHTML(){
+  if(dlState.specCat!==dlState.cat){dlState.spec={};dlState.specCat=dlState.cat;}
+  if(dlState.cat!=='all')void dlLoadSpecs();
   const all=dlRows().filter(r=>Number.isFinite(r.price)); /* V226: only products with a checked price are deals */
   const plus=dlPlusActive();
   const early=dlFilter(all.filter(r=>r.isEarly));
@@ -3206,8 +3356,10 @@ function dealsPageHTML(){
           <div class="ppx-dl-catmenu" role="listbox" aria-label="Category" hidden>${cats.map(([k,l,n])=>`<button type="button" role="option" aria-selected="${dlState.cat===k}" class="${dlState.cat===k?'is-on':''}" data-dl-cat="${H(k)}"><span>${H(l)}</span><em>${n}</em></button>`).join('')}</div></div>
         <label><span>Price</span><select data-dl-select="price">${DL_PRICE.map(([k,l])=>`<option value="${k}"${dlState.price===k?' selected':''}>${H(l)}</option>`).join('')}</select></label>
         <label><span>Saving</span><select data-dl-select="off">${DL_OFF.map(([k,l])=>`<option value="${k}"${dlState.off===k?' selected':''}>${H(l)}</option>`).join('')}</select></label>
+        ${dlState.store?`<button type="button" class="ppx-dl-storechip" data-dl-store-x aria-label="Show all stores">Lowest on <b>${H(dlState.store)}</b> <span aria-hidden="true">×</span></button>`:''}
         <label><span>Sort</span><select data-dl-select="sort">${DL_SORT.map(([k,l])=>`<option value="${k}"${dlState.sort===k?' selected':''}>${H(l)}</option>`).join('')}</select></label>
       </div>
+      ${(()=>{const fs=dlSpecFacets(pub);return fs.length?`<div class="ppx-dl-selects ppx-dl-specs">${fs.map(([k,l,vals])=>`<label class="${dlState.spec[k]?'is-set':''}"><span>${H(l)}</span><select data-dl-spec="${H(k)}"><option value="">Any</option>${vals.map(([v,n])=>`<option value="${H(v)}"${dlState.spec[k]===v?' selected':''}>${H(v)} (${n})</option>`).join('')}</select></label>`).join('')}${Object.keys(dlState.spec).length?'<button type="button" class="ppx-dl-chip" data-dl-specclear>Clear specs</button>':''}</div>`:'';})()}
     </div>
     ${empty}
     ${dlSection('picks',ICON.star,"Today's top picks",'Hand-checked by the PricePulse team',featured,{big:true})}
@@ -3282,11 +3434,15 @@ pageView.addEventListener('click',e=>{
   if(document.body.dataset.ppPage!=='deals')return;
   if(e.target.closest('[data-dl-catbtn]')){dlCatMenu();return;}
   const c=e.target.closest('[data-dl-cat]');if(c){dlState.cat=c.dataset.dlCat;dlRerender();return;}
-  if(e.target.closest('[data-dl-reset]')){dlState={cat:'all',price:'all',off:'0',sort:'score'};dlRerender();return;}
+  if(e.target.closest('[data-dl-reset]')){dlState={cat:'all',price:'all',off:'0',sort:'score',spec:{},specCat:'all',store:''};dlRerender();return;}
+  if(e.target.closest('[data-dl-store-x]')){dlState.store='';dlRerender();return;}
+  if(e.target.closest('[data-dl-specclear]')){dlState.spec={};dlRerender();return;}
   if(e.target.closest('.ppx-dl-card.is-locked .ppx-dl-media')){e.preventDefault();}
 });
 pageView.addEventListener('change',e=>{
   if(document.body.dataset.ppPage!=='deals')return;
+  const sp=e.target.closest('[data-dl-spec]');
+  if(sp){const k=sp.dataset.dlSpec;if(sp.value)dlState.spec={...dlState.spec,[k]:sp.value};else{const o={...dlState.spec};delete o[k];dlState.spec=o;}dlRerender();return;}
   const s=e.target.closest('[data-dl-select]');if(!s)return;
   dlState[s.dataset.dlSelect]=s.value;
   dlRerender();
@@ -3490,8 +3646,8 @@ function pcHTML(d,opts={}){
   return `<div class="ppx-pc is-${d.v.k}${opts.locked?' is-locked':''}" data-pc-id="${H(id)}"><div class="ppx-pc-in">
     <div class="ppx-pc-top"><span class="ppx-pc-verdict"><i></i>${pcVerdictHTML(d.v.t)}</span><span class="ppx-pc-icons"><button type="button" class="ppx-pc-ib" data-pc-alert="${H(id)}" ${d.target?`data-pc-target="${d.target}"`:''} aria-label="Price alert for ${H(d.p.name)}">${PC_SVG.bell}</button><button type="button" class="ppx-pc-ib is-heart${saved?' is-on':''}" data-pc-heart="${H(id)}" aria-pressed="${saved}" aria-label="${saved?'Remove from':'Add to'} wishlist">${PC_SVG.heart}</button></span></div>
     <a class="ppx-pc-prod" href="#/product/${eid}"><span class="ph ${ppxGlobalImg(d.p.id,d.photo).surface}">${ppxGlobalImg(d.p.id,d.photo).img}</span><span class="nm"><small>${H(cat)}</small><b>${H(d.p.name)}</b>${d.variant?`<em>${H(d.variant)}</em>`:''}</span>${score}</a>
-    ${d.price!=null?`<div class="ppx-pc-price"><div><b>${M(d.price)}</b>${d.sav?.mrp?`<s>${M(d.sav.mrp)}</s>`:''}</div>${d.chg?`<div class="chg is-${d.chg.c}">${H(d.chg.a)}<small>${H(d.chg.b)}</small></div>`:''}</div>`:`<div class="ppx-pc-pending"><i></i>We are checking ${d.stores} ${d.stores===1?'store':'stores'} for this product</div>`}
-    ${opts.meter?(()=>{const m=ppMeterHTML(d.price,lowestSeries(d.p.id),d.store,'is-card');return m?`<div class="ppx-pc-meter">${m}</div>`:'';})():pcSpark(d)}${pcLadder(d)}${plus}
+    ${d.price!=null?`<div class="ppx-pc-price"><div><b>${M(d.price)}</b>${d.sav?.mrp?`<s>${M(d.sav.mrp)}</s>`:''}${cbSpan(d.store,d.price,d.p.category,'tag')}</div>${d.chg?`<div class="chg is-${d.chg.c}">${H(d.chg.a)}<small>${H(d.chg.b)}</small></div>`:''}</div>`:`<div class="ppx-pc-pending"><i></i>We are checking ${d.stores} ${d.stores===1?'store':'stores'} for this product</div>`}
+    ${opts.meter?(()=>{const m=ppMeterHTML(d.price,lowestSeries(d.p.id),d.store,'is-card');return m?`<div class="ppx-pc-meter">${m}</div>`:'';})():pcSpark(d)}${pcLadder(d)}${opts.withPlus?plus:''}
     <div class="ppx-pc-btns">${main}<a class="ppx-pc-cmp" href="#/product/${eid}">Details</a></div>
     <div class="ppx-pc-meta"><span><i></i>${d.price!=null?(d.stores>d.offers.length&&d.offers.length?`${d.stores} stores · ${d.stores-d.offers.length} out of stock`:`${d.offers.length||d.stores} ${(d.offers.length||d.stores)===1?'store':'stores'} verified`):`${d.stores} ${d.stores===1?'store':'stores'} listed`}${d.offers.length>3?` · <b class="ppx-pc-more">+${d.offers.length-3} more</b>`:''}</span>${d.price!=null?`<button type="button" class="ppx-pc-add${inCmp?' is-on':''}" data-pc-cmp="${H(id)}" aria-pressed="${inCmp}">${PC_SVG.cmp}${inCmp?'Added to compare':'Add to compare'}</button>`:''}</div>
   </div>${lock}</div>`;
@@ -3508,7 +3664,7 @@ function pcMountHome(){
     const d=pcData(p);
     const sig=[d.price,d.v.t,d.an?.score,d.offers.map(o=>o.name+o.price).join(','),pcSaved(p.id),pcCmp.includes(p.id),d.plus?.v,dlPlusActive(),d.photo].join('|');
     if(slot.dataset.sig===sig)return;
-    slot.dataset.sig=sig;slot.innerHTML=pcHTML(d,{meter:true});
+    slot.dataset.sig=sig;slot.innerHTML=pcHTML(d,{}); /* V276 (P9): same card as the Deals page, no High/Low slider (it stays on the product page) */
   });
 }
 function pcDecorateSection(){
@@ -3591,6 +3747,11 @@ function pcTray(){
   if(items.length>prevN){tray.classList.remove('is-bump');void tray.offsetWidth;tray.classList.add('is-bump');}
 }
 window.addEventListener('hashchange',()=>setTimeout(pcTray,30));
+/* V277 (P18): Compare page panel buttons */
+document.addEventListener('click',e=>{
+  if(e.target.closest&&e.target.closest('[data-pp-cmp-clear]')){setTimeout(()=>{location.hash='#/compare/';},0);return;}
+  if(e.target.closest&&e.target.closest('[data-pp-cmp-add]')){document.getElementById('ppSearchTop')?.click();}
+});
 routes.compare=(param)=>{
   const ids=String(param||'').split(',').map(s=>s.trim()).filter(Boolean).slice(0,3);
   const ps=ids.map(id=>productIndex().find(p=>p.id===id)).filter(Boolean);
@@ -3604,6 +3765,7 @@ routes.compare=(param)=>{
     ${row('',ds.map(d=>`<span class="ppx-cmpx-c ppx-cmpx-prod"><a href="#/product/${encodeURIComponent(d.p.id)}"><span class="ph">${d.photo?`<img src="${H(d.photo)}" alt="">`:''}</span><b>${H(d.p.name)}</b></a><button type="button" class="ppx-cmpx-x" data-pc-tray-x="${H(d.p.id)}">Remove</button></span>`))}
     ${row('Best price',ds.map(d=>cell(d.price!=null?`<b class="big">${M(d.price)}</b>`:'<span class="mut">Being verified</span>',bp!=null&&d.price===bp)))}
     ${row('Cheapest at',ds.map(d=>cell(d.store?H(d.store):'<span class="mut">—</span>')))}
+    ${cbRates&&ds.some(d=>cbAmount(d.store,d.price,d.p.category))?row('Cashback (est.)',ds.map(d=>{const a=cbAmount(d.store,d.price,d.p.category);return cell(a?`<b class="pp-cb-v">+ ${cbRangeTxt(a,true)}</b><small class="mut"> after the return period</small>`:'<span class="mut">—</span>');})):''}
     ${row('Verdict',ds.map(d=>cell(`<span class="ppx-cmpx-v is-${d.v.k}">${H(d.v.t)}</span>`)))}
     ${row('Deal Score',ds.map(d=>cell(d.an?`<b>${d.an.score}</b>/100`:'<span class="mut">Needs more history</span>',bs!=null&&d.an?.score===bs)))}
     ${row('30-day low',ds.map(d=>cell(d.series.length>=3?M(d.min):'<span class="mut">—</span>',bl!=null&&d.series.length>=3&&d.min===bl)))}
@@ -3611,7 +3773,7 @@ routes.compare=(param)=>{
     ${row('Price gap',ds.map(d=>cell(d.spread?`${M(d.spread)} between stores`:'<span class="mut">—</span>')))}
     ${row('',ds.map(d=>{const u=d.url&&d.price!=null?ppAffiliateUrl(d.url).url:'';return `<span class="ppx-cmpx-c">${u?`<a class="ppx-pc-buy" href="${H(u)}" target="_blank" rel="sponsored noopener noreferrer" data-product-id="${H(d.p.id)}">Buy on ${H(d.store)} ↗</a>`:`<a class="ppx-pc-buy is-alert" href="#/product/${encodeURIComponent(d.p.id)}">See details</a>`}</span>`;}))}
   </div>`;
-  showPage('compare',`<div class="ppx-product ppx-list-page container ppx-compare-page">${crumbs('Compare')}<section class="ppx-dl-hero ppx-cmpx-hero"><div class="ppx-dl-hero-copy"><span class="ppx-eyebrow">SIDE BY SIDE</span><h1>Which one should you buy?</h1><p>Verified prices, Deal Score and price history next to each other.</p></div></section>${body}</div>`);
+  showPage('compare',`<div class="ppx-product ppx-list-page container ppx-compare-page">${crumbs('Compare')}<section class="ppx-dl-hero ppx-cmpx-hero"><div class="ppx-dl-hero-copy"><span class="ppx-eyebrow">SIDE BY SIDE</span><h1>Which one should you buy?</h1><p>Verified prices, Deal Score and price history next to each other.</p></div></section><div class="pp-panel pp-cmp-panel"><span class="pp-panel-note"><b>${ds.length}</b> of 3 products</span><span class="pp-panel-acts">${ds.length<3?`<button type="button" class="pp-pbtn is-go" data-pp-cmp-add>+ Add product</button>`:''}<a class="pp-pbtn" href="#/deals">Browse deals</a>${ds.length?`<button type="button" class="pp-pbtn" data-pc-tray-clear data-pp-cmp-clear>Clear all</button>`:''}</span></div>${body}</div>`);
   document.title='Compare | PricePulse';
   pcTray();
 };
@@ -3792,14 +3954,16 @@ function hlDots(grid,on){
   dots.__paint=paint;
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-see-cat]');if(!a)return;try{dlState.cat=a.dataset.seeCat||'all';}catch(_){}},true);
+/* V277 (P26): "View all" of a Deal Radar lens opens Live Deals with that lens */
+document.addEventListener('click',e=>{const a=e.target.closest('[data-see-lens]');if(!a)return;try{const l=a.dataset.seeLens;dlState.cat='all';dlState.store=l==='store'?(a.dataset.seeStore||''):'';dlState.sort=l==='store'?'score':'save';}catch(_){}},true);
 if(typeof filterProducts==='function'){
   const origFilter=filterProducts;
   filterProducts=function(category){hlCat=category||'all';const r=origFilter.apply(this,arguments);try{const g=document.getElementById('dealGrid');if(g)g.scrollLeft=0;}catch(_){}try{hlApplyCap();hlRows();}catch(_){}return r;};
 }
-function hlMini(p,d){
+function hlMini(p,d,o={}){
   const k=d?.v?.k||'pending';
   const lbl=k==='buy'?'Buy now':k==='wait'?'Wait':k==='fair'?'Fair price':'Verifying';
-  const sub=d?.price!=null?(d.drop>0?`▼ ${M(d.drop)}`:d.sav?.percent?`${d.sav.percent}% off`:`${d.offers.length} stores`):`${d?.stores||0} stores`;
+  const sub=o.sub||(d?.price!=null?(d.drop>0?`▼ ${M(d.drop)}`:d.sav?.percent?`${d.sav.percent}% off`:`${d.offers.length} stores`):`${d?.stores||0} stores`);
   return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph ${ppxGlobalImg(p.id,d?.photo).surface}">${ppxGlobalImg(p.id,d?.photo).img}</span>${p.brand?`<span class="br">${H(p.brand)}</span>`:''}<span class="nm">${H(p.name)}</span><span class="pr${d?.price!=null?'':' is-soon'}">${d?.price!=null?M(d.price):'Price soon'}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}<span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
 }
 function hlRows(){
@@ -3811,12 +3975,31 @@ function hlRows(){
   const all=productIndex().map(p=>{let d=null;try{d=pcData(p);}catch(_){}return {p,d};});
   const rows=[];let grid=null;
   if(quiet&&hlCat==='all'){
-    const drops=all.filter(x=>x.d?.drop>0&&!top.has(x.p.id)).sort((a,b)=>b.d.drop-a.d.drop).slice(0,10);
-    if(drops.length>=3)rows.push({key:'drops',title:'Biggest price drops',sub:'Cheaper than the last verified price',items:drops,cat:'all'});
-    Object.keys(CAT_LABEL).forEach(cat=>{
-      const items=all.filter(x=>x.p.category===cat&&!top.has(x.p.id)).sort((a,b)=>hlRank(b.p)-hlRank(a.p)).slice(0,8);
-      if(items.length>=3)rows.push({key:cat,title:`Best discounts in ${catLabel(cat)}`,sub:`${all.filter(x=>x.p.category===cat).length} products compared`,items,cat});
+    /* V277 (P26): Deal Radar = "lens" sections instead of one row per category. One line of the same small cards each,
+       "View all" opens Live Deals with that lens. A section shows only with 3+ VERIFIED products, so the list grows
+       by itself as the catalog grows. Max 5 sections. Biggest total saving gets the featured box. */
+    const ver=all.filter(x=>x.d&&x.d.price!=null&&!x.p.card.hidden);
+    const pref=(a,b)=>(top.has(a.p.id)-top.has(b.p.id)); /* products not already in Popular deals first */
+    const kit=window.ppOffersKit;
+    const tot=x=>{
+      const disc=x.d.sav?.saving>0?x.d.sav.saving:0;
+      let off=0,st=x.d.store,pay=x.d.price;
+      try{const b=kit&&kit.best?kit.best(x.p):null;if(b){off=b.save;st=b.store;pay=b.final;}}catch(_){}
+      const cbE=cbAmount(st,pay,x.p.category),cb=cbE?(cbRange(cbE)[0]||0):0; /* only the sure (low) end counts in the total */
+      return {disc,off,cb,cbE,sum:disc+off+cb};
+    };
+    ver.forEach(x=>{x.t=tot(x);});
+    const totals=ver.filter(x=>x.t.sum>0&&(x.t.off>0||x.t.cbE>0)).sort((a,b)=>b.t.sum-a.t.sum||pref(a,b)).slice(0,10);
+    if(totals.length>=3)rows.push({key:'total',lens:'total',feature:true,title:'Biggest total saving',sub:'Discount + coupons and bank offers + cashback, added up',items:totals});
+    const disc=ver.filter(x=>x.d.sav?.percent>0).sort((a,b)=>b.d.sav.percent-a.d.sav.percent||pref(a,b)).slice(0,10);
+    if(disc.length>=3)rows.push({key:'disc',lens:'disc',title:'Highest discount',sub:'Biggest cut from MRP, verified price',items:disc});
+    const byStore=new Map();ver.forEach(x=>{const st=x.d.store;if(!st)return;if(!byStore.has(st))byStore.set(st,[]);byStore.get(st).push(x);});
+    [...byStore.entries()].filter(([,l])=>l.length>=3).sort((a,b)=>b[1].length-a[1].length).forEach(([st,l])=>{
+      if(rows.length>=5)return;
+      const items=l.sort((a,b)=>(b.d.spread||0)-(a.d.spread||0)||pref(a,b)).slice(0,10);
+      rows.push({key:'store-'+cbKey(st),lens:'store',store:st,title:`Lowest price on ${st}`,sub:`${l.length} products cheapest on ${st} right now`,items});
     });
+    rows.splice(5);
   }else if(quiet&&hlCat&&hlCat!=='all'){
     /* V224: category picked in the deals section -> the rest of that category as small cards */
     const items=all.filter(x=>x.p.category===hlCat&&!x.p.card.hidden&&!top.has(x.p.id)).sort((a,b)=>hlRank(b.p)-hlRank(a.p));
@@ -3826,7 +4009,18 @@ function hlRows(){
   host.hidden=false;
   const head=`<div class="ppx-radar-head"><span class="ppx-radar-eyebrow"><i aria-hidden="true"></i>DEAL RADAR${grid?` · ${H(catLabel(hlCat).toUpperCase())}`:''}</span><h2>${grid?H(grid.title):'Deal Radar'}</h2><p>${grid?H(grid.sub):'Biggest price drops and best discounts, checked across stores.'}</p></div>`;
   const body=grid?`<div class="ppx-row" data-row="cat-${H(grid.cat)}"><div class="ppx-row-grid">${grid.items.map(x=>hlMini(x.p,x.d)).join('')}</div><div class="ppx-row-more"><a href="#/deals" data-see-cat="${H(grid.cat)}">Filter &amp; sort all ${H(catLabel(grid.cat))} deals <span aria-hidden="true">→</span></a></div></div>`
-    :rows.map(r=>`<div class="ppx-row" data-row="${H(r.key)}"><div class="ppx-row-head"><div><h3>${H(r.title)}</h3><small>${H(r.sub)}</small></div><a href="#/deals" data-see-cat="${H(r.cat)}">View all <span aria-hidden="true">→</span></a></div><div class="ppx-row-track">${r.items.map(x=>hlMini(x.p,x.d)).join('')}</div></div>`).join('');
+    :rows.map(r=>{
+      const see=`<a href="#/deals" data-see-lens="${H(r.lens)}" data-see-store="${H(r.store||'')}">View all <span aria-hidden="true">→</span></a>`;
+      const subOf=x=>r.lens==='total'?`Save ${M(x.t.sum)}`:r.lens==='disc'?`${x.d.sav.percent}% off MRP`:'';
+      if(r.feature){
+        const f=r.items[0],t=f.t,img=ppxGlobalImg(f.p.id,f.d.photo);
+        const parts=[t.disc?`<em>${M(t.disc)} discount</em>`:'',t.off?`<em>${M(t.off)} offers</em>`:'',t.cbE?`<em>${cbRangeTxt(t.cbE,true)} cashback <small>est.</small></em>`:''].join('');
+        return `<div class="ppx-row pp-lens-feature" data-row="total"><div class="ppx-row-head"><div><h3>${H(r.title)}</h3><small>${H(r.sub)}</small></div>${see}</div>
+          <div class="pp-lf-body"><a class="pp-lf-top" href="#/product/${encodeURIComponent(f.p.id)}"><span class="ph ${img.surface}">${img.img}</span><span class="pp-lf-c">${f.p.brand?`<small>${H(f.p.brand)}</small>`:''}<b>${H(f.p.name)}</b><span class="pp-lf-pr">${M(f.d.price)}${f.d.sav?.mrp?` <s>${M(f.d.sav.mrp)}</s>`:''} <i>at ${H(f.d.store||'')}</i></span><span class="pp-lf-save">Save ${M(t.sum)} in total</span><span class="pp-lf-parts">${parts}</span></span></a>
+          <div class="ppx-row-track">${r.items.slice(1).map(x=>hlMini(x.p,x.d,{sub:subOf(x)})).join('')}</div></div></div>`;
+      }
+      return `<div class="ppx-row" data-row="${H(r.key)}"><div class="ppx-row-head"><div><h3>${H(r.title)}</h3><small>${H(r.sub)}</small></div>${see}</div><div class="ppx-row-track">${r.items.map(x=>hlMini(x.p,x.d,{sub:subOf(x)})).join('')}</div></div>`;
+    }).join('');
   const html=`<div class="container">${head}${body}</div>`;
   if(host.__h!==html){host.innerHTML=html;host.__h=html;}
 }
@@ -3885,7 +4079,7 @@ function navApplyHomeFilters(s){
   const q=String(s.q||''),cat=s.cat||'all';
   let curCat='all';try{curCat=hlCat||'all';}catch(_){}
   if(q!==String(headerInput?.value||'')||cat!==curCat||changed){
-    if(headerInput)headerInput.value=q;const hi=document.getElementById('ppxHeroSearch');if(hi)hi.value=q;
+    if(headerInput)headerInput.value=q;
     document.querySelectorAll('.deal-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.filter===cat));
     try{filterProducts(cat,q);}catch(_){}
     try{if(q)searchBar(q);else document.getElementById('ppxSearchBar')?.remove();}catch(_){}
@@ -4077,4 +4271,67 @@ window.ppPremiumRoutes=routes;
 window.ppPremiumRoute=route;
 window.ppProductPageHTML=productPageHTML;
 route();
+})();
+
+/* V248: PricePulse extension "Alert me at ₹X" opens #/product/<id>?alert=<price>.
+   Opens this product's deal-alert editor (after sign-in if needed) with that target filled in. */
+(function(){
+  const KEY='ppx_ext_alert_v248';
+  const read=()=>{try{const v=JSON.parse(sessionStorage.getItem(KEY)||'null');return v&&Date.now()-v.t<15*60*1000?v:null;}catch(_){return null;}};
+  function check(){
+    const m=(location.hash||'').match(/^#\/product\/([^?]+)\?(?:.*&)?alert=(\d{2,8})(?:&|$)/i);
+    if(!m)return;
+    const id=decodeURIComponent(m[1]),price=Number(m[2]);
+    try{sessionStorage.setItem(KEY,JSON.stringify({id,price,t:Date.now()}));}catch(_){}
+    try{history.replaceState(null,'',location.pathname+location.search+'#/product/'+encodeURIComponent(id));}catch(_){}
+    let n=0;
+    const iv=setInterval(()=>{
+      const b=document.querySelector(`.ppx-product [data-ppx-action="alert"][data-product-id="${CSS.escape(id)}"]`);
+      if(b){clearInterval(iv);b.click();}else if(++n>60)clearInterval(iv);
+    },250);
+  }
+  // Fill the target as soon as the alert editor for that product is open (also after sign-in).
+  setInterval(()=>{
+    const v=read();if(!v)return;
+    const ed=document.getElementById('dealAlertEditor');
+    if(!ed||ed.dataset.productId!==v.id)return;
+    const inp=ed.querySelector('#dealAlertForm input[name="target"]');
+    if(!inp||inp.dataset.ppxExt==='1')return;
+    inp.value=String(v.price);inp.dataset.ppxExt='1';
+    inp.dispatchEvent(new Event('input',{bubbles:true}));
+    try{sessionStorage.removeItem(KEY);}catch(_){}
+  },300);
+  window.addEventListener('hashchange',check);
+  check();
+})();
+
+/* V249: PricePulse extension "View" for a store that is NOT cheaper opens #/product/<id>?from=<store>.
+   The product page highlights that store and its button reads "Continue to <Store>". No automatic redirect
+   or click: the shopper decides here (Chrome Web Store affiliate policy + store affiliate rules). */
+(function(){
+  const KEY='ppx_ext_from_v249';
+  const read=()=>{try{const v=JSON.parse(sessionStorage.getItem(KEY)||'null');return v&&Date.now()-v.t<15*60*1000?v:null;}catch(_){return null;}};
+  if(!document.getElementById('ppxFromStyle')){const st=document.createElement('style');st.id='ppxFromStyle';st.textContent=`.ppx-store.ppx-from{outline:2px solid #E8B954;outline-offset:2px;box-shadow:0 0 0 6px rgba(232,185,84,.18)}.ppx-from-note{display:block;margin:0 0 10px;padding:8px 12px;border-radius:10px;background:#FFF7E2;color:#5B4612;font-size:13px;font-weight:600}`;document.head.appendChild(st);}
+  function check(){
+    const m=(location.hash||'').match(/^#\/product\/([^?]+)\?(?:.*&)?from=([a-z ]{2,30})(?:&|$)/i);
+    if(!m)return;
+    const id=decodeURIComponent(m[1]),store=decodeURIComponent(m[2]).toLowerCase().trim();
+    try{sessionStorage.setItem(KEY,JSON.stringify({id,store,t:Date.now()}));}catch(_){}
+    try{history.replaceState(null,'',location.pathname+location.search+'#/product/'+encodeURIComponent(id));}catch(_){}
+  }
+  setInterval(()=>{
+    const v=read();if(!v)return;
+    if(!(location.hash||'').startsWith('#/product/'+encodeURIComponent(v.id))&&!(location.hash||'').startsWith('#/product/'+v.id))return;
+    const row=[...document.querySelectorAll('.ppx-product .ppx-store[data-retailer]')].find(r=>r.dataset.retailer.toLowerCase().trim()===v.store);
+    if(!row||row.classList.contains('ppx-from'))return;
+    row.classList.add('ppx-from');
+    const cta=row.querySelector('.ppx-store-cta');
+    if(cta){cta.classList.remove('ppx-btn-outline');cta.classList.add('ppx-btn-primary');cta.innerHTML=`Continue to ${row.dataset.retailer.replace(/[<>&]/g,'')} <span aria-hidden="true">↗</span>`;}
+    const note=document.createElement('span');note.className='ppx-from-note';note.textContent=`You chose ${row.dataset.retailer} in the PricePulse extension. Compare all stores here, then continue.`;
+    row.parentNode.insertBefore(note,row);
+    row.scrollIntoView({block:'center',behavior:'smooth'});
+    try{sessionStorage.removeItem(KEY);}catch(_){}
+  },400);
+  window.addEventListener('hashchange',check);
+  check();
 })();

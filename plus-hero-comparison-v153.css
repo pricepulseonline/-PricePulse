@@ -13,7 +13,7 @@
   #ppPlusPage .pp-pg-halo {width:365px;height:170px;}
   /* Wider Plus cells with intentionally readable type and clearer active column. */
   #ppPlusPage .pp-pg-table {grid-template-columns:minmax(180px,1.17fr) minmax(90px,.72fr) minmax(148px,1.01fr);}
-  #ppPlusPage .pp-pg-cell {font-size:13.4px;line-height:1.18;color:#213b49;}
+  #ppPlusPage .pp-pg-cell {font-size:13.4px;line-height:1.18;color:#264439;}
   #ppPlusPage .pp-pg-cell:nth-child(3n+1) {font-weight:795;}
   #ppPlusPage .pp-pg-cell:nth-child(3n+2) {font-weight:800;}
   #ppPlusPage .pp-pg-cell.pp-pg-plus {font-weight:850;background:#fff7e2;}

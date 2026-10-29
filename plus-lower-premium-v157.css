@@ -4,7 +4,7 @@
 
 /* Shared design rhythm, preserve the site's established 1170px main container. */
 #ppPlusPage .pp-rd-inner{
-  --ppx-ink:#102b3a;--ppx-emerald:#0aa97b;--ppx-gold:#e8be70;
+  --ppx-ink:#183229;--ppx-emerald:#0aa97b;--ppx-gold:#e8be70;
   --ppx-gold-deep:#a77a2a;--ppx-line:#dfe9e6;
 }
 #ppPlusPage .pp-rd-benefit-section,
@@ -23,7 +23,7 @@
   padding:21px 21px 19px;overflow:hidden;
   border:1px solid #dde8e2;border-radius:20px;
   background:linear-gradient(145deg,#fff 0%,#fbfefd 58%,#f1f8f5 100%);
-  box-shadow:0 17px 34px rgba(6,35,42,.075),0 3px 9px rgba(5,32,41,.035),inset 0 1px 0 #fff;
+  box-shadow:0 17px 34px rgba(15,33,26,.075),0 3px 9px rgba(15,31,25,.035),inset 0 1px 0 #fff;
   transition:transform .26s ease,border-color .26s ease,box-shadow .26s ease;
 }
 #ppPlusPage .pp-rd-benefit::before{
@@ -37,14 +37,14 @@
 }
 #ppPlusPage .pp-rd-benefit:hover{
   transform:translateY(-5px);border-color:#d7b66e;
-  box-shadow:0 24px 48px rgba(6,35,42,.12),0 5px 12px rgba(5,32,41,.045);
+  box-shadow:0 24px 48px rgba(15,33,26,.12),0 5px 12px rgba(15,31,25,.045);
 }
 #ppPlusPage .pp-rd-feature-stat{
   display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:37px;
 }
 #ppPlusPage .pp-rd-feature-stat strong{
   font-size:clamp(24px,2.25vw,31px);letter-spacing:-.055em;
-  line-height:1;font-weight:930;color:#122d3d;
+  line-height:1;font-weight:930;color:#19362B;
 }
 #ppPlusPage .pp-rd-feature-stat small{
   max-width:112px;text-align:right;font-size:9px;line-height:1.38;
@@ -52,9 +52,9 @@
 }
 #ppPlusPage .pp-rd-icon{
   width:45px;height:45px;margin-top:12px;border-radius:14px;
-  background:linear-gradient(145deg,#1b4651,#092738);
+  background:linear-gradient(145deg,#23493B,#152C24);
   color:#f4d78d;border:1px solid rgba(239,208,134,.23);
-  box-shadow:0 8px 15px rgba(8,45,56,.19),inset 0 1px rgba(255,255,255,.16);
+  box-shadow:0 8px 15px rgba(20,44,35,.19),inset 0 1px rgba(255,255,255,.16);
 }
 #ppPlusPage .pp-rd-icon svg{width:25px;height:25px}
 #ppPlusPage .pp-rd-benefit h3{font-size:18px;margin:15px 0 8px;line-height:1.22}
@@ -70,7 +70,7 @@
 #ppPlusPage .pp-rd-plan-grid{gap:22px;margin-top:29px}
 #ppPlusPage .pp-rd-plan{
   border-radius:22px;padding:29px 29px 25px;
-  box-shadow:0 16px 34px rgba(15,48,54,.07),inset 0 1px rgba(255,255,255,.78);
+  box-shadow:0 16px 34px rgba(22,47,38,.07),inset 0 1px rgba(255,255,255,.78);
 }
 #ppPlusPage .pp-rd-plan.is-free{
   background:linear-gradient(145deg,#fff,#f9fcfb);
@@ -79,9 +79,9 @@
 #ppPlusPage .pp-rd-plan.is-plus{
   isolation:isolate;overflow:visible;
   background:radial-gradient(circle at 95% 2%,rgba(41,147,111,.22),transparent 43%),
-    linear-gradient(147deg,#173849 0%,#0d2939 52%,#0d302f 100%);
+    linear-gradient(147deg,#1F4135 0%,#163026 52%,#142921 100%);
   border:2px solid #deb868;
-  box-shadow:0 23px 43px rgba(11,37,45,.2),0 3px 12px rgba(10,37,44,.08),inset 0 1px rgba(255,245,212,.16);
+  box-shadow:0 23px 43px rgba(18,38,31,.2),0 3px 12px rgba(17,37,30,.08),inset 0 1px rgba(255,245,212,.16);
 }
 #ppPlusPage .pp-rd-plan.is-plus::before{
   content:"";height:2px;position:absolute;top:0;left:22px;right:22px;
@@ -109,7 +109,7 @@
 }
 #ppPlusPage .pp-rd-full-compare{
   border-radius:15px;border-color:#dce8e3;
-  box-shadow:0 11px 24px rgba(14,46,54,.04);
+  box-shadow:0 11px 24px rgba(22,46,37,.04);
 }
 #ppPlusPage .pp-rd-full-compare summary{padding:16px 21px}
 #ppPlusPage .pp-rd-full-compare[open]{border-color:#d8bb7c}
@@ -185,7 +185,7 @@
   position:relative;border-radius:15px;
   background:linear-gradient(120deg,#fff,#fbfdfc);
   border:1px solid #dce8e2;
-  box-shadow:0 7px 19px rgba(18,46,53,.035);
+  box-shadow:0 7px 19px rgba(23,48,39,.035);
   transition:border-color .2s ease,box-shadow .2s ease;
 }
 #ppPlusPage .pp-rd-faq details:hover{border-color:#cdded5}
@@ -215,8 +215,8 @@
   border-radius:23px;padding:45px 28px 44px;gap:12px;
   background:radial-gradient(ellipse at 78% 12%,rgba(227,181,89,.17),transparent 36%),
     radial-gradient(ellipse at 12% 95%,rgba(4,191,134,.16),transparent 47%),
-    linear-gradient(120deg,#0b2231,#123b3d);
-  box-shadow:0 24px 48px rgba(12,48,55,.16),inset 0 1px rgba(255,255,255,.1);
+    linear-gradient(120deg,#132921,#19362B);
+  box-shadow:0 24px 48px rgba(21,46,37,.16),inset 0 1px rgba(255,255,255,.1);
 }
 #ppPlusPage .pp-rd-final::before{
   content:"";position:absolute;inset:14px;border-radius:16px;

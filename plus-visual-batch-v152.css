@@ -4,22 +4,22 @@
 #ppPlusPage .pp-pg-hero {
   grid-template-columns:minmax(0,1.0fr) minmax(390px,1.03fr);
   border-color:#cddfd9;
-  box-shadow:0 9px 23px rgba(13,49,57,.075),0 1px 0 rgba(255,255,255,.9) inset;
+  box-shadow:0 9px 23px rgba(22,48,38,.075),0 1px 0 rgba(255,255,255,.9) inset;
 }
 #ppPlusPage .pp-pg-stage {
-  background:radial-gradient(ellipse at 50% 40%,rgba(244,211,136,.24),transparent 58%),linear-gradient(145deg,#f4faf7,#eef7f2 70%,#fdfcf8);
+  background:radial-gradient(ellipse at 50% 40%,rgba(244,211,136,.24),transparent 58%),linear-gradient(145deg,#f4faf7,#eef7f2 70%,#FAFBFA);
   border-color:#d2e2d9;
   gap:7px;
   padding-left:9px;padding-right:9px;
 }
 #ppPlusPage .pp-pg-card-wrap {width:292px;height:133px;}
-#ppPlusPage .pp-pg-member-card {padding:14px 19px;border-color:#e3c37c;box-shadow:0 13px 26px rgba(5,39,47,.20),0 0 0 1px rgba(248,218,148,.23) inset;}
+#ppPlusPage .pp-pg-member-card {padding:14px 19px;border-color:#e3c37c;box-shadow:0 13px 26px rgba(17,35,28,.20),0 0 0 1px rgba(248,218,148,.23) inset;}
 #ppPlusPage .pp-pg-member-card strong {font-size:23px;}
 #ppPlusPage .pp-pg-member-card small {font-size:10px;letter-spacing:.11em;}
 #ppPlusPage .pp-pg-crown{right:7px;top:-14px;width:44px;height:35px;}
 #ppPlusPage .pp-pg-orbit{width:325px;height:160px;border-color:rgba(192,147,46,.33)}
 #ppPlusPage .pp-pg-stage-stats {gap:7px;}
-#ppPlusPage .pp-pg-mini {padding:5px 8px;border-color:#d6e5dc;color:#445d65;background:#fff;font-size:10.7px;}
+#ppPlusPage .pp-pg-mini {padding:5px 8px;border-color:#d6e5dc;color:#486158;background:#fff;font-size:10.7px;}
 #ppPlusPage .pp-pg-mini b {font-size:12px;}
 /* Four benefit tiles: brighter headings and descriptions, recognizable individual accents. */
 #ppPlusPage .pp-pg-benefit {border-color:#d5e4dc;background:linear-gradient(165deg,#fff 0%,#fdfefd 100%);gap:10px;}
@@ -27,21 +27,21 @@
 #ppPlusPage .pp-pg-benefit:nth-child(2) {border-top:2px solid #60ad99;}
 #ppPlusPage .pp-pg-benefit:nth-child(3) {border-top:2px solid #d8b667;}
 #ppPlusPage .pp-pg-benefit:nth-child(4) {border-top:2px solid #60ad99;}
-#ppPlusPage .pp-pg-benefit b {font-size:14.1px;font-weight:900;color:#112f40;}
-#ppPlusPage .pp-pg-benefit p {font-size:12.3px;line-height:1.29;color:#3c5360;font-weight:550;}
+#ppPlusPage .pp-pg-benefit b {font-size:14.1px;font-weight:900;color:#1A372C;}
+#ppPlusPage .pp-pg-benefit p {font-size:12.3px;line-height:1.29;color:#405C52;font-weight:550;}
 #ppPlusPage .pp-pg-benefit-icon {border-color:#e2c681;background:linear-gradient(150deg,#fff3d6,#f3dea6);}
 /* Free vs Plus: real three-way balance and clear scan-friendly row boundaries. */
 #ppPlusPage .pp-pg-table {grid-template-columns:minmax(200px,1.17fr) minmax(104px,.78fr) minmax(160px,1fr);}
 #ppPlusPage .pp-pg-cell{font-size:13px;padding-left:10px;padding-right:10px;border-bottom-color:#e2eae7;}
-#ppPlusPage .pp-pg-cell:nth-child(3n+2){color:#2f4955;background:#f9fbfb;}
-#ppPlusPage .pp-pg-cell.pp-pg-th:nth-child(3n+2){background:#eaf0f0;color:#1f4550;}
-#ppPlusPage .pp-pg-cell:nth-child(3n+1){font-weight:785;color:#223c49;}
+#ppPlusPage .pp-pg-cell:nth-child(3n+2){color:#345046;background:#f9fbfb;}
+#ppPlusPage .pp-pg-cell.pp-pg-th:nth-child(3n+2){background:#eaf0f0;color:#254A3C;}
+#ppPlusPage .pp-pg-cell:nth-child(3n+1){font-weight:785;color:#274439;}
 #ppPlusPage .pp-pg-cell.pp-pg-plus{background:#fff8e7;color:#73511b;}
 #ppPlusPage .pp-pg-cell.pp-pg-th.pp-pg-plus{background:linear-gradient(110deg,#f6e3ac,#fceecb);color:#684713;}
 #ppPlusPage .pp-pg-cell.pp-pg-plus.is-yes{color:#126b4d;}
 #ppPlusPage .pp-pg-compare-head{background:linear-gradient(90deg,#fff,#f4f9f6);}
 /* Savings panel: stronger comparison, a restrained gold detail, no imaginary earned value. */
-#ppPlusPage .pp-pg-value-panel {position:relative;overflow:hidden;border-color:#caa454;background:linear-gradient(142deg,#143b4c 0%,#0b293a 58%,#082332 100%);box-shadow:0 11px 23px rgba(12,43,52,.16),inset 0 1px 0 rgba(255,237,181,.20);}
+#ppPlusPage .pp-pg-value-panel {position:relative;overflow:hidden;border-color:#caa454;background:linear-gradient(142deg,#1F4135 0%,#162F26 58%,#132720 100%);box-shadow:0 11px 23px rgba(20,44,35,.16),inset 0 1px 0 rgba(255,237,181,.20);}
 #ppPlusPage .pp-pg-value-panel:before{content:"";position:absolute;pointer-events:none;width:148px;height:148px;top:-108px;right:-60px;border:1px solid rgba(243,207,121,.17);border-radius:50%;}
 #ppPlusPage .pp-pg-value-panel small{color:#f8df9c;}
 #ppPlusPage .pp-pg-value-math {gap:8px;}
@@ -51,7 +51,7 @@
 #ppPlusPage .pp-pg-value-math .is-green strong {color:#7bedbd;}
 #ppPlusPage .pp-pg-value-panel p {color:#e3edec;font-size:12.7px;line-height:1.32;}
 #ppPlusPage .pp-pg-value-panel b {color:#91f3cf;}
-#ppPlusPage .pp-pg-panel-action {min-height:38px;box-shadow:0 4px 10px rgba(4,16,18,.1);}
+#ppPlusPage .pp-pg-panel-action {min-height:38px;box-shadow:0 4px 10px rgba(7,15,12,.1);}
 /* Height-sensitive laptop sizing: preserve the V151 zero-scroll fit, no text shrinking. */
 @media (min-width:1120px) and (max-height:850px){
   #ppPlusPage .pp-pg-card-wrap{width:278px;height:120px;}

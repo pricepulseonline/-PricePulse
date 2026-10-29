@@ -30,3 +30,4 @@
 .pp-req-det small{color:#8a7a4e;font-weight:700}
 .pp-req-det .pp-req-ok{background:#e5f7ef;border-color:#bfe5d2;color:#08734d}
 .pp-req-det .pp-req-price{background:#fff7e6;border-color:#f0d9a6;color:#7a5410}
+.pp-sale-colour{display:flex;gap:6px}.pp-sale-colour input[type=color]{flex:none;width:46px!important;height:42px;padding:3px!important}

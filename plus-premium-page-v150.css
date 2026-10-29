@@ -3,22 +3,22 @@
 body.pp-plus-page-open main > :not(#ppPlusPage){display:none!important}
 body.pp-plus-page-open footer{display:none!important}
 body.pp-plus-page-open{overflow-y:auto!important}
-#ppPlusPage{--pp-ink:#102b3a;--pp-muted:#536875;--pp-green:#098d68;--pp-gold:#e7b95a;--pp-gold-soft:#fff2cd;position:relative;width:100%;margin:0;padding:12px 0 20px;color:var(--pp-ink);background:radial-gradient(ellipse at 76% 0%,rgba(246,219,150,.17),transparent 37%),#f5f8f7;overflow:visible;font-family:inherit}
+#ppPlusPage{--pp-ink:#183229;--pp-muted:#5A6E62;--pp-green:#098d68;--pp-gold:#e7b95a;--pp-gold-soft:#fff2cd;position:relative;width:100%;margin:0;padding:12px 0 20px;color:var(--pp-ink);background:radial-gradient(ellipse at 76% 0%,rgba(246,219,150,.17),transparent 37%),#f5f8f7;overflow:visible;font-family:inherit}
 #ppPlusPage[hidden]{display:none!important}
 #ppPlusPage *,#ppPlusPage *::before,#ppPlusPage *::after{box-sizing:border-box}
 #ppPlusPage button{font-family:inherit;cursor:pointer}
 #ppPlusPage button:focus-visible{outline:3px solid #18a67c;outline-offset:3px}
 
 /* This is a true website layout, not a full-bleed static promotional image. */
-#ppPlusPage .pp-pg-hero{position:relative;width:min(1380px,calc(100% - 44px));margin:auto;padding:20px 26px 20px 30px;display:grid;grid-template-columns:minmax(0,1.06fr) minmax(380px,.94fr);align-items:center;gap:22px;min-height:220px;border-radius:23px;border:1px solid #d5e3df;background:linear-gradient(112deg,#fff 0%,#fffdf8 50%,#f5faf8 100%);box-shadow:0 12px 32px rgba(17,52,62,.075);isolation:isolate}
+#ppPlusPage .pp-pg-hero{position:relative;width:min(1380px,calc(100% - 44px));margin:auto;padding:20px 26px 20px 30px;display:grid;grid-template-columns:minmax(0,1.06fr) minmax(380px,.94fr);align-items:center;gap:22px;min-height:220px;border-radius:23px;border:1px solid #d5e3df;background:linear-gradient(112deg,#fff 0%,#fffdf8 50%,#f5faf8 100%);box-shadow:0 12px 32px rgba(25,54,43,.075);isolation:isolate}
 #ppPlusPage .pp-pg-hero::before{content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;background:radial-gradient(circle at 62% 0%,rgba(249,220,148,.13),transparent 31%);pointer-events:none}
 #ppPlusPage .pp-pg-copy{position:relative;z-index:3;min-width:0}
 #ppPlusPage .pp-pg-kicker{display:inline-flex;width:max-content;max-width:100%;margin:0 0 8px;padding:5px 11px;border:1px solid #ecd7a4;border-radius:99px;background:#fff8e8;color:#8e6112;font-size:11px;font-weight:850;letter-spacing:.115em;text-transform:uppercase}
-#ppPlusPage .pp-pg-title{margin:0;color:#102b3a;font-size:clamp(37px,3.3vw,49px);line-height:1.07;font-weight:900;letter-spacing:-.045em}
+#ppPlusPage .pp-pg-title{margin:0;color:#183229;font-size:clamp(37px,3.3vw,49px);line-height:1.07;font-weight:900;letter-spacing:-.045em}
 #ppPlusPage .pp-pg-title span{color:#07b382}
 #ppPlusPage .pp-pg-title em{font-style:normal;background:linear-gradient(110deg,#aa7520 0%,#d6a74a 52%,#a56a14 100%);color:transparent;background-clip:text;-webkit-background-clip:text}
-#ppPlusPage .pp-pg-tagline{margin:7px 0 7px;color:#435a68;font-size:15px;line-height:1.3;font-weight:650}
-#ppPlusPage .pp-pg-price{display:flex;align-items:baseline;gap:9px;margin:0 0 10px;color:#122b39}
+#ppPlusPage .pp-pg-tagline{margin:7px 0 7px;color:#486359;font-size:15px;line-height:1.3;font-weight:650}
+#ppPlusPage .pp-pg-price{display:flex;align-items:baseline;gap:9px;margin:0 0 10px;color:#183329}
 #ppPlusPage .pp-pg-price strong{font-size:38px;font-weight:950;letter-spacing:-.055em;line-height:1.1}
 #ppPlusPage .pp-pg-price span{color:#835c16;background:#fff3d9;border:1px solid #efddae;border-radius:99px;padding:4px 9px;font-size:12px;font-weight:800}
 #ppPlusPage .pp-pg-active-line{display:inline-flex;align-items:center;gap:7px;margin:0 0 10px;padding:6px 11px;border:1px solid #cfe9de;border-radius:99px;background:#eaf9f2;color:#116247;font-size:12px;font-weight:800}
@@ -27,18 +27,18 @@ body.pp-plus-page-open{overflow-y:auto!important}
 #ppPlusPage .pp-pg-primary{min-height:42px;min-width:290px;padding:10px 18px;border:0;border-radius:11px;background:linear-gradient(115deg,#088b67,#13bc89);box-shadow:0 7px 18px rgba(4,139,98,.21),inset 0 1px rgba(255,255,255,.25);color:#fff;font-size:13.5px;font-weight:900;transition:transform .2s,box-shadow .2s}
 #ppPlusPage .pp-pg-primary:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(4,139,98,.26)}
 #ppPlusPage .pp-pg-primary:disabled{opacity:.58;cursor:not-allowed;transform:none}
-#ppPlusPage .pp-pg-link{min-height:42px;padding:10px 15px;border:1px solid #cdded7;border-radius:11px;background:#fff;color:#25475a;font-size:12.5px;font-weight:850;transition:background .2s}
+#ppPlusPage .pp-pg-link{min-height:42px;padding:10px 15px;border:1px solid #cdded7;border-radius:11px;background:#fff;color:#2C5345;font-size:12.5px;font-weight:850;transition:background .2s}
 #ppPlusPage .pp-pg-link:hover{background:#ecf8f3}
-#ppPlusPage .pp-pg-back{position:absolute;z-index:6;right:15px;top:12px;border-radius:99px;padding:7px 11px;border:1px solid #d9e4df;background:rgba(255,255,255,.95);color:#4c5f68;font-size:11px;font-weight:800}
+#ppPlusPage .pp-pg-back{position:absolute;z-index:6;right:15px;top:12px;border-radius:99px;padding:7px 11px;border:1px solid #d9e4df;background:rgba(255,255,255,.95);color:#526259;font-size:11px;font-weight:800}
 
 /* Live membership card; no stat chips covering text or crown. */
 #ppPlusPage .pp-pg-stage{position:relative;z-index:2;min-width:0;min-height:190px;padding:12px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;border-radius:19px;border:1px solid #d5e4df;background:radial-gradient(circle at 80% 18%,rgba(248,215,139,.20),transparent 45%),linear-gradient(140deg,#f2f8f5,#f9fbfa);perspective:1000px;overflow:hidden}
 #ppPlusPage .pp-pg-halo{position:absolute;width:330px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(229,184,73,.19),transparent 71%);pointer-events:none}
 #ppPlusPage .pp-pg-orbit{position:absolute;width:350px;height:190px;border:1px solid rgba(209,170,79,.29);border-radius:50%;transform:rotate(-11deg);pointer-events:none}
 #ppPlusPage .pp-pg-card-wrap{position:relative;z-index:2;width:260px;height:129px;flex:0 0 auto}
-#ppPlusPage .pp-pg-member-card{position:relative;width:100%;height:100%;padding:15px 17px;border:1px solid #c9a85d;border-radius:16px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;align-items:start;color:#fff;background:linear-gradient(130deg,#163b4c,#091e2e 65%,#133545);box-shadow:0 12px 26px rgba(14,48,55,.24),inset 0 1px rgba(255,255,255,.13);transform:rotate(-2deg);transition:transform .24s ease,box-shadow .24s ease;overflow:hidden}
+#ppPlusPage .pp-pg-member-card{position:relative;width:100%;height:100%;padding:15px 17px;border:1px solid #c9a85d;border-radius:16px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;align-items:start;color:#fff;background:linear-gradient(130deg,#1F4336,#12251E 65%,#1C3C30);box-shadow:0 12px 26px rgba(22,47,38,.24),inset 0 1px rgba(255,255,255,.13);transform:rotate(-2deg);transition:transform .24s ease,box-shadow .24s ease;overflow:hidden}
 #ppPlusPage .pp-pg-member-card:before{content:"";position:absolute;inset:-60% -55%;background:linear-gradient(110deg,transparent 37%,rgba(255,255,255,.15) 50%,transparent 62%);transform:translateX(-50%);transition:transform .65s ease}
-#ppPlusPage .pp-pg-stage:hover .pp-pg-member-card{transform:rotate(0deg) translateY(-3px);box-shadow:0 18px 32px rgba(14,48,55,.28),inset 0 1px rgba(255,255,255,.15)}
+#ppPlusPage .pp-pg-stage:hover .pp-pg-member-card{transform:rotate(0deg) translateY(-3px);box-shadow:0 18px 32px rgba(22,47,38,.28),inset 0 1px rgba(255,255,255,.15)}
 #ppPlusPage .pp-pg-stage:hover .pp-pg-member-card:before{transform:translateX(45%)}
 #ppPlusPage .pp-pg-member-card img{grid-column:1;width:33px;height:33px;object-fit:contain}
 #ppPlusPage .pp-pg-member-card .pp-card-price-badge{grid-column:2;grid-row:1;padding:5px 7px;border-radius:7px;border:1px solid rgba(243,201,102,.32);background:rgba(242,200,92,.10);font-size:9px;font-weight:900;color:#f7dd92}
@@ -49,29 +49,29 @@ body.pp-plus-page-open{overflow-y:auto!important}
 #ppPlusPage .pp-pg-crown{position:absolute;z-index:6;top:-16px;right:3px;width:42px;height:34px;filter:drop-shadow(0 5px 5px rgba(80,57,12,.18))}
 #ppPlusPage .pp-pg-pedestal{display:none}
 #ppPlusPage .pp-pg-stage-stats{position:relative;z-index:3;display:flex;justify-content:center;flex-wrap:wrap;gap:7px;width:100%;margin:0}
-#ppPlusPage .pp-pg-mini{display:flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 8px;border-radius:9px;border:1px solid #d7e6e0;background:#fff;box-shadow:0 2px 6px rgba(12,45,52,.035);color:#526875;font-size:10px;font-weight:700}
-#ppPlusPage .pp-pg-mini b{font-size:11.5px;font-weight:900;color:#143b49}
+#ppPlusPage .pp-pg-mini{display:flex;align-items:center;gap:5px;white-space:nowrap;padding:5px 8px;border-radius:9px;border:1px solid #d7e6e0;background:#fff;box-shadow:0 2px 6px rgba(20,44,35,.035);color:#5A6D62;font-size:10px;font-weight:700}
+#ppPlusPage .pp-pg-mini b{font-size:11.5px;font-weight:900;color:#1E3F33}
 
 /* Benefits — legible descriptions, tidy integrated tile heights. */
 #ppPlusPage .pp-pg-content{width:min(1380px,calc(100% - 44px));margin:10px auto 0;display:grid;gap:10px}
 #ppPlusPage .pp-pg-benefits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-#ppPlusPage .pp-pg-benefit{display:flex;align-items:center;min-width:0;gap:11px;min-height:76px;padding:10px 12px;border:1px solid #dee7e4;border-radius:13px;background:#fff;box-shadow:0 4px 15px rgba(17,49,60,.035);transition:transform .18s,border-color .18s,box-shadow .18s}
-#ppPlusPage .pp-pg-benefit:hover{transform:translateY(-2px);border-color:#d4b977;box-shadow:0 9px 19px rgba(17,49,60,.075)}
+#ppPlusPage .pp-pg-benefit{display:flex;align-items:center;min-width:0;gap:11px;min-height:76px;padding:10px 12px;border:1px solid #dee7e4;border-radius:13px;background:#fff;box-shadow:0 4px 15px rgba(25,52,42,.035);transition:transform .18s,border-color .18s,box-shadow .18s}
+#ppPlusPage .pp-pg-benefit:hover{transform:translateY(-2px);border-color:#d4b977;box-shadow:0 9px 19px rgba(25,52,42,.075)}
 #ppPlusPage .pp-pg-benefit-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;border:1px solid #e8cf91;border-radius:12px;color:#855914;background:linear-gradient(130deg,#fff5da,#f5e0ac);font-size:21px;font-weight:900}
-#ppPlusPage .pp-pg-benefit b{display:block;color:#142f40;font-size:13.5px;font-weight:880;line-height:1.25}
-#ppPlusPage .pp-pg-benefit p{margin:4px 0 0;color:#4d636e;font-size:11.5px;line-height:1.32}
+#ppPlusPage .pp-pg-benefit b{display:block;color:#1B392E;font-size:13.5px;font-weight:880;line-height:1.25}
+#ppPlusPage .pp-pg-benefit p{margin:4px 0 0;color:#54675C;font-size:11.5px;line-height:1.32}
 
 /* Free vs Plus — 12px+ text, visible contrast & spacious rows. */
 #ppPlusPage .pp-pg-lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(288px,320px);gap:11px;align-items:stretch;min-width:0}
-#ppPlusPage .pp-pg-compare{min-width:0;background:#fff;border:1px solid #dce6e3;border-radius:14px;overflow:hidden;box-shadow:0 6px 17px rgba(15,45,55,.035)}
+#ppPlusPage .pp-pg-compare{min-width:0;background:#fff;border:1px solid #dce6e3;border-radius:14px;overflow:hidden;box-shadow:0 6px 17px rgba(22,48,38,.035)}
 #ppPlusPage .pp-pg-compare-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:linear-gradient(90deg,#fff,#f9fbfa);border-bottom:1px solid #e4ebe8}
-#ppPlusPage .pp-pg-compare-head h2{margin:0;font-size:19px;font-weight:900;letter-spacing:-.025em;color:#142d3d}
-#ppPlusPage .pp-pg-compare-head span{color:#526e78;font-size:11.5px;font-weight:700}
+#ppPlusPage .pp-pg-compare-head h2{margin:0;font-size:19px;font-weight:900;letter-spacing:-.025em;color:#1A372C}
+#ppPlusPage .pp-pg-compare-head span{color:#5B6F63;font-size:11.5px;font-weight:700}
 #ppPlusPage .pp-pg-table{display:grid;grid-template-columns:minmax(200px,1.45fr) .62fr .95fr}
-#ppPlusPage .pp-pg-cell{display:flex;align-items:center;min-height:31px;padding:5px 12px;border-bottom:1px solid #e9eeec;color:#263d4a;font-size:12px;line-height:1.25}
+#ppPlusPage .pp-pg-cell{display:flex;align-items:center;min-height:31px;padding:5px 12px;border-bottom:1px solid #e9eeec;color:#2A463C;font-size:12px;line-height:1.25}
 #ppPlusPage .pp-pg-cell:nth-child(3n+1){font-weight:730}
 #ppPlusPage .pp-pg-cell:nth-child(3n+2),#ppPlusPage .pp-pg-cell:nth-child(3n+3){justify-content:center;text-align:center;border-left:1px solid #e9eeec;font-weight:780}
-#ppPlusPage .pp-pg-cell.pp-pg-th{min-height:33px;background:#eef2f3;color:#223b48;font-weight:900;font-size:12px;letter-spacing:.01em}
+#ppPlusPage .pp-pg-cell.pp-pg-th{min-height:33px;background:#eef2f3;color:#274339;font-weight:900;font-size:12px;letter-spacing:.01em}
 #ppPlusPage .pp-pg-cell.pp-pg-plus{background:#fffaeb;color:#694d19}
 #ppPlusPage .pp-pg-cell.pp-pg-th.pp-pg-plus{background:#f8e8b9;color:#5f4516}
 #ppPlusPage .pp-pg-cell.is-yes{color:#107150}
@@ -79,7 +79,7 @@ body.pp-plus-page-open{overflow-y:auto!important}
 #ppPlusPage .pp-pg-cell:nth-last-child(-n+3){border-bottom:0}
 
 /* Value calculation panel — no made-up savings: ₹100 is explicitly eligibility-based. */
-#ppPlusPage .pp-pg-value-panel{display:flex;flex-direction:column;min-width:0;padding:16px;border-radius:14px;border:1px solid #d2bb7a;background:linear-gradient(145deg,#122e3d,#092333 90%);color:#fff;box-shadow:0 9px 22px rgba(12,42,54,.095)}
+#ppPlusPage .pp-pg-value-panel{display:flex;flex-direction:column;min-width:0;padding:16px;border-radius:14px;border:1px solid #d2bb7a;background:linear-gradient(145deg,#19362B,#132921 90%);color:#fff;box-shadow:0 9px 22px rgba(21,45,36,.095)}
 #ppPlusPage .pp-pg-value-panel small{color:#f1cf79;font-size:10px;font-weight:850;letter-spacing:.14em}
 #ppPlusPage .pp-pg-value-panel h2{margin:6px 0 10px;font-size:23px;line-height:1.15;font-weight:890}
 #ppPlusPage .pp-pg-value-math{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
@@ -96,7 +96,7 @@ body.pp-plus-page-open{overflow-y:auto!important}
 #ppPlusPage .pp-pg-reassure span{display:block;color:#506d62;font-size:11px;line-height:1.35}
 #ppPlusPage .pp-pg-reassure>span:last-child{text-align:right}
 #ppPlusPage .pp-pg-flash{animation:ppPremiumFlash .9s ease}
-@keyframes ppPremiumFlash{0%,100%{box-shadow:0 6px 17px rgba(15,45,55,.035)}50%{box-shadow:0 0 0 4px rgba(224,185,86,.32)}}
+@keyframes ppPremiumFlash{0%,100%{box-shadow:0 6px 17px rgba(22,48,38,.035)}50%{box-shadow:0 0 0 4px rgba(224,185,86,.32)}}
 @media(max-width:1150px){#ppPlusPage .pp-pg-hero{grid-template-columns:minmax(0,1fr) minmax(345px,.9fr);padding:17px 20px}#ppPlusPage .pp-pg-benefit{padding:9px;gap:8px}#ppPlusPage .pp-pg-benefit-icon{width:39px;height:39px;flex-basis:39px}#ppPlusPage .pp-pg-benefit b{font-size:12.5px}#ppPlusPage .pp-pg-benefit p{font-size:11px}#ppPlusPage .pp-pg-lower{grid-template-columns:minmax(0,1fr) 292px}#ppPlusPage .pp-pg-cell{font-size:11.5px;padding:5px 8px}}
 @media(max-width:940px){#ppPlusPage .pp-pg-hero{grid-template-columns:1fr;gap:14px}#ppPlusPage .pp-pg-stage{min-height:195px}#ppPlusPage .pp-pg-benefits{grid-template-columns:repeat(2,minmax(0,1fr))}#ppPlusPage .pp-pg-lower{grid-template-columns:1fr}#ppPlusPage .pp-pg-value-panel{min-height:230px}#ppPlusPage .pp-pg-back{right:12px;top:10px}#ppPlusPage .pp-pg-copy{padding-top:16px}}
 @media(max-width:620px){#ppPlusPage{padding:9px 0 22px}#ppPlusPage .pp-pg-hero,#ppPlusPage .pp-pg-content{width:calc(100% - 20px)}#ppPlusPage .pp-pg-hero{padding:16px;gap:12px}#ppPlusPage .pp-pg-copy{padding-top:21px}#ppPlusPage .pp-pg-title{font-size:38px}#ppPlusPage .pp-pg-primary,#ppPlusPage .pp-pg-link{width:100%;min-width:0}#ppPlusPage .pp-pg-benefits{grid-template-columns:1fr}#ppPlusPage .pp-pg-benefit{min-height:68px}#ppPlusPage .pp-pg-compare-head{flex-wrap:wrap}#ppPlusPage .pp-pg-table{grid-template-columns:minmax(125px,1.22fr) minmax(63px,.64fr) minmax(94px,.97fr)}#ppPlusPage .pp-pg-cell{font-size:11px;padding:6px 6px;overflow-wrap:anywhere}#ppPlusPage .pp-pg-cell.pp-pg-th{font-size:11px}#ppPlusPage .pp-pg-reassure{align-items:flex-start;flex-direction:column}#ppPlusPage .pp-pg-reassure>span:last-child{text-align:left}}
@@ -130,31 +130,31 @@ body.pp-plus-page-open{overflow-y:auto!important}
 /* V78.8.150 Plus-specific visual refinement: larger legible copy without hidden/cropped rows.
    Only #ppPlusPage. No changes to business state, payments, referrals, or other pages. */
 #ppPlusPage{background:radial-gradient(ellipse at 78% 4%,rgba(233,192,97,.115),transparent 38%),linear-gradient(180deg,#f7faf8,#f3f8f6);}
-#ppPlusPage .pp-pg-hero{border-color:#ceded9;background:linear-gradient(112deg,#fff 0%,#fffefb 48%,#f2f9f5 100%);box-shadow:0 10px 24px rgba(17,50,58,.065),0 1px 0 rgba(255,255,255,.85) inset;}
+#ppPlusPage .pp-pg-hero{border-color:#ceded9;background:linear-gradient(112deg,#fff 0%,#fffefb 48%,#f2f9f5 100%);box-shadow:0 10px 24px rgba(24,51,41,.065),0 1px 0 rgba(255,255,255,.85) inset;}
 #ppPlusPage .pp-pg-title{letter-spacing:-.037em;}
 #ppPlusPage .pp-pg-primary{font-size:14px;font-weight:900;border-radius:12px;box-shadow:0 8px 20px rgba(5,143,107,.20),inset 0 1px 0 rgba(255,255,255,.23);}
 #ppPlusPage .pp-pg-link{font-size:13.2px;font-weight:850;}
 #ppPlusPage .pp-pg-stage{border-color:#d4e4dd;background:radial-gradient(circle at 47% 42%,rgba(249,222,153,.18),transparent 45%),linear-gradient(137deg,#f0f8f3,#f9fcfa);}
-#ppPlusPage .pp-pg-member-card{border-color:#dbb86b;box-shadow:0 12px 27px rgba(11,39,47,.21),0 0 0 1px rgba(250,217,143,.13) inset,inset 0 1px rgba(255,255,255,.20);}
+#ppPlusPage .pp-pg-member-card{border-color:#dbb86b;box-shadow:0 12px 27px rgba(19,39,32,.21),0 0 0 1px rgba(250,217,143,.13) inset,inset 0 1px rgba(255,255,255,.20);}
 #ppPlusPage .pp-pg-member-card strong{font-size:21px;}
 #ppPlusPage .pp-pg-member-card small{font-size:9.5px;}
 #ppPlusPage .pp-pg-mini{border-color:#cfe1d8;background:rgba(255,255,255,.97);font-size:10.4px;}
 #ppPlusPage .pp-pg-mini b{font-size:12px;}
-#ppPlusPage .pp-pg-benefit{border-color:#d9e5df;box-shadow:0 6px 16px rgba(14,46,57,.045);min-height:73px;}
+#ppPlusPage .pp-pg-benefit{border-color:#d9e5df;box-shadow:0 6px 16px rgba(23,48,39,.045);min-height:73px;}
 #ppPlusPage .pp-pg-benefit b{font-size:14.3px;font-weight:880;line-height:1.22;}
-#ppPlusPage .pp-pg-benefit p{font-size:12.2px;line-height:1.34;color:#455c67;margin-top:3px;}
+#ppPlusPage .pp-pg-benefit p{font-size:12.2px;line-height:1.34;color:#496359;margin-top:3px;}
 #ppPlusPage .pp-pg-benefit-icon{box-shadow:0 2px 8px rgba(134,91,17,.06);}
 #ppPlusPage .pp-pg-compare{border-color:#d5e3dc;}
 #ppPlusPage .pp-pg-compare-head{padding-top:9px;padding-bottom:9px;}
 #ppPlusPage .pp-pg-compare-head h2{font-size:20px;}
-#ppPlusPage .pp-pg-compare-head span{font-size:12px;color:#46606b;}
-#ppPlusPage .pp-pg-cell{min-height:31.5px;padding:5px 11px;font-size:13px;line-height:1.21;color:#203a49;}
+#ppPlusPage .pp-pg-compare-head span{font-size:12px;color:#506157;}
+#ppPlusPage .pp-pg-cell{min-height:31.5px;padding:5px 11px;font-size:13px;line-height:1.21;color:#254439;}
 #ppPlusPage .pp-pg-cell:nth-child(3n+1){font-weight:760;}
 #ppPlusPage .pp-pg-cell.pp-pg-th{min-height:32px;font-size:12.6px;}
 #ppPlusPage .pp-pg-cell.pp-pg-plus{background:#fffbef;color:#755318;}
 #ppPlusPage .pp-pg-cell.pp-pg-th.pp-pg-plus{background:linear-gradient(90deg,#f9ecc7,#f4e3b3);color:#634713;}
 #ppPlusPage .pp-pg-cell.pp-pg-plus.is-yes{color:#126849;font-weight:850;}
-#ppPlusPage .pp-pg-value-panel{border-color:#d2ae62;background:linear-gradient(150deg,#143547,#081f2e);box-shadow:0 9px 22px rgba(10,41,49,.115),inset 0 1px 0 rgba(245,209,116,.14);}
+#ppPlusPage .pp-pg-value-panel{border-color:#d2ae62;background:linear-gradient(150deg,#1D3E32,#11251E);box-shadow:0 9px 22px rgba(19,40,32,.115),inset 0 1px 0 rgba(245,209,116,.14);}
 #ppPlusPage .pp-pg-value-panel small{font-size:10.8px;color:#f5d589;}
 #ppPlusPage .pp-pg-value-panel h2{font-size:23px;}
 #ppPlusPage .pp-pg-value-math span{font-size:11.2px;color:#d2e2e5;}

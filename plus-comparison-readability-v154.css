@@ -5,15 +5,15 @@
     font-size:14.3px;
     line-height:1.14;
     letter-spacing:-.012em;
-    color:#1d3441;
+    color:#223C33;
     /* Current grid row sizing is preserved; only glyphs/contrast change. */
   }
   #ppPlusPage .pp-pg-table .pp-pg-cell:nth-child(3n+1){
     font-weight:810;
-    color:#183240;
+    color:#1D3B30;
   }
   #ppPlusPage .pp-pg-table .pp-pg-cell:nth-child(3n+2){
-    color:#29424c;
+    color:#2D483E;
     font-weight:800;
   }
   #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-plus {
@@ -36,4 +36,4 @@
   #ppPlusPage .pp-pg-table .pp-pg-cell.pp-pg-th {font-size:13.15px;}
 }
 
-#ppPlusPage .pp-pg-title span{color:#102b3a;}
+#ppPlusPage .pp-pg-title span{color:#183229;}
