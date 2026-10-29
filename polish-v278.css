@@ -1,0 +1,287 @@
+/* PricePulse V278 - site polish batch 3 (30 Oct 2026). Loaded last. script.js is never changed.
+   L1/L2 cashback gold look · L6 one-line page heads + slim breadcrumb · L7 Wishlist / Deal Alerts body
+   L8 extension + app promotion · L9 two-line card charts · L10 light cards that stand out */
+
+:root{--pp78-gold:#E8B954;--pp78-gold-d:#7A5200;--pp78-gold-bg:linear-gradient(135deg,#FFF7E0 0%,#FCE9B8 100%);--pp78-gold-b:#EBC66A;
+  --pp78-line:#DCE5E0;--pp78-ink:#10231C;--pp78-mut:#5B6F68;--pp78-dark:#0F1F1A}
+
+/* ======================================================================================================
+   L1/L2 Cashback: ONE number "up to", gold coin pill. Only shown when a real rule matches (.is-on).
+   ====================================================================================================== */
+.pp-cb:not(.is-on){display:none!important}
+.pp-cb-coin{flex:none;display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFE7A3 0%,#F2C14E 45%,#C98B1E 100%);box-shadow:0 1px 0 rgba(122,82,0,.35),inset 0 0 0 1px rgba(255,255,255,.35)}
+.pp-cb-coin svg{width:11px;height:11px;fill:none;stroke:#6B4500;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pp-cb-coin svg circle{display:none}
+.pp-cb b{font-weight:800}
+/* light surfaces: store rows, Saving stack, wishlist, compare, Price Check rows */
+.pp-cb-row,.pp-cb-stack,.pp-cb-tag{display:inline-flex!important;align-items:center;gap:6px;width:max-content;max-width:100%;
+  padding:4px 11px 4px 5px;border-radius:999px;background:var(--pp78-gold-bg)!important;border:1px solid var(--pp78-gold-b);
+  color:var(--pp78-gold-d)!important;font:700 12.5px/1.2 Manrope,system-ui,sans-serif;white-space:nowrap;box-shadow:0 4px 10px -8px rgba(160,110,10,.6)}
+.pp-cb-row{margin-top:6px}
+.pp-cb-stack{margin:10px 0 0;padding:6px 14px 6px 6px;font-size:13.5px}
+.pp-cb-stack .pp-cb-coin{width:20px;height:20px}.pp-cb-stack .pp-cb-coin svg{width:12px;height:12px}
+.pp-cb-tag{margin:4px 0 0;padding:3px 9px 3px 4px;font-size:11.5px;gap:5px;vertical-align:middle}
+.pp-cb-tag .pp-cb-coin{width:15px;height:15px}.pp-cb-tag .pp-cb-coin svg{width:9px;height:9px}
+.pp-cb small{display:none!important} /* V277 had "est. / after the return period" lines: never shown now */
+/* dark product box (best price): a gold strip */
+.pp-cb-hero{display:flex!important;align-items:center;gap:8px;width:auto;max-width:100%;margin:10px 0 4px;padding:8px 12px;border-radius:12px;
+  background:linear-gradient(90deg,rgba(232,185,84,.24) 0%,rgba(232,185,84,.07) 100%)!important;border:1px solid rgba(232,185,84,.5);
+  color:#F6D88E!important;font:700 13.5px/1.2 Manrope,system-ui,sans-serif}
+.pp-cb-hero .pp-cb-coin{width:20px;height:20px}.pp-cb-hero .pp-cb-coin svg{width:12px;height:12px}
+/* dark deal cards (Home Popular deals, Live Deals): small gold pill next to the price */
+.ppx-pc .pp-cb-tag{margin:0 0 0 8px;background:rgba(232,185,84,.15)!important;border-color:rgba(232,185,84,.45);color:#F4D27E!important;box-shadow:none}
+/* coupon tickets: "+ Cashback" */
+.pp-cb-chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:var(--pp78-gold-bg)!important;border:1px solid var(--pp78-gold-b);
+  color:var(--pp78-gold-d)!important;font:800 11px Manrope,system-ui,sans-serif;font-style:normal}
+/* Deal Radar featured box parts */
+.pp-lf-parts em.is-cb{display:inline-flex;align-items:center;gap:5px;color:#F4D27E!important;border-color:rgba(232,185,84,.45)!important;background:rgba(232,185,84,.12)!important}
+.pp-lf-parts em.is-cb .pp-cb-coin{width:14px;height:14px}.pp-lf-parts em.is-cb .pp-cb-coin svg{width:8px;height:8px}
+
+/* ======================================================================================================
+   L6 Page heads = Live Deals: slim breadcrumb row (Back / page) ABOVE, then ONE-line dark bar
+   (title + small stats inline + buttons right). The white panel under the bar stays sticky (V277 rules).
+   ====================================================================================================== */
+body.pp-v276 .ppx-list-page>.ppx-crumbs,body.pp-v276 .pp78-crumbs{display:flex;align-items:center;gap:6px;min-height:28px;margin:-12px 0 -6px!important;padding:0;font:600 13px/1 Manrope,system-ui,sans-serif;color:var(--pp78-mut)}
+body.pp-v276 .ppx-list-page>.ppx-crumbs a.ppx-back,body.pp-v276 .pp78-crumbs a.ppx-back{min-height:28px;padding:0 11px 0 7px;border-radius:999px;background:#fff;border:1px solid var(--pp78-line);box-shadow:0 4px 10px -8px rgba(13,27,22,.45);font-weight:800;color:var(--ppx-green,#137A52)}
+body.pp-v276 .ppx-list-page>.ppx-crumbs a.ppx-back:hover{border-color:#B9D3C8;background:#F6FBF8}
+body.pp-v276 .ppx-list-page>.ppx-crumbs a svg{width:14px;height:14px}
+body.pp-v276 .ppx-list-page>.ppx-crumbs .is-current{font-weight:800;color:var(--pp78-ink)}
+body.pp-v276 .ppx-deals-page>.ppx-crumbs{margin:-12px 0 8px!important}
+body.pp-v276 .ppx-list-page>.ppx-crumbs+*,body.pp-v276 .ppx-list-page>.ppx-crumbs+.pp-head-unit>.pp-onebar{margin-top:0!important}
+body.pp-v276 .ppx-deals-page .ppx-dl-head{margin-top:0!important}
+
+body.pp-v276 .pp-onebar{position:relative;display:flex!important;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:6px 18px;min-height:60px;
+  padding:12px 20px!important;margin-top:0!important;color:#fff;overflow:visible;
+  background:radial-gradient(circle at 92% 0%,rgba(232,185,84,.16),transparent 45%),var(--pp-dark,#0F1F1A)!important}
+body.pp-v276 .pp-onebar::before,body.pp-v276 .pp-onebar::after{content:none!important}
+body.pp-v276 .pp-onebar h1{margin:0!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff!important;
+  font:800 21px/1.2 Sora,Manrope,system-ui,sans-serif!important;letter-spacing:-.02em}
+body.pp-v276 .pp-onebar .ppx-gold-text{color:var(--pp78-gold)}
+body.pp-v276 .pp-ob-stats{display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;margin:0;color:#BFD3CB;font:600 13px/1.3 Manrope,system-ui,sans-serif}
+body.pp-v276 .pp-ob-stats span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+body.pp-v276 .pp-ob-stats b{color:#fff;font-weight:800}
+body.pp-v276 .pp-ob-stats .pp-live-dot,body.pp-v276 .pp-ob-stats .ppx-dx-dot{flex:none}
+body.pp-v276 .pp-ob-tag{padding:3px 10px;border-radius:999px;background:rgba(61,220,151,.14);color:#7EF0C0;font:800 11.5px/1.3 Manrope,system-ui,sans-serif}
+body.pp-v276 .pp-ob-tag.is-gold{background:rgba(232,185,84,.16);color:#F4D27E}
+body.pp-v276 .pp-ob-acts,body.pp-v276 .pp-onebar .ppx-acc-hero-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+body.pp-v276 .pp-ob-btn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);color:#fff!important;font:800 13px/1 Manrope,system-ui,sans-serif;text-decoration:none;transition:background .2s}
+body.pp-v276 .pp-ob-btn:hover{background:rgba(255,255,255,.18)}
+body.pp-v276 .pp-ob-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}
+/* account: small avatar + Edit profile / Get Plus on the right, its own rounded bar */
+body.pp-v276 .ppx-acc-hero.pp-onebar{border-radius:18px!important;border:0!important;box-shadow:0 22px 48px -34px rgba(15,31,26,.45)}
+body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-acc-avatar{width:36px;height:36px;font-size:15px;border-radius:12px;margin:0}
+body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-btn{min-height:36px;height:36px;padding:0 14px;font-size:13px;border-radius:999px}
+/* coupons: the old two-column hero becomes the same bar */
+body.pp-v276 .ppf-cpp .pp-head-unit .ppf-cp-hero.pp-onebar{display:flex!important;grid-template-columns:none;margin:0;gap:6px 18px}
+/* bar radius: with a panel under it the bottom is square (V277 rules), alone it is round */
+body.pp-v276 .pp-onebar.ppx-page-head{border-radius:18px 18px 0 0!important}
+body.pp-v276 .pp-head-unit>.pp-onebar:last-child{border-radius:18px!important}
+body.pp-v276 .ppx-cmpx-hero.pp-onebar{border-radius:18px 18px 0 0!important}
+/* Plus page: only the slim breadcrumb row above its own hero */
+body.pp-v276 .pp78-crumbs{max-width:var(--ppx-max,1180px);margin-left:auto!important;margin-right:auto!important;padding:0 20px}
+@media (max-width:760px){
+  body.pp-v276 .pp-onebar{min-height:0;padding:10px 14px!important;gap:4px 12px}
+  body.pp-v276 .pp-onebar h1{font-size:17px!important;flex:1 1 auto}
+  body.pp-v276 .pp-ob-stats{font-size:12px;gap:2px 12px;flex:1 1 100%}
+  body.pp-v276 .pp-ob-stats span:nth-child(n+3){display:none}
+  body.pp-v276 .pp-ob-acts{margin-left:auto}
+  body.pp-v276 .pp-ob-btn{height:32px;padding:0 11px;font-size:12px}
+  body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-acc-hero-actions{flex:1 1 100%;margin:4px 0 0}
+  body.pp-v276 .ppx-list-page>.ppx-crumbs{margin:-4px 0 -6px!important}
+  body.pp-v276 .ppx-deals-page>.ppx-crumbs{margin:-4px 0 8px!important}
+  body.pp-v276 .pp-onebar h1{order:0;min-width:0;flex:1 1 0}
+  body.pp-v276 .pp-onebar .pp-ob-acts{order:1}
+  body.pp-v276 .pp-onebar .pp-ob-stats{order:2}
+  body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-acc-hero-actions{order:3}
+}
+
+/* ======================================================================================================
+   L7 Wishlist + Deal Alerts body: no box-in-box, real text sizes (13px+), 40px buttons, one clean white card
+   per product with a balanced layout: product (left) - price (centre) - actions (right).
+   ====================================================================================================== */
+body.pp-v276 .ppx-page-head.pp-onebar+.ppx-adopt-host>.ppx-adopted>section,
+body.pp-v276 #ppxWishHost .pp-wishlist-flyout,body.pp-v276 #ppxAlertHost .pp-deal-flyout{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important}
+body.pp-v276 #ppxWishHost #wishlistPanelBody,body.pp-v276 #ppxAlertHost #dealAlertsPanelBody,
+body.pp-v276 #ppxAlertHost .pp-alerts-shell{padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;max-height:none!important;overflow:visible!important}
+body.pp-v276 #ppxWishHost .pp-wishlist-fly-head,body.pp-v276 #ppxAlertHost .pp-da-brand,body.pp-v276 #ppxAlertHost .pp-da-head{display:none!important}
+/* the white panel under the bar (filters / tabs + buttons): attached to the bar, sticky (V277) */
+body.pp-v276 #ppxWishHost .pp-wishlist-summary,body.pp-v276 #ppxAlertHost .pp-da-toolbar{display:flex!important;align-items:center;flex-wrap:wrap;gap:8px 10px;
+  margin:0 0 16px!important;padding:12px 18px!important;background:#fff!important;border:1px solid var(--pp78-line)!important;border-top:0!important;border-radius:0 0 18px 18px!important;box-shadow:0 16px 30px -26px rgba(15,31,26,.45)!important}
+/* wishlist filters: real buttons */
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:7px;height:40px;min-width:0!important;padding:0 14px!important;
+  border:1px solid var(--pp78-line)!important;border-radius:999px!important;background:#fff!important;box-shadow:none!important;font:700 13px/1 Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat b{display:inline-flex;align-items:center;gap:4px;font:800 13.5px/1 Manrope,system-ui,sans-serif!important;margin:0!important}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat b svg{width:14px;height:14px}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat span{font-size:13px!important;margin:0!important;color:inherit!important}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat.is-active{background:#E9F7F0!important;border-color:#9ED8BE!important;color:#0E6B47!important}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat:disabled{opacity:.55}
+body.pp-v276 #ppxWishHost .pp-wish-last{display:inline-flex!important;flex-direction:row!important;align-items:center;width:auto!important;gap:8px;margin-left:auto!important;padding:0 6px!important;border:0!important;background:none!important;font:600 13px Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxWishHost .pp-wish-last span{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:5px;font-size:13px!important}
+body.pp-v276 #ppxWishHost .pp-wish-last b{display:inline-flex;font-size:15px!important;color:#2C6BED}
+body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{flex:none!important;width:max-content!important;max-width:none!important;min-width:0!important;grid-column:auto!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-meta,body.pp-v276 #ppxWishHost .pp-wish-alert-meta span{font:600 12.5px/1.3 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-meta b{font:800 12.5px/1.3 Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important}
+body.pp-v276 #ppxWishHost .pp-wish-edit-alert{display:inline-flex!important;align-items:center;justify-content:center;width:100%!important;height:40px!important;border-radius:12px!important;font:800 13.5px/1 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxWishHost .pp-wish-last strong{font-size:13px!important;color:var(--pp78-ink)!important}
+body.pp-v276 #ppxWishHost .pp-wish-refresh,body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions button{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;height:40px!important;min-height:40px!important;padding:0 16px!important;
+  border-radius:999px!important;font:800 13px/1 Manrope,system-ui,sans-serif!important;white-space:nowrap}
+/* list */
+body.pp-v276 #ppxWishHost .pp-wishlist-track-list,body.pp-v276 #ppxAlertHost .pp-da-list{display:grid!important;gap:12px!important;max-height:none!important;height:auto!important;overflow:visible!important;padding:0!important;margin:0!important;background:none!important;border:0!important}
+/* ---- wishlist card ---- */
+body.pp-v276 #ppxWishHost .pp-wish-track-card{position:relative;display:grid!important;
+  grid-template-columns:108px minmax(0,1fr) minmax(230px,280px) minmax(190px,220px)!important;
+  grid-template-areas:"status main price heart" "media main price actions"!important;grid-template-rows:auto 1fr!important;column-gap:26px!important;row-gap:8px!important;align-items:start;min-height:0!important;height:auto!important;
+  padding:16px 20px 18px!important;background:#fff!important;border:1px solid var(--pp78-line)!important;border-radius:18px!important;
+  box-shadow:0 12px 28px -24px rgba(15,31,26,.5)!important;transition:box-shadow .2s,transform .2s,border-color .2s}
+body.pp-v276 #ppxWishHost .pp-wish-track-card:hover{border-color:#C6D8D0!important;box-shadow:0 18px 34px -24px rgba(15,31,26,.55)!important;transform:translateY(-1px)}
+body.pp-v276 #ppxWishHost .pp-wish-product-main{grid-area:main!important;display:flex!important;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;margin:0!important;padding:0!important}
+body.pp-v276 #ppxWishHost .pp-wish-status{grid-area:status!important;position:static!important;align-self:center;margin:0!important;padding:0!important;background:none!important;border:0!important}
+body.pp-v276 #ppxWishHost .pp-wish-status strong{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:#F1F5F3;font:800 11.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)}
+body.pp-v276 #ppxWishHost .pp-wish-status.is-drop strong,body.pp-v276 #ppxWishHost .pp-wish-status.is-good strong{background:#E6F6EE;color:#0E7A4F}
+body.pp-v276 #ppxWishHost .pp-wish-product-media{grid-area:media!important;width:108px!important;height:108px!important;margin:0!important;display:grid!important;place-items:center;
+  background:#fff!important;border:1px solid #E1E9E5!important;border-radius:14px!important;overflow:hidden}
+body.pp-v276 #ppxWishHost .pp-wish-brand-logo{position:static!important;align-self:flex-start!important;margin:0!important;left:auto!important;right:auto!important}
+body.pp-v276 #ppxWishHost .pp-wish-track-card h3{margin:2px 0 0!important;font:800 17px/1.25 Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important;letter-spacing:-.01em}
+body.pp-v276 #ppxWishHost .pp-wish-facts{margin:0!important;display:flex;flex-wrap:wrap;gap:6px}
+body.pp-v276 #ppxWishHost .pp-wish-facts span{padding:3px 9px!important;border-radius:999px;background:#F1F5F3!important;font:700 12.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxWishHost .pp-wish-track-card .pp-retailers{margin:4px 0 0!important;display:flex;flex-wrap:wrap;gap:6px}
+body.pp-v276 #ppxWishHost .pp-wish-best-price{grid-area:price!important;align-self:center;justify-self:stretch;max-width:300px!important;display:grid;gap:4px;margin:0!important;padding:14px 16px!important;border-radius:14px!important;
+  background:#F5FAF7!important;border:1px solid #DDEBE4!important;box-shadow:none!important;width:auto!important;max-width:none!important}
+body.pp-v276 #ppxWishHost .pp-wish-best-price>span:first-child{font:700 12.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxWishHost .pp-wish-best-price>div{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+body.pp-v276 #ppxWishHost .pp-wish-best-price strong{font:800 24px/1.1 Sora,Manrope,system-ui,sans-serif!important;color:#0E6B47!important;letter-spacing:-.02em}
+body.pp-v276 #ppxWishHost .pp-wish-price-tag{padding:3px 9px!important;font:800 11.5px/1.2 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxWishHost .pp-wish-best-price small{font:600 12.5px/1.3 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxWishHost .pp-wish-best-price .pp-cb-tag{margin-top:4px}
+body.pp-v276 #ppxWishHost .pp-wish-remove{grid-area:heart!important;position:static!important;justify-self:end;align-self:center;width:36px!important;height:36px!important;margin:0!important;border-radius:50%!important;font-size:17px!important}
+body.pp-v276 #ppxWishHost .pp-wish-card-actions{grid-area:actions!important;position:static!important;display:grid!important;gap:10px;align-self:center;width:auto!important;margin:0!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-box{display:grid;gap:8px;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-head{display:flex;align-items:center;gap:8px}
+body.pp-v276 #ppxWishHost .pp-wish-alert-head strong{font:800 13.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-head small{font:600 12.5px/1.3 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-icon{width:30px!important;height:30px!important;font-size:15px!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert,body.pp-v276 #ppxWishHost .pp-wish-compare,body.pp-v276 #ppxWishHost .pp-wish-alert-box button{display:inline-flex!important;align-items:center;justify-content:center;gap:6px;
+  width:100%!important;height:40px!important;min-height:40px!important;padding:0 14px!important;border-radius:12px!important;font:800 13.5px/1 Manrope,system-ui,sans-serif!important}
+/* ---- deal alert card ---- */
+body.pp-v276 #ppxAlertHost .pp-da-tabs{display:flex;gap:6px;padding:0!important;background:none!important;border:0!important}
+body.pp-v276 #ppxAlertHost .pp-da-tabs button{display:inline-flex;align-items:center;gap:7px;height:40px!important;padding:0 15px!important;border-radius:999px!important;
+  border:1px solid var(--pp78-line)!important;background:#fff!important;font:700 13px/1 Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important;box-shadow:none!important}
+body.pp-v276 #ppxAlertHost .pp-da-tabs button span{font-size:12.5px!important;font-weight:800;color:var(--pp78-mut)}
+body.pp-v276 #ppxAlertHost .pp-da-tabs button.is-active{background:#E9F7F0!important;border-color:#9ED8BE!important;color:#0E6B47!important}
+body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions{display:flex;gap:8px;margin-left:auto}
+body.pp-v276 #ppxAlertHost .pp-da-card{display:grid!important;grid-template-columns:108px minmax(0,1fr) minmax(230px,280px) minmax(170px,200px)!important;
+  grid-template-areas:"img copy target actions" "img copy state actions"!important;grid-template-rows:auto auto!important;column-gap:26px!important;row-gap:8px!important;align-items:center;min-height:0!important;
+  padding:16px 20px!important;background:#fff!important;border:1px solid var(--pp78-line)!important;border-radius:18px!important;box-shadow:0 12px 28px -24px rgba(15,31,26,.5)!important;transition:box-shadow .2s,transform .2s}
+body.pp-v276 #ppxAlertHost .pp-da-card:hover{box-shadow:0 18px 34px -24px rgba(15,31,26,.55)!important;transform:translateY(-1px)}
+body.pp-v276 #ppxAlertHost .pp-da-product-image{grid-area:img!important;width:108px!important;height:108px!important;margin:0!important;display:grid!important;place-items:center;background:#fff!important;border:1px solid #E1E9E5!important;border-radius:14px!important;overflow:hidden}
+body.pp-v276 #ppxAlertHost .pp-da-product-copy{grid-area:copy!important;display:grid;gap:5px;align-content:center;min-width:0}
+body.pp-v276 #ppxAlertHost .pp-da-product-copy>strong{font:800 17px/1.25 Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important}
+body.pp-v276 #ppxAlertHost .pp-da-category{font:700 12.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxAlertHost .pp-da-store-fallback{justify-self:start;padding:3px 9px;border-radius:999px;background:#F1F5F3;font:700 12px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxAlertHost .pp-da-current-inline{display:grid;gap:2px;margin-top:2px}
+body.pp-v276 #ppxAlertHost .pp-da-current-inline small{font:700 12.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxAlertHost .pp-da-current-value strong{font:800 18px/1.2 Sora,Manrope,system-ui,sans-serif!important;color:var(--pp78-ink)!important}
+body.pp-v276 #ppxAlertHost .pp-da-current-inline.is-pending .pp-da-current-value strong{font:700 13.5px/1.3 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxAlertHost .pp-da-target-block{grid-area:target!important;align-self:end;display:grid;gap:3px;margin:0!important;padding:12px 16px 0!important;border:0!important;background:none!important}
+body.pp-v276 #ppxAlertHost .pp-da-target-block small{font:700 12.5px/1.2 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxAlertHost .pp-da-target-block strong{font:800 18px/1.2 Sora,Manrope,system-ui,sans-serif!important;color:#0E6B47!important}
+body.pp-v276 #ppxAlertHost .pp-da-state{grid-area:state!important;align-self:start;padding:0 16px!important;margin:0!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span{display:inline-flex;align-items:center;gap:6px;padding:5px 11px!important;border-radius:999px;font:800 12.5px/1 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxAlertHost .pp-da-actions{grid-area:actions!important;display:grid!important;gap:8px;margin:0!important;align-self:center}
+body.pp-v276 #ppxAlertHost .pp-da-actions button{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;width:100%!important;height:40px!important;min-height:40px!important;padding:0 14px!important;
+  border-radius:12px!important;font:800 13.5px/1 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxAlertHost .pp-da-actions button svg{width:16px!important;height:16px!important}
+body.pp-v276 #ppxAlertHost .pp-da-foot{margin:14px 0 0!important;padding:12px 16px!important;border-radius:14px!important;background:#F5FAF7!important;border:1px solid #DDEBE4!important;font:600 13px/1.4 Manrope,system-ui,sans-serif!important;color:var(--pp78-mut)!important}
+body.pp-v276 #ppxAlertHost .pp-da-foot span{font-size:13px!important}
+body.pp-v276 #ppxAlertHost .pp-da-empty{padding:34px 20px!important;background:#fff!important;border:1px solid var(--pp78-line)!important;border-radius:18px!important;font-size:14px!important}
+body.pp-v276 #ppxAlertHost .pp-da-empty p{font-size:14px!important}
+body.pp-v276 #ppxAlertHost .pp-da-empty button{height:40px!important;padding:0 18px!important;border-radius:999px!important;font:800 13.5px Manrope,system-ui,sans-serif!important}
+/* tablets / phones: two rows, actions in one line under the card */
+@media (max-width:980px){
+  body.pp-v276 #ppxWishHost .pp-wish-track-card{grid-template-columns:88px minmax(0,1fr) auto!important;grid-template-areas:"status status heart" "media main main" "price price price" "actions actions actions"!important;grid-template-rows:auto auto auto auto!important;column-gap:14px!important;padding:14px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-best-price{max-width:none!important}
+  body.pp-v276 #ppxWishHost .pp-wish-product-media{width:88px!important;height:88px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-card-actions{grid-template-columns:1fr 1fr;align-items:end}
+  body.pp-v276 #ppxAlertHost .pp-da-card{grid-template-columns:88px minmax(0,1fr)!important;grid-template-areas:"img copy" "target target" "state state" "actions actions"!important;grid-template-rows:auto!important;padding:14px!important;column-gap:14px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-product-image{width:88px!important;height:88px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-target-block,body.pp-v276 #ppxAlertHost .pp-da-state{padding:0!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions{grid-template-columns:1fr 1fr}
+  body.pp-v276 #ppxWishHost .pp-wish-last{margin-left:0!important}
+}
+body.pp-v276 #ppxAlertHost .pp-da-state{justify-self:start!important;display:flex!important;justify-content:flex-start!important;text-align:left!important}
+body.pp-v276 #ppxWishHost .pp-wishlist-flyout::before,body.pp-v276 #ppxAlertHost .pp-deal-flyout::before,
+body.pp-v276 #ppxWishHost .pp-wishlist-flyout::after,body.pp-v276 #ppxAlertHost .pp-deal-flyout::after{content:none!important;display:none!important}
+
+/* ======================================================================================================
+   L9 Card chart = the product page chart, small (area + step line + dashed average + gold end dot)
+   ====================================================================================================== */
+.ppx-pc-chart.pp-xc-mini{cursor:default;touch-action:auto}
+.ppx-pc-chart.pp-xc-mini .avg{stroke:rgba(255,255,255,.42);stroke-width:1.2;stroke-dasharray:4 4}
+.ppx-pc-chart.pp-xc-mini i{width:10px;height:10px;background:#E8B954!important;border:2px solid #fff;box-shadow:0 0 0 3px rgba(232,185,84,.22)}
+.ppx-pc-chart.pp-xc-mini .pp-xc-avg{position:absolute;right:0;top:-17px;font:700 10px var(--ppx-body,Manrope,sans-serif);font-style:normal;color:#9FB5AD}
+
+/* ======================================================================================================
+   L10 Light cards stand out: solid white, clear 1px border, soft shadow, lift on hover.
+   The picture box STAYS, white inside, with a thin visible border. Stronger brand, bigger price, larger status.
+   Sections that hold light cards get a very light tint so the white cards pop. Dark cards are not touched.
+   ====================================================================================================== */
+.ppx-mini{background:#fff!important;border:1px solid var(--pp78-line)!important;box-shadow:0 1px 2px rgba(16,35,28,.05),0 12px 24px -18px rgba(16,35,28,.38)!important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important}
+.ppx-mini:hover{transform:translateY(-3px);border-color:#BFD3CA!important;box-shadow:0 2px 4px rgba(16,35,28,.06),0 20px 34px -20px rgba(16,35,28,.45)!important}
+.ppx-mini .ph,.ppx-mini-img{background:#fff!important;box-shadow:none!important;border:1px solid #E1E9E5!important}
+.ppx-mini .br,.ppx-mini-brand{color:#7A6224!important;font-weight:800!important;font-size:11px!important;letter-spacing:.11em!important}
+.ppx-mini .nm,.ppx-mini-name{color:#10231C!important}
+.ppx-mini .pr{font-size:21px!important;font-weight:800!important;color:#0F241C!important;letter-spacing:-.02em}
+.ppx-mini .pr small.at{display:block;margin-top:1px;font:700 11.5px/1.2 Manrope,system-ui,sans-serif;letter-spacing:0;color:#5B6F68}
+.ppx-mini-price b{font-size:19px!important;font-weight:800!important;color:#0F241C!important}
+.ppx-mini .ft{font-size:12.5px!important;color:#24372F!important;padding-right:36px;min-width:0}
+.ppx-mini .ft i{width:8px!important;height:8px!important}
+.ppx-mini .ft em{padding:3px 8px;border-radius:999px;background:#EAF6F0;font-size:11.5px!important;font-weight:800;color:#0F7A51!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:none}
+/* tinted sections behind light cards (home Deal Radar rows, Recently viewed, product page "You may also like") */
+#ppxRows .ppx-row:not(.pp-lens-feature){padding:18px 18px 20px;margin-top:18px;border-radius:22px;background:#EEF4F1;border:1px solid #E2ECE7}
+#ppxRows .ppx-row:not(.pp-lens-feature) .ppx-row-head{padding:0 2px}
+.ppx-recent>.container{padding-top:18px;padding-bottom:20px;border-radius:22px;background:#EEF4F1;border:1px solid #E2ECE7}
+.ppx-similar{background:#EEF4F1!important;border-color:#E2ECE7!important}
+@media (max-width:760px){
+  #ppxRows .ppx-row:not(.pp-lens-feature){padding:14px 12px 16px;border-radius:18px}
+  .ppx-mini .pr{font-size:18px!important}
+}
+
+/* ======================================================================================================
+   L8 Extension (desktop) + app (phones) promotion - never forced, all can be closed
+   ====================================================================================================== */
+.pp78-ext-top{display:inline-flex;align-items:center;gap:7px}
+.pp78-ext-ic{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.pp78-ext-ic svg{width:16px;height:16px}
+@media (max-width:1199px){.pp78-ext-top{display:none!important}}
+.pp78-pop{position:fixed;z-index:1200;width:340px;max-width:calc(100vw - 24px);padding:16px;border-radius:18px;background:#fff;border:1px solid var(--pp78-line);
+  box-shadow:0 26px 60px -24px rgba(10,24,19,.45);color:var(--pp78-ink);font:600 13px/1.45 Manrope,system-ui,sans-serif}
+.pp78-pop-row{display:flex;gap:12px;align-items:flex-start;padding-right:22px}
+.pp78-pop-row b{display:block;font-size:14.5px;font-weight:800}
+.pp78-pop-row small{display:block;margin-top:2px;font-size:13px;color:var(--pp78-mut)}
+.pp78-pop-row.is-app{margin-top:14px;padding:12px 0 0;border-top:1px solid #E8EFEB;align-items:center}
+.pp78-pop-row.is-app>div{flex:1}
+.pp78-pop-ic,.pp78-card-ic,.pp78-strip-ic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#EAF6F0;color:#0F7A51}
+.pp78-pop-ic svg,.pp78-card-ic svg,.pp78-strip-ic svg{width:20px;height:20px}
+.pp78-pop-act{display:flex;gap:8px;margin:12px 0 0 52px}
+.pp78-btn{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--pp78-line);background:#fff;
+  color:var(--pp78-ink)!important;font:800 13px/1 Manrope,system-ui,sans-serif;text-decoration:none;white-space:nowrap;cursor:pointer}
+.pp78-btn.is-go{background:#137A52;border-color:#137A52;color:#fff!important}
+.pp78-btn.is-soon{background:var(--pp78-gold-bg);border-color:var(--pp78-gold-b);color:var(--pp78-gold-d)!important;cursor:default}
+.pp78-btn.is-sm{height:32px;padding:0 12px;font-size:12.5px}
+.pp78-btn.is-ghost{background:transparent}
+.pp78-x{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:#71847C;cursor:pointer}
+.pp78-x:hover{background:#F0F4F2}
+.pp78-x svg{width:14px;height:14px}
+.pp78-strip{position:relative;display:flex;align-items:center;gap:12px;margin-top:14px;margin-bottom:6px;padding:10px 52px 10px 12px!important;border-radius:16px;background:#fff;border:1px solid var(--pp78-line);
+  box-shadow:0 10px 24px -20px rgba(16,35,28,.4);font:600 13.5px/1.4 Manrope,system-ui,sans-serif;color:var(--pp78-mut)}
+.pp78-strip-t{flex:1;min-width:0}
+.pp78-strip-t b{color:var(--pp78-ink);font-weight:800;margin-right:4px}
+.pp78-strip .pp78-x{top:50%;transform:translateY(-50%)}
+@media (max-width:760px){.pp78-strip{flex-wrap:wrap;gap:8px 10px;padding:10px 44px 10px 10px!important;font-size:13px;margin-left:12px;margin-right:12px;width:auto}.pp78-strip .pp78-x{top:18px}}
+.pp78-card{position:relative;display:flex;gap:12px;margin-top:14px;padding:14px 36px 14px 14px;border-radius:16px;background:#F5FAF7;border:1px solid #DDEBE4;font:600 13px/1.45 Manrope,system-ui,sans-serif;color:var(--pp78-mut)}
+.pp78-card b{display:block;color:var(--pp78-ink);font-size:14px;font-weight:800}
+.pp78-card small{display:block;margin-top:2px;font-size:13px}
+.pp78-card-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}

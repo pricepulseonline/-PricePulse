@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,12 +26,20 @@ jobs:
           node-version: 20
       - name: Install the card maker (outside the site folder)
         run: |
-          mkdir -p /tmp/pp && cd /tmp/pp && npm init -y >/dev/null && npm install playwright@1.48.2
+          mkdir -p /tmp/pp && cd /tmp/pp && npm init -y >/dev/null && npm install playwright@latest
           npx playwright install --with-deps chromium
       - name: Make share pages
         # if this step fails the site is still published, only without new share pages
         continue-on-error: true
-        run: NODE_PATH=/tmp/pp/node_modules node tools/make-share-pages.js
+        run: |
+          set -o pipefail
+          NODE_PATH=/tmp/pp/node_modules node tools/make-share-pages.js 2>&1 | tee /tmp/share.log
+      - name: Share pages result (see Summary tab)
+        if: always()
+        run: |
+          echo "### Share pages" >> $GITHUB_STEP_SUMMARY
+          echo "folders made: $(ls -d p/*/ 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY; tail -n 25 /tmp/share.log >> $GITHUB_STEP_SUMMARY 2>/dev/null; echo '```' >> $GITHUB_STEP_SUMMARY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -144,8 +144,7 @@ function salesListHTML(){
   const chip=(v,t)=>`<button type="button" class="ppf-lchip${norm(saleStore)===norm(v)?' is-on':''}" data-pp-salestore="${H(v)}">${v?`<span class="ppf-lchip-i">${logo(v)}</span>`:''}<span>${H(t||label(v))}</span></button>`;
   return `<div class="ppx-product ppx-list-page container pp-sales-page">${crumbs([['Sales','']])}
     <div class="pp-head-unit">
-      <header class="pp-bar"><div class="pp-bar-copy"><span class="ppx-eyebrow">STORE SALES</span><h1>Big sales, verified prices</h1><p>Official sale dates from each store, and the products whose verified price is the lowest there.</p></div>
-        <div class="pp-bar-stats"><div><b>${live.length}</b><span>live now</span></div><div><b>${up.length}</b><span>upcoming</span></div></div></header>
+      <header class="pp-bar pp-onebar"><h1>Big sales, verified prices</h1><div class="pp-ob-stats"><span><i class="pp-live-dot" aria-hidden="true"></i><b>${live.length}</b> live now</span><span><b>${up.length}</b> upcoming</span><span>Official dates from each store</span></div></header>
       <div class="pp-panel pp-sales-panel"><div class="pp-tabs" role="tablist" aria-label="Sale status">${[['','All',l.length],['live','Live now',live.length],['upcoming','Upcoming',up.length],['ended','Ended',ended.length]].map(([k,t,n])=>`<button type="button" role="tab" aria-selected="${saleTab===k}" class="pp-tab${saleTab===k?' is-on':''}" data-pp-saletab="${k}"${k&&!n?' disabled':''}>${k==='live'?'<i class="pp-live-dot" aria-hidden="true"></i>':''}${t} <em>${n}</em></button>`).join('')}</div>
         ${stores.length>1?`<div class="ppf-cp-row">${chip('','All stores')}${stores.map(x=>chip(x)).join('')}</div>`:''}</div>
     </div>
@@ -231,7 +230,7 @@ function giftHTML(){
   const email=(typeof currentUser!=='undefined'&&currentUser&&currentUser.email)||'';
   return `<div class="ppx-product ppx-list-page container pp-gift-page">${crumbs([['Gift Cards','']])}
     <div class="pp-head-unit">
-      <header class="pp-bar"><div class="pp-bar-copy"><span class="ppx-eyebrow">COMING SOON</span><h1>Gift cards for less</h1><p>Buy store gift cards at a discount, then shop with them. Extra savings on top of coupons and bank offers.</p></div></header>
+      <header class="pp-bar pp-onebar"><h1>Gift cards for less</h1><div class="pp-ob-stats"><span class="pp-ob-tag is-gold">Coming soon</span><span>Store gift cards below face value</span></div></header>
       <div class="pp-panel pp-gift-btns"><span class="pp-panel-note">Launching soon. Get one email when it is live.</span>
         <span class="pp-panel-acts"><button type="button" class="pp-pbtn is-go" data-pp-giftfocus>🔔 Notify me</button><a class="pp-pbtn" href="#/offers">Coupons &amp; offers</a><a class="pp-pbtn" href="#/find">Price Check</a></span></div>
     </div>

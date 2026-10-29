@@ -25,8 +25,8 @@ function supabaseConfig() {
   return { url, key };
 }
 async function rest(cfg, q) {
-  const r = await fetch(`${cfg.url}/rest/v1/${q}`, { headers: { apikey: cfg.key, Accept: 'application/json' } });
-  if (!r.ok) throw new Error(`${q.split('?')[0]}: HTTP ${r.status}`);
+  const r = await fetch(`${cfg.url}/rest/v1/${q}`, { headers: { apikey: cfg.key, Authorization: 'Bearer ' + cfg.key, Accept: 'application/json' } });
+  if (!r.ok) throw new Error(`${q.split('?')[0]}: HTTP ${r.status} ${(await r.text()).slice(0, 300)}`);
   return r.json();
 }
 async function loadData() {
@@ -34,9 +34,9 @@ async function loadData() {
   if (file) return JSON.parse(fs.readFileSync(file, 'utf8'));
   const cfg = supabaseConfig();
   const [products, listings, stores] = await Promise.all([
-    rest(cfg, 'pp_catalog_products?select=product_id,name,brand_slug,category,image_url,live_image_url,status&status=in.(active,tracking)'),
-    rest(cfg, 'pp_product_store_listings?select=product_id,store_slug,active&active=eq.true').catch(() => []),
-    rest(cfg, 'pp_catalog_stores?select=slug,name,active&active=eq.true').catch(() => [])
+    rest(cfg, 'pp_catalog_products?select=*&limit=1000'),
+    rest(cfg, 'pp_product_store_listings?select=*&limit=5000').catch(() => []),
+    rest(cfg, 'pp_catalog_stores?select=*&limit=500').catch(() => [])
   ]);
   return { products, listings, stores };
 }
@@ -102,7 +102,8 @@ function pageHTML(p, storeNames) {
   const storeName = new Map(stores.map(s => [s.slug, s.name]));
   const byProduct = new Map();
   listings.forEach(l => { if (!l.product_id || l.active === false) return; const n = storeName.get(l.store_slug) || l.store_slug; if (!n) return; if (!byProduct.has(l.product_id)) byProduct.set(l.product_id, []); const a = byProduct.get(l.product_id); if (!a.includes(n)) a.push(n); });
-  const list = products.filter(p => okId(p.product_id) && String(p.name || '').trim());
+  const list = products.filter(p => okId(p.product_id) && String(p.name || '').trim() && !/^(inactive|draft|archived|hidden)$/i.test(String(p.status || '')));
+  console.log('products from database:', products.length, '| usable:', list.length);
   const { chromium } = require('playwright');
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });

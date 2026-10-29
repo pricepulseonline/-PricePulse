@@ -462,7 +462,7 @@ function productPageHTML(productId){
       <div class="ppx-hero-kicker">BEST VERIFIED PRICE</div>
       <div class="ppx-hero-price"><b>${M(lowest)}</b>${saving?`<s>${M(saving.mrp)}</s><span class="ppx-save-tag">You save ${M(saving.saving)} · ${saving.percent}% off</span>`:''}</div>
       <p class="ppx-hero-note">${whereLine}${extra}</p>
-      ${cbSpan(selected.name,selected.price,catalog?.category||card?.dataset.category||'','hero')}
+      ${cbSpan(selected.name,selected.price,catalog?.category||card?.dataset.category||'','hero',productId)}
       ${vsLine}
       ${range}
       ${dealInsightHTML(dealAnalysis(productId,lowest,saving,available.filter(o=>o.price!=null&&o.availability!=='out_of_stock').length))}
@@ -500,7 +500,7 @@ function productPageHTML(productId){
       <div class="ppx-store-copy">
         <div class="ppx-store-price">${o.price!=null?`<b>${M(o.price)}</b>`:'<b class="is-na">Check latest price</b>'}${tag}</div>
         ${sav?`<div class="ppx-store-save">MRP <s>${M(sav.mrp)}</s> · Save ${M(sav.saving)} (${sav.percent}%)</div>`:''}
-        ${o.price!=null&&o.availability!=='out_of_stock'?cbSpan(o.name,o.price,catalog?.category||card?.dataset.category||'','row'):''}
+        ${o.price!=null&&o.availability!=='out_of_stock'?cbSpan(o.name,o.price,catalog?.category||card?.dataset.category||'','row',productId):''}
         ${meta.length?`<div class="ppx-store-meta">${meta.join('<i aria-hidden="true">·</i>')}</div>`:''}
         ${o.offerText?`<div class="ppx-store-offer">${H(o.offerText)}</div>`:''}
       </div>
@@ -881,8 +881,11 @@ function askSignIn(type){
   if(typeof currentUser!=='undefined'&&currentUser&&typeof renderProfileForm==='function')renderProfileForm(currentUser.email||'',currentProfile);
   else if(typeof renderAuthStart==='function')renderAuthStart();
 }
-function pageHead({eyebrow,title,sub,icon='',aside=''}){
-  return `<header class="ppx-page-head"><div class="ppx-page-head-copy">${icon?`<span class="ppx-page-head-icon">${icon}</span>`:''}<div><span class="ppx-eyebrow">${eyebrow}</span><h1>${title}</h1>${sub?`<p>${sub}</p>`:''}</div></div>${aside}</header>`;
+function alertStats(){const a=typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0;const l=typeof ppDealAlertLimit==='function'?ppDealAlertLimit():1;return `<span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${a}</b> active</span><span><b>${l}</b> ${l===1?'alert':'alerts'} on your plan</span>`;}
+/* V278 (L6): one-line dark bar like Live Deals - title + small stats inline + buttons on the right.
+   No gold label and no 2-line text any more (eyebrow / sub are kept as parameters so old calls still work). */
+function pageHead({eyebrow,title,sub,icon='',aside='',stats=''}){
+  return `<header class="ppx-page-head pp-onebar"><h1>${title}</h1>${stats?`<div class="pp-ob-stats">${stats}</div>`:''}${aside?`<div class="pp-ob-acts">${aside}</div>`:''}</header>`;
 }
 function crumbs(label){
   return `<nav class="ppx-crumbs" aria-label="Breadcrumb"><a href="#home" class="ppx-back" data-ppx-action="back">${ICON.back}Back</a><span>/</span><span class="is-current">${H(label)}</span></nav>`;
@@ -893,7 +896,7 @@ routes.wishlist=()=>{
   if(!authed()){askSignIn('wishlist-open');window.ppGoHome();return;}
   const count=typeof saved!=='undefined'?saved.size:0;
   showPage('wishlist',`<div class="ppx-product ppx-list-page container">${crumbs('My Wishlist')}
-    ${pageHead({eyebrow:'SAVED PRODUCTS',title:'My Wishlist',sub:'Every saved product is re-checked across stores. Price drops and alert hits show up here first.',icon:ICON.heart})}
+    ${pageHead({eyebrow:'SAVED PRODUCTS',title:'My Wishlist',stats:`<span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${count}</b> saved</span><span>Re-checked across stores</span>`,aside:`<a class="pp-ob-btn" href="#/alerts">${ICON.bell}Deal Alerts</a>`})}
     <div class="ppx-adopt-host" id="ppxWishHost"></div></div>`);
   document.title=`My Wishlist (${count}) | PricePulse`;
   internalBuild=true;
@@ -939,7 +942,7 @@ if(typeof ppRenderWishlistPanel==='function'){
 routes.alerts=async()=>{
   if(!authed()){askSignIn('deal-alerts-open');window.ppGoHome();return;}
   showPage('alerts',`<div class="ppx-product ppx-list-page container">${crumbs('Deal Alerts')}
-    ${pageHead({eyebrow:'SMART SHOPPING',title:'Deal Alerts',sub:'Set a target price on any saved product. We watch every store and tell you the moment it drops.',icon:ICON.bell})}
+    ${pageHead({eyebrow:'SMART SHOPPING',title:'Deal Alerts',stats:alertStats(),aside:`<a class="pp-ob-btn" href="#/wishlist">${ICON.heart}My Wishlist</a>`})}
     <div class="ppx-adopt-host" id="ppxAlertHost"></div></div>`);
   document.title='Deal Alerts | PricePulse';
   internalBuild=true;
@@ -948,6 +951,7 @@ routes.alerts=async()=>{
   if(!r||r.name!=='alerts')return;
   adopt(typeof ppDealAlertsOverlay!=='undefined'?ppDealAlertsOverlay:null,document.getElementById('ppxAlertHost'));
   document.body.classList.remove('pp-deal-open');
+  const stEl=document.querySelector('.ppx-list-page .pp-onebar .pp-ob-stats');if(stEl)stEl.innerHTML=alertStats();
 };
 const origRenderAlerts=typeof renderDealAlertsDashboard==='function'?renderDealAlertsDashboard:null;
 if(origRenderAlerts){
@@ -1298,9 +1302,9 @@ function accountHTML(){
   const loc=[p.city,p.state,p.country].filter(Boolean).join(', ');
   const tile=(href,icon,title,sub,extra='')=>`<a class="ppx-acc-tile" href="${href}" ${extra}><span class="ppx-icon-tile">${icon}</span><span><b>${title}</b><small>${sub}</small></span><i aria-hidden="true">›</i></a>`;
   return `<div class="ppx-product ppx-list-page container">${crumbs('My Account')}
-    <section class="ppx-acc-hero"><i class="ppx-sheen" aria-hidden="true"></i>
+    <section class="ppx-acc-hero pp-onebar">
       <span class="ppx-acc-avatar" aria-hidden="true">${H(initials)}</span>
-      <div class="ppx-acc-id"><span class="ppx-eyebrow is-gold">${plus?'PRICEPULSE PLUS MEMBER':'FREE MEMBER'}</span><h1>${H(name)}</h1><p>${H(email)}</p></div>
+      <h1>${H(name)}</h1><div class="pp-ob-stats"><span class="pp-ob-tag${plus?' is-gold':''}">${plus?'Plus member':'Free member'}</span><span>${H(email)}</span></div>
       <div class="ppx-acc-hero-actions"><button type="button" class="ppx-btn ppx-btn-ghost" data-ppx-acc="edit">Edit profile</button>${plus?'':`<a class="ppx-btn ppx-btn-gold" href="#/plus">${ICON.crown}Get Plus · ₹99</a>`}</div>
     </section>
     <div class="ppx-acc-stats">
@@ -2087,7 +2091,7 @@ const PP_AFF_DEFAULT={amazon_tag:'pricepulsein-21',cuelinks_enabled:false,cuelin
 let ppAff={...PP_AFF_DEFAULT};
 PPData.settings=async function(){const r=await this.rpc('pp_public_settings');return r.error?null:(r.data||null);};
 PPData.logClick=function(productId,store,source,affiliate){return this.rpc('pp_log_click',{click_product:productId||null,click_store:store||'Unknown',click_source:source||'site',click_affiliate:!!affiliate});};
-PPData.settings().then(s=>{if(s&&s.affiliate&&typeof s.affiliate==='object')ppAff={...PP_AFF_DEFAULT,...s.affiliate};});
+const ppSettingsP=PPData.settings().then(s=>{if(s&&s.affiliate&&typeof s.affiliate==='object')ppAff={...PP_AFF_DEFAULT,...s.affiliate};return s;}).catch(()=>null); /* V278: cashback waits for these (share + Cuelinks stores) */
 const AFF_SHORT_HOSTS=/(^|\.)(link\.amazon|amzn\.(to|in|eu)|fktr\.in|ekaro\.in|earnkaro\.com|linksredirect\.com|clnk\.in|bitli\.in|dl\.flipkart\.com)$/;
 function storeOfHost(host){const st=STORE_HOSTS.find(([re])=>re.test(host));return st?st[1]:'';}
 function ppAffiliateUrl(raw){
@@ -2132,6 +2136,8 @@ function prepOutbound(e){
   const {a,raw}=t;
   if(!a.dataset.ppxOrig)a.dataset.ppxOrig=raw;
   const res=ppAffiliateUrl(raw);
+  /* V278 (L5): Cuelinks links carry an anonymous click id as "subid" (never the user id) - the wallet matches orders by it later */
+  if(res.affiliate&&/linksredirect\.com/.test(res.url||'')){if(!a.dataset.ppxRef)a.dataset.ppxRef=ppClickRef();try{const u=new URL(res.url);u.searchParams.set('subid',a.dataset.ppxRef);res.url=u.href;}catch(_){}}
   if(res.url&&a.getAttribute('href')!==res.url)a.href=res.url;
   if(!/sponsored/.test(a.rel))a.rel=(a.rel+' sponsored noopener').trim();
   return {...t,res};
@@ -2145,7 +2151,10 @@ function onOutbound(e){
   a.dataset.ppxLogged=String(Date.now());
   let pid=String(clickProductId(a)||'').toLowerCase();if(!/^[a-z0-9-]{1,80}$/.test(pid))pid='';
   PPData.logClick(pid,res.store||storeOfHost(host)||host,clickSource(a),res.affiliate);
+  if(a.dataset.ppxRef){try{const r=supabaseClient.rpc('pp_log_click_ref',{p_ref:a.dataset.ppxRef,p_product:pid||null,p_store:res.store||storeOfHost(host)||host,p_source:clickSource(a)});r&&r.then&&r.then(()=>{},()=>{});}catch(_){}
+    a.removeAttribute('data-ppx-ref');} /* the next click gets a new id */
 }
+function ppClickRef(){const b=new Uint8Array(10);try{crypto.getRandomValues(b);}catch(_){for(let i=0;i<10;i++)b[i]=Math.random()*256|0;}return 'pp'+[...b].map(x=>(x%36).toString(36)).join('')+Date.now().toString(36).slice(-4);}
 document.addEventListener('click',onOutbound,true);
 document.addEventListener('auxclick',onOutbound,true);
 /* V223: honest button for store SEARCH links. While Admin has only a store search link
@@ -2198,48 +2207,103 @@ const EXTRA_STORE_LOGOS={'Reliance Digital':'logos/reliance-digital-logo.png','T
 /* V277 (B2): script.js RETAILER_LOGOS knows only 6 stores, so store rows built by ppPopupRetailerRowLogo showed the NAME for
    Reliance Digital, Vijay Sales, Tata CLiQ, Nykaa... Add the logo files we already ship (script.js itself stays unchanged). */
 try{if(typeof RETAILER_LOGOS==='object'&&RETAILER_LOGOS){Object.entries({'Reliance Digital':'reliance-digital-logo.png','Tata CLiQ':'tatacliq-logo.png','JioMart':'jiomart-logo.png','Vijay Sales':'stores/vijay-sales.svg','Nykaa':'stores/nykaa.svg','Nykaa Fashion':'stores/nykaa-fashion.svg','Purplle':'stores/purplle.svg','Shopsy':'stores/shopsy.svg','Adidas':'stores/adidas.svg'}).forEach(([k,v])=>{if(!RETAILER_LOGOS[k])RETAILER_LOGOS[k]=v;});}}catch(_){}
-/* ---------- V277 (P22): cashback - DISPLAY ONLY (estimate). The real wallet / payouts are Step 4. ----------
-   User gets 40% of PricePulse's affiliate earning. Rates (commission % per store, optional per category) come from
-   Admin > Growth > Cashback rates (RPC pp_cashback_rates_public). No rate = no line. Amazon: never (Associates rules).
-   Templates only drop a <span class="pp-cb" ...> placeholder; cbFill() writes the text once the rates are loaded. */
-const CB_SHARE=0.40,CB_MIN=5;
+/* ---------- V278 (L1-L5): cashback - DISPLAY ONLY ("up to"). The real wallet / payouts are Step 4. ----------
+   Rates come from the daily Cuelinks sync (Edge Function cuelinks-rates) + Admin's own rules (RPC pp_cashback_rates_public):
+   store + category + BRAND (+ model rows) + cap per sale. There is NO store-wide rate: no matching rule = no cashback.
+   Shopper share = settings "cashback".share (Admin; default 40%) of OUR commission, which is capped by the store's
+   "User Max Earn" cap. Synced (Cuelinks) rules only count for stores whose links really go through Cuelinks (Admin > Links).
+   Amazon: never (Associates rules). Base = the store's listed price, everywhere (product page, cards, Radar, stack).
+   Templates only drop <span class="pp-cb pp-cb-<look>" ...>; cbFill() writes the text once rates + settings are in. */
+let CB_SHARE=0.40,CB_MIN=5;
 let cbRates=null,cbP=null;
 const cbKey=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const cbBlocked=s=>/^amazon/.test(cbKey(s));
+const cbNorm=s=>String(s||'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+const cbRxC=new Map();
+function cbRx(src){if(!src)return null;if(!cbRxC.has(src)){let r=null;try{r=new RegExp(src);}catch(_){r=/$^/;}cbRxC.set(src,r);}return cbRxC.get(src);}
+function cbLinked(store){ /* our link for this store goes through Cuelinks (else Cuelinks pays nothing) */
+  const a=ppAff||{};if(!a.cuelinks_enabled)return false;
+  return !Array.isArray(a.cuelinks_stores)||a.cuelinks_stores.some(x=>cbKey(x)===cbKey(store));
+}
 function cbLoad(force){
   if(cbP&&!force)return cbP;
   cbP=(async()=>{try{
     if(typeof supabaseClient==='undefined'||!supabaseClient)return [];
-    const r=await supabaseClient.rpc('pp_cashback_rates_public');
+    const [r,s]=await Promise.all([supabaseClient.rpc('pp_cashback_rates_public'),ppSettingsP.catch(()=>null)]);
+    const c=s&&s.cashback;if(c){const sh=Number(c.share);if(sh>0&&sh<=0.9)CB_SHARE=sh;const mn=Number(c.min);if(mn>=1)CB_MIN=mn;}
     return r.error||!Array.isArray(r.data)?[]:r.data;
-  }catch(_){return [];}})().then(l=>{cbRates=l.filter(x=>x&&x.store&&Number(x.commission_pct)>0&&!cbBlocked(x.store));cbDecorate();cbFill(true);try{window.dispatchEvent(new Event('pp-cashback'));}catch(_){}return cbRates;});
+  }catch(_){return [];}})().then(l=>{
+    /* a V277 database (before supabase-cashback-v278.sql) still sends store-wide rows: never use those */
+    cbRates=l.filter(x=>x&&x.store&&!cbBlocked(x.store)&&!(String(x.category||'*')==='*'&&!x.brand_rx&&!x.name_rx)&&(Number(x.commission_pct)>=0));
+    cbDecorate();cbFill(true);try{window.dispatchEvent(new Event('pp-cashback'));}catch(_){}return cbRates;});
   return cbP;
 }
-function cbRate(store,cat){
-  if(!cbRates||!store||cbBlocked(store))return 0;
-  const k=cbKey(store),c=String(cat||'').toLowerCase(),rs=cbRates.filter(r=>cbKey(r.store)===k);
-  const hit=(c&&rs.find(r=>String(r.category||'*').toLowerCase()===c))||rs.find(r=>!r.category||r.category==='*');
-  return hit?Number(hit.commission_pct):0;
+/* the rule for one product on one store: highest priority wins, a tie takes the smaller rate (never promise more) */
+function cbRule(store,cat,prod){
+  if(!cbRates||!store||cbBlocked(store))return null;
+  const k=cbKey(store),c=String(cat||'').toLowerCase();
+  const T=' '+cbNorm(prod&&prod.brand)+' '+cbNorm(prod&&prod.name)+' ';
+  let best=null;
+  for(const r of cbRates){
+    if(cbKey(r.store)!==k)continue;
+    if(r.source==='cuelinks'&&!cbLinked(r.store))continue;
+    const rc=String(r.category||'*').toLowerCase();if(rc!=='*'&&rc!==c)continue;
+    if(r.brand_rx&&!cbRx(r.brand_rx).test(T))continue;
+    if(r.name_rx&&!cbRx(r.name_rx).test(T))continue;
+    const pr=Number(r.priority)||0,bp=best?Number(best.priority)||0:-1;
+    if(!best||pr>bp||(pr===bp&&(Number(r.flat_amount)||0)+Number(r.commission_pct)<(Number(best.flat_amount)||0)+Number(best.commission_pct)))best=r;
+  }
+  return best;
 }
-function cbAmount(store,price,cat){const r=cbRate(store,cat);if(!r||!Number.isFinite(price)||price<=0)return 0;const a=Math.floor(price*r/100*CB_SHARE);return a>=CB_MIN?a:0;}
-function cbSpan(store,price,cat,v){return `<span class="pp-cb pp-cb-${v||'row'}" data-cb-s="${H(store||'')}" data-cb-p="${Number.isFinite(price)?price:''}" data-cb-c="${H(String(cat||'').toLowerCase())}"></span>`;}
-/* V277 (user): show a RANGE, not one exact number - the final amount depends on what the store confirms.
-   Top of the range = our 40% estimate (never promise more than that); bottom = about 60% of it. Small amounts: "up to". */
-function cbRange(a){const hi=a>=25?Math.floor(a/5)*5:a,lo=Math.floor(a*0.6/5)*5;return lo>=10&&lo<hi?[lo,hi]:[0,hi];}
-function cbRangeTxt(a,short){const [lo,hi]=cbRange(a);const f=v=>'₹'+v.toLocaleString('en-IN');return lo?`${f(lo)}–${f(hi)}`:(short?'up to ':'Up to ')+f(hi);}
+/* our commission on this sale (capped), then the shopper's share */
+function cbAmount(store,price,cat,prod){
+  const r=cbRule(store,cat,prod);if(!r||!Number.isFinite(price)||price<=0)return 0;
+  let com=Number(r.flat_amount)>0?Number(r.flat_amount):price*Number(r.commission_pct)/100;
+  if(Number(r.cap_amount)>0)com=Math.min(com,Number(r.cap_amount));
+  const a=Math.floor(com*CB_SHARE);return a>=CB_MIN?a:0;
+}
+function cbHasAny(store,cat){
+  if(!cbRates||!store||cbBlocked(store))return false;const k=cbKey(store),c=String(cat||'').toLowerCase();
+  return cbRates.some(r=>cbKey(r.store)===k&&(r.source!=='cuelinks'||cbLinked(r.store))&&(Number(r.commission_pct)>0||Number(r.flat_amount)>0)&&(!c||String(r.category||'*')==='*'||String(r.category).toLowerCase()===c));
+}
+function cbSpan(store,price,cat,v,prod){
+  const pid=prod&&typeof prod==='object'?prod.id:prod;
+  return `<span class="pp-cb pp-cb-${v||'row'}" data-cb-s="${H(store||'')}" data-cb-p="${Number.isFinite(price)?price:''}" data-cb-c="${H(String(cat||'').toLowerCase())}"${pid?` data-cb-id="${H(pid)}"`:''}${prod&&typeof prod==='object'&&prod.name?` data-cb-n="${H(prod.name)}" data-cb-b="${H(prod.brand||'')}"`:''}></span>`;
+}
+/* one number, "up to" (the store confirms the final amount; we never promise more than our share) */
+function cbUpTo(a){return a>=100?Math.floor(a/10)*10:a>=25?Math.floor(a/5)*5:a;}
+const cbMoney=a=>'₹'+cbUpTo(a).toLocaleString('en-IN');
+const CB_COIN='<i class="pp-cb-coin" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.5 7.5h7M8.5 10.5h7M10 7.5c3 0 3.5 6-1 6l4.5 4"/></svg></i>';
 function cbText(v,a){
   if(v==='chip')return '+ Cashback';
-  if(v==='tag')return `+${cbRangeTxt(a,true)} cashback`;
-  if(v==='stack')return `<b>+ ${cbRangeTxt(a,true)} cashback</b><small>in your PricePulse wallet after the return period · est.</small>`;
-  return `<b>+ ${cbRangeTxt(a,true)} cashback</b><small>est. · after the return period</small>`;
+  if(v==='tag')return `${CB_COIN}<b>Earn up to ${cbMoney(a)}</b>`;
+  if(v==='radar')return `+ up to ${cbMoney(a)} cashback`;
+  return `${CB_COIN}<b>Earn up to ${cbMoney(a)} cashback</b>`;
+}
+/* which product a placeholder belongs to: its own data, the card / page around it, or the open product page */
+function cbProdOf(e,idx){
+  if(e.dataset.cbN)return {name:e.dataset.cbN,brand:e.dataset.cbB||''};
+  let id=e.dataset.cbId||e.closest('[data-cb-id],[data-pc-id],[data-product-id],[data-wishlist-id],[data-alert-product]')?.dataset?.cbId;
+  if(!id){const h=e.closest('[data-pc-id],[data-product-id],[data-wishlist-id]');id=h&&(h.dataset.pcId||h.dataset.productId||h.dataset.wishlistId);}
+  if(!id){try{const r=parseRoute();if(r&&r.name==='product')id=r.param;}catch(_){}}
+  if(id){const p=idx.get(String(id));let cp=null;try{cp=typeof ppCatalogProduct==='function'?ppCatalogProduct(id):null;}catch(_){}
+    if(p||cp)return {name:(p&&p.name)||cp?.name||'',brand:(p&&p.brand)||cp?.brand||cp?.brand_name||String(cp?.brand_slug||'').replace(/-/g,' ')};}
+  const h1=e.closest('.ppf-main,.ppf-card,.ppx-product')?.querySelector('h1');
+  return {name:h1?h1.textContent.trim():'',brand:''};
 }
 function cbFill(reset){
   if(reset)document.querySelectorAll('.pp-cb[data-done]').forEach(e=>e.removeAttribute('data-done'));
   if(!cbRates)return;
-  document.querySelectorAll('.pp-cb:not([data-done])').forEach(e=>{
+  const todo=document.querySelectorAll('.pp-cb:not([data-done])');if(!todo.length)return;
+  let idx=null;
+  todo.forEach(e=>{
     e.dataset.done='1';const v=(e.className.match(/pp-cb-(\w+)/)||[])[1]||'row';
-    const a=v==='chip'?(cbRate(e.dataset.cbS,e.dataset.cbC)>0?1:0):cbAmount(e.dataset.cbS,Number(e.dataset.cbP),e.dataset.cbC);
+    let a=0;
+    if(v==='chip')a=cbHasAny(e.dataset.cbS,e.dataset.cbC)?1:0;
+    else{if(!idx){idx=new Map();try{productIndex().forEach(p=>idx.set(String(p.id),p));}catch(_){}}
+      a=cbAmount(e.dataset.cbS,Number(e.dataset.cbP),e.dataset.cbC,cbProdOf(e,idx));}
     e.innerHTML=a?cbText(v,a):'';e.classList.toggle('is-on',!!a);
+    if(a&&v!=='chip')e.setAttribute('title','Paid to your PricePulse wallet once the store confirms the order');
   });
 }
 /* Wishlist cards come from script.js (not changed): add the placeholder under their "Best verified price" box */
@@ -2249,11 +2313,11 @@ function cbDecorate(){
     box.dataset.cb='1';
     try{const id=box.closest('[data-wishlist-id]').dataset.wishlistId;const p=productIndex().find(x=>String(x.id)===String(id));if(!p)return;
       const b=bestPrice(p);const st=b.state||{};const low=(st.inStock||[]).find(o=>o.price===b.price);if(!low||!Number.isFinite(b.price))return;
-      box.insertAdjacentHTML('beforeend',cbSpan(low.name,b.price,p.category,'row'));}catch(_){}
+      box.insertAdjacentHTML('beforeend',cbSpan(low.name,b.price,p.category,'tag',p.id));}catch(_){}
   });
 }
 new MutationObserver(()=>{if(!cbRates)return;cbDecorate();if(document.querySelector('.pp-cb:not([data-done])'))cbFill();}).observe(document.documentElement,{childList:true,subtree:true});
-window.ppCashback={load:cbLoad,rate:cbRate,amount:cbAmount,range:cbRange,rangeText:cbRangeTxt,span:cbSpan,fill:cbFill,share:CB_SHARE,blocked:cbBlocked};
+window.ppCashback={load:cbLoad,rule:cbRule,amount:cbAmount,hasAny:cbHasAny,upTo:cbUpTo,money:cbMoney,span:cbSpan,fill:cbFill,get share(){return CB_SHARE;},blocked:cbBlocked,linked:cbLinked};
 setTimeout(()=>cbLoad(),0);
 function storeLogoFor(store){if(store&&EXTRA_STORE_LOGOS[store])return `<img src="${EXTRA_STORE_LOGOS[store]}" alt="${H(store)} logo" data-extra-store="${H(store)}">`;return store&&typeof retailerLogo==='function'?retailerLogo(store):'';}
 function showLinkPanel(anchor,html){
@@ -3343,9 +3407,8 @@ function dealsPageHTML(){
   const earlyHTML=early.length?(plus?dlSection('early',ICON.crown,'Plus Early Access','You are seeing these before everyone else',dlSort(early),{}):
     `<section class="ppx-dl-sec ppx-dl-plus" data-dl-sec="early"><header class="ppx-dl-sechead"><span class="ppx-dl-secicon is-gold">${ICON.crown}</span><div><h2>Plus Early Access</h2><p>Plus members see these deals first. Everyone else gets them a little later.</p></div><em>${early.length} ${early.length===1?'deal':'deals'}</em></header><div class="ppx-dl-grid">${dlSort(early).slice(0,4).map(r=>dlCard(r,{locked:true})).join('')}</div></section>`):'';
   const empty=!rows.length?`<div class="ppx-dl-empty"><b>No deals match these filters</b><p>Try another category or price range.</p><button type="button" class="ppx-btn ppx-btn-ghost" data-dl-reset>Clear filters</button></div>`:'';
-  return `<div class="ppx-product ppx-list-page container ppx-deals-page">
+  return `<div class="ppx-product ppx-list-page container ppx-deals-page">${crumbs('Live Deals')}
     <header class="ppx-dl-head">
-      <a href="#home" class="ppx-back ppx-dl-back" data-ppx-action="back">${ICON.back}Back</a>
       <h1>${H(headline)}</h1>
       <div class="ppx-dl-stats"><span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${pub.length}</b> ${pub.length===1?'deal':'deals'} tracked</span>${nDrops?`<span><b>${nDrops}</b> price ${nDrops===1?'drop':'drops'}</span>`:''}${nLow?`<span><b>${nLow}</b> at lowest price</span>`:''}${live.ago?`<span>Updated <b>${live.ago}</b> ago</span>`:''}</div>
       <div class="ppx-dl-sale" id="ppxDlSale" hidden></div>
@@ -3607,17 +3670,30 @@ function pcVariant(p){
   try{const c=typeof ppCatalogProduct==='function'?ppCatalogProduct(p.id):null;const parts=[c?.variant,c?.model_code].filter(Boolean);if(parts.length)return parts.join(' · ');}catch(_){}
   const v=p.card.querySelector('.pp-card-variant')?.textContent?.trim();return v||'';
 }
+/* V278 (L9): card chart = the product page chart, small: area + STEP line (red / gold / green by height), dashed AVERAGE
+   line, gold end dot, "29-day high" label. No axis, no tabs, no hover. */
 function pcSpark(d){
-  const ser=d.series.map(s=>({time:s.time,price:s.price,store:s.store||''}));
-  if(d.price!=null&&(!ser.length||ser[ser.length-1].price!==d.price))ser.push({time:Date.now(),price:d.price,store:d.store||''});
+  const ser=d.series.map(s=>({time:s.time,price:s.price}));
+  if(d.price!=null&&(!ser.length||ser[ser.length-1].price!==d.price))ser.push({time:Date.now(),price:d.price});
+  if(ser.length<3)return '';
   const pts=ser.map(s=>s.price);
-  if(pts.length<3)return '';
-  const lo=Math.min(...pts),hi=Math.max(...pts),rng=Math.max(hi-lo,hi*.01);
-  const W=300,Hh=60,x=i=>(i/(pts.length-1))*W,y=v=>6+((hi-v)/rng)*(Hh-14);
-  const line=pts.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-  const col=d.v.k==='wait'?'#E8B954':'#5EF0C0';const gid='pcg'+d.p.id.replace(/[^a-z0-9]/gi,'');
-  const lbl=d.v.k==='wait'?`${d.days||30}-day low ${M(lo)}`:`${d.days||30}-day high ${M(hi)}`;
-  return `<div class="ppx-pc-chart" aria-label="Price trend, ${H(lbl)}"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".32"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><path d="${line} L${W} ${Hh} L0 ${Hh}Z" fill="url(#${gid})"/><path d="${line}" fill="none" stroke="${col}" stroke-width="2.2" vector-effect="non-scaling-stroke"/></svg><i style="left:calc(100% - 5px);top:calc(${(y(pts[pts.length-1])/Hh*100).toFixed(2)}% - 4.5px);background:${col}"></i><span>${H(lbl)}</span>${ppxTipData(ser.map((s,i)=>[x(i)/W,y(s.price)/Hh,s.time,s.price,s.store]))}</div>`;
+  const avg=pts.reduce((a,c)=>a+c,0)/pts.length;
+  let lo=Math.min(...pts),hi=Math.max(...pts);
+  if(hi===lo){hi+=Math.max(1,hi*.01);lo-=Math.max(1,lo*.01);}
+  const W=300,Hh=64,T=7,B=5,t0=ser[0].time,t1=Math.max(Date.now(),ser[ser.length-1].time,t0+1);
+  const X=t=>((t-t0)/(t1-t0))*W,Y=v=>T+((hi-v)/(hi-lo))*(Hh-T-B);
+  let line='';ser.forEach((q,k)=>{const x=X(q.time).toFixed(1),y=Y(q.price).toFixed(1);line+=k?` H${x} V${y}`:`M${x} ${y}`;});line+=` H${W}`;
+  const yTop=Y(hi),yBot=Y(lo),yAvg=Y(avg);
+  const off=Math.min(.9,Math.max(.1,(yAvg-yTop)/Math.max(1,yBot-yTop))).toFixed(3);
+  const gid='pcg'+d.p.id.replace(/[^a-z0-9]/gi,'');
+  const lbl=d.v.k==='wait'?`${d.days||30}-day low ${M(Math.min(...pts))}`:`${d.days||30}-day high ${M(Math.max(...pts))}`;
+  const lastY=Y(ser[ser.length-1].price);
+  return `<div class="ppx-pc-chart pp-xc-mini" aria-label="Price trend, ${H(lbl)}, average ${H(M(Math.round(avg)))}"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><defs>
+    <linearGradient id="${gid}l" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${yTop.toFixed(1)}" y2="${yBot.toFixed(1)}"><stop offset="0" stop-color="#F06A6E"/><stop offset="${off}" stop-color="#E8B954"/><stop offset="1" stop-color="#3DDC97"/></linearGradient>
+    <linearGradient id="${gid}a" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${yTop.toFixed(1)}" y2="${Hh}"><stop offset="0" stop-color="#F06A6E" stop-opacity=".2"/><stop offset="${off}" stop-color="#E8B954" stop-opacity=".12"/><stop offset="1" stop-color="#3DDC97" stop-opacity=".02"/></linearGradient></defs>
+    <path d="${line} V${Hh} H0 Z" fill="url(#${gid}a)"/>
+    <line x1="0" x2="${W}" y1="${yAvg.toFixed(1)}" y2="${yAvg.toFixed(1)}" class="avg" vector-effect="non-scaling-stroke"/>
+    <path d="${line}" fill="none" stroke="url(#${gid}l)" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><i style="left:calc(100% - 5px);top:calc(${(lastY/Hh*100).toFixed(2)}% - 5px)"></i><span>${H(lbl)}</span><em class="pp-xc-avg">avg ${H(M(Math.round(avg)))}</em></div>`;
 }
 function pcLadder(d){
   if(d.offers.length<2)return '';
@@ -3646,7 +3722,7 @@ function pcHTML(d,opts={}){
   return `<div class="ppx-pc is-${d.v.k}${opts.locked?' is-locked':''}" data-pc-id="${H(id)}"><div class="ppx-pc-in">
     <div class="ppx-pc-top"><span class="ppx-pc-verdict"><i></i>${pcVerdictHTML(d.v.t)}</span><span class="ppx-pc-icons"><button type="button" class="ppx-pc-ib" data-pc-alert="${H(id)}" ${d.target?`data-pc-target="${d.target}"`:''} aria-label="Price alert for ${H(d.p.name)}">${PC_SVG.bell}</button><button type="button" class="ppx-pc-ib is-heart${saved?' is-on':''}" data-pc-heart="${H(id)}" aria-pressed="${saved}" aria-label="${saved?'Remove from':'Add to'} wishlist">${PC_SVG.heart}</button></span></div>
     <a class="ppx-pc-prod" href="#/product/${eid}"><span class="ph ${ppxGlobalImg(d.p.id,d.photo).surface}">${ppxGlobalImg(d.p.id,d.photo).img}</span><span class="nm"><small>${H(cat)}</small><b>${H(d.p.name)}</b>${d.variant?`<em>${H(d.variant)}</em>`:''}</span>${score}</a>
-    ${d.price!=null?`<div class="ppx-pc-price"><div><b>${M(d.price)}</b>${d.sav?.mrp?`<s>${M(d.sav.mrp)}</s>`:''}${cbSpan(d.store,d.price,d.p.category,'tag')}</div>${d.chg?`<div class="chg is-${d.chg.c}">${H(d.chg.a)}<small>${H(d.chg.b)}</small></div>`:''}</div>`:`<div class="ppx-pc-pending"><i></i>We are checking ${d.stores} ${d.stores===1?'store':'stores'} for this product</div>`}
+    ${d.price!=null?`<div class="ppx-pc-price"><div><b>${M(d.price)}</b>${d.sav?.mrp?`<s>${M(d.sav.mrp)}</s>`:''}${cbSpan(d.store,d.price,d.p.category,'tag',d.p.id)}</div>${d.chg?`<div class="chg is-${d.chg.c}">${H(d.chg.a)}<small>${H(d.chg.b)}</small></div>`:''}</div>`:`<div class="ppx-pc-pending"><i></i>We are checking ${d.stores} ${d.stores===1?'store':'stores'} for this product</div>`}
     ${opts.meter?(()=>{const m=ppMeterHTML(d.price,lowestSeries(d.p.id),d.store,'is-card');return m?`<div class="ppx-pc-meter">${m}</div>`:'';})():pcSpark(d)}${pcLadder(d)}${opts.withPlus?plus:''}
     <div class="ppx-pc-btns">${main}<a class="ppx-pc-cmp" href="#/product/${eid}">Details</a></div>
     <div class="ppx-pc-meta"><span><i></i>${d.price!=null?(d.stores>d.offers.length&&d.offers.length?`${d.stores} stores · ${d.stores-d.offers.length} out of stock`:`${d.offers.length||d.stores} ${(d.offers.length||d.stores)===1?'store':'stores'} verified`):`${d.stores} ${d.stores===1?'store':'stores'} listed`}${d.offers.length>3?` · <b class="ppx-pc-more">+${d.offers.length-3} more</b>`:''}</span>${d.price!=null?`<button type="button" class="ppx-pc-add${inCmp?' is-on':''}" data-pc-cmp="${H(id)}" aria-pressed="${inCmp}">${PC_SVG.cmp}${inCmp?'Added to compare':'Add to compare'}</button>`:''}</div>
@@ -3765,7 +3841,7 @@ routes.compare=(param)=>{
     ${row('',ds.map(d=>`<span class="ppx-cmpx-c ppx-cmpx-prod"><a href="#/product/${encodeURIComponent(d.p.id)}"><span class="ph">${d.photo?`<img src="${H(d.photo)}" alt="">`:''}</span><b>${H(d.p.name)}</b></a><button type="button" class="ppx-cmpx-x" data-pc-tray-x="${H(d.p.id)}">Remove</button></span>`))}
     ${row('Best price',ds.map(d=>cell(d.price!=null?`<b class="big">${M(d.price)}</b>`:'<span class="mut">Being verified</span>',bp!=null&&d.price===bp)))}
     ${row('Cheapest at',ds.map(d=>cell(d.store?H(d.store):'<span class="mut">—</span>')))}
-    ${cbRates&&ds.some(d=>cbAmount(d.store,d.price,d.p.category))?row('Cashback (est.)',ds.map(d=>{const a=cbAmount(d.store,d.price,d.p.category);return cell(a?`<b class="pp-cb-v">+ ${cbRangeTxt(a,true)}</b><small class="mut"> after the return period</small>`:'<span class="mut">—</span>');})):''}
+    ${cbRates&&ds.some(d=>cbAmount(d.store,d.price,d.p.category,d.p))?row('Cashback',ds.map(d=>{const a=cbAmount(d.store,d.price,d.p.category,d.p);return cell(a?`<span class="pp-cb pp-cb-tag is-on" data-done="1">${CB_COIN}<b>Earn up to ${cbMoney(a)}</b></span>`:'<span class="mut">—</span>');})):''}
     ${row('Verdict',ds.map(d=>cell(`<span class="ppx-cmpx-v is-${d.v.k}">${H(d.v.t)}</span>`)))}
     ${row('Deal Score',ds.map(d=>cell(d.an?`<b>${d.an.score}</b>/100`:'<span class="mut">Needs more history</span>',bs!=null&&d.an?.score===bs)))}
     ${row('30-day low',ds.map(d=>cell(d.series.length>=3?M(d.min):'<span class="mut">—</span>',bl!=null&&d.series.length>=3&&d.min===bl)))}
@@ -3773,7 +3849,7 @@ routes.compare=(param)=>{
     ${row('Price gap',ds.map(d=>cell(d.spread?`${M(d.spread)} between stores`:'<span class="mut">—</span>')))}
     ${row('',ds.map(d=>{const u=d.url&&d.price!=null?ppAffiliateUrl(d.url).url:'';return `<span class="ppx-cmpx-c">${u?`<a class="ppx-pc-buy" href="${H(u)}" target="_blank" rel="sponsored noopener noreferrer" data-product-id="${H(d.p.id)}">Buy on ${H(d.store)} ↗</a>`:`<a class="ppx-pc-buy is-alert" href="#/product/${encodeURIComponent(d.p.id)}">See details</a>`}</span>`;}))}
   </div>`;
-  showPage('compare',`<div class="ppx-product ppx-list-page container ppx-compare-page">${crumbs('Compare')}<section class="ppx-dl-hero ppx-cmpx-hero"><div class="ppx-dl-hero-copy"><span class="ppx-eyebrow">SIDE BY SIDE</span><h1>Which one should you buy?</h1><p>Verified prices, Deal Score and price history next to each other.</p></div></section><div class="pp-panel pp-cmp-panel"><span class="pp-panel-note"><b>${ds.length}</b> of 3 products</span><span class="pp-panel-acts">${ds.length<3?`<button type="button" class="pp-pbtn is-go" data-pp-cmp-add>+ Add product</button>`:''}<a class="pp-pbtn" href="#/deals">Browse deals</a>${ds.length?`<button type="button" class="pp-pbtn" data-pc-tray-clear data-pp-cmp-clear>Clear all</button>`:''}</span></div>${body}</div>`);
+  showPage('compare',`<div class="ppx-product ppx-list-page container ppx-compare-page">${crumbs('Compare')}<header class="ppx-cmpx-hero pp-onebar"><h1>Which one should you buy?</h1><div class="pp-ob-stats"><span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${ds.length}</b> of 3 products</span><span>Verified prices · Deal Score · price history</span></div></header><div class="pp-panel pp-cmp-panel"><span class="pp-panel-note"><b>${ds.length}</b> of 3 products</span><span class="pp-panel-acts">${ds.length<3?`<button type="button" class="pp-pbtn is-go" data-pp-cmp-add>+ Add product</button>`:''}<a class="pp-pbtn" href="#/deals">Browse deals</a>${ds.length?`<button type="button" class="pp-pbtn" data-pc-tray-clear data-pp-cmp-clear>Clear all</button>`:''}</span></div>${body}</div>`);
   document.title='Compare | PricePulse';
   pcTray();
 };
@@ -3964,7 +4040,7 @@ function hlMini(p,d,o={}){
   const k=d?.v?.k||'pending';
   const lbl=k==='buy'?'Buy now':k==='wait'?'Wait':k==='fair'?'Fair price':'Verifying';
   const sub=o.sub||(d?.price!=null?(d.drop>0?`▼ ${M(d.drop)}`:d.sav?.percent?`${d.sav.percent}% off`:`${d.offers.length} stores`):`${d?.stores||0} stores`);
-  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph ${ppxGlobalImg(p.id,d?.photo).surface}">${ppxGlobalImg(p.id,d?.photo).img}</span>${p.brand?`<span class="br">${H(p.brand)}</span>`:''}<span class="nm">${H(p.name)}</span><span class="pr${d?.price!=null?'':' is-soon'}">${d?.price!=null?M(d.price):'Price soon'}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}<span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
+  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph ${ppxGlobalImg(p.id,d?.photo).surface}">${ppxGlobalImg(p.id,d?.photo).img}</span>${p.brand?`<span class="br">${H(p.brand)}</span>`:''}<span class="nm">${H(p.name)}</span><span class="pr${d?.price!=null?'':' is-soon'}">${d?.price!=null?M(Number.isFinite(o.price)?o.price:d.price):'Price soon'}${o.at?`<small class="at">at ${H(o.at)}</small>`:''}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}<span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
 }
 function hlRows(){
   const deals=document.getElementById('deals');if(!deals)return;
@@ -3981,15 +4057,21 @@ function hlRows(){
     const ver=all.filter(x=>x.d&&x.d.price!=null&&!x.p.card.hidden);
     const pref=(a,b)=>(top.has(a.p.id)-top.has(b.p.id)); /* products not already in Popular deals first */
     const kit=window.ppOffersKit;
+    /* V278 (L3): ONE store for price + offers + cashback. For every in-stock store: discount from MRP at that store's price,
+       that store's coupons / bank offers / card rewards, that store's cashback (base = its listed price). The store where you
+       pay the least wins (= the biggest total saving, because MRP is the same). */
     const tot=x=>{
-      const disc=x.d.sav?.saving>0?x.d.sav.saving:0;
-      let off=0,st=x.d.store,pay=x.d.price;
-      try{const b=kit&&kit.best?kit.best(x.p):null;if(b){off=b.save;st=b.store;pay=b.final;}}catch(_){}
-      const cbE=cbAmount(st,pay,x.p.category),cb=cbE?(cbRange(cbE)[0]||0):0; /* only the sure (low) end counts in the total */
-      return {disc,off,cb,cbE,sum:disc+off+cb};
+      const mrp=Number(x.d.sav?.mrp)||0;let best=null;
+      for(const o of (x.d.offers||[])){
+        const price=o.price;if(!Number.isFinite(price))continue;
+        let off=0;try{const n=kit&&kit.netAt?kit.netAt(x.p,o.name,price):null;if(n&&n.save>0)off=n.save;}catch(_){}
+        const cb=cbAmount(o.name,price,x.p.category,x.p),disc=mrp>price?mrp-price:0,pay=price-off-cb;
+        if(!best||pay<best.pay)best={store:o.name,price,disc,off,cb,pay,sum:disc+off+cb};
+      }
+      return best||{store:x.d.store,price:x.d.price,disc:0,off:0,cb:0,pay:x.d.price,sum:0};
     };
     ver.forEach(x=>{x.t=tot(x);});
-    const totals=ver.filter(x=>x.t.sum>0&&(x.t.off>0||x.t.cbE>0)).sort((a,b)=>b.t.sum-a.t.sum||pref(a,b)).slice(0,10);
+    const totals=ver.filter(x=>x.t.sum>0&&(x.t.off>0||x.t.cb>0)).sort((a,b)=>b.t.sum-a.t.sum||pref(a,b)).slice(0,10);
     if(totals.length>=3)rows.push({key:'total',lens:'total',feature:true,title:'Biggest total saving',sub:'Discount + coupons and bank offers + cashback, added up',items:totals});
     const disc=ver.filter(x=>x.d.sav?.percent>0).sort((a,b)=>b.d.sav.percent-a.d.sav.percent||pref(a,b)).slice(0,10);
     if(disc.length>=3)rows.push({key:'disc',lens:'disc',title:'Highest discount',sub:'Biggest cut from MRP, verified price',items:disc});
@@ -4012,14 +4094,15 @@ function hlRows(){
     :rows.map(r=>{
       const see=`<a href="#/deals" data-see-lens="${H(r.lens)}" data-see-store="${H(r.store||'')}">View all <span aria-hidden="true">→</span></a>`;
       const subOf=x=>r.lens==='total'?`Save ${M(x.t.sum)}`:r.lens==='disc'?`${x.d.sav.percent}% off MRP`:'';
+      const optOf=x=>r.lens==='total'?{sub:subOf(x),price:x.t.price,at:x.t.store}:{sub:subOf(x)};
       if(r.feature){
         const f=r.items[0],t=f.t,img=ppxGlobalImg(f.p.id,f.d.photo);
-        const parts=[t.disc?`<em>${M(t.disc)} discount</em>`:'',t.off?`<em>${M(t.off)} offers</em>`:'',t.cbE?`<em>${cbRangeTxt(t.cbE,true)} cashback <small>est.</small></em>`:''].join('');
+        const parts=[t.disc?`<em>${M(t.disc)} discount</em>`:'',t.off?`<em>${M(t.off)} offers</em>`:'',t.cb?`<em class="is-cb">${CB_COIN}${cbText('radar',t.cb)}</em>`:''].join('');
         return `<div class="ppx-row pp-lens-feature" data-row="total"><div class="ppx-row-head"><div><h3>${H(r.title)}</h3><small>${H(r.sub)}</small></div>${see}</div>
-          <div class="pp-lf-body"><a class="pp-lf-top" href="#/product/${encodeURIComponent(f.p.id)}"><span class="ph ${img.surface}">${img.img}</span><span class="pp-lf-c">${f.p.brand?`<small>${H(f.p.brand)}</small>`:''}<b>${H(f.p.name)}</b><span class="pp-lf-pr">${M(f.d.price)}${f.d.sav?.mrp?` <s>${M(f.d.sav.mrp)}</s>`:''} <i>at ${H(f.d.store||'')}</i></span><span class="pp-lf-save">Save ${M(t.sum)} in total</span><span class="pp-lf-parts">${parts}</span></span></a>
-          <div class="ppx-row-track">${r.items.slice(1).map(x=>hlMini(x.p,x.d,{sub:subOf(x)})).join('')}</div></div></div>`;
+          <div class="pp-lf-body"><a class="pp-lf-top" href="#/product/${encodeURIComponent(f.p.id)}"><span class="ph ${img.surface}">${img.img}</span><span class="pp-lf-c">${f.p.brand?`<small>${H(f.p.brand)}</small>`:''}<b>${H(f.p.name)}</b><span class="pp-lf-pr">${M(t.price)}${f.d.sav?.mrp>t.price?` <s>${M(f.d.sav.mrp)}</s>`:''} <i>at ${H(t.store||'')}</i></span><span class="pp-lf-save">Save ${t.cb?'up to ':''}${M(t.sum)} in total</span><span class="pp-lf-parts">${parts}</span></span></a>
+          <div class="ppx-row-track">${r.items.slice(1).map(x=>hlMini(x.p,x.d,optOf(x))).join('')}</div></div></div>`;
       }
-      return `<div class="ppx-row" data-row="${H(r.key)}"><div class="ppx-row-head"><div><h3>${H(r.title)}</h3><small>${H(r.sub)}</small></div>${see}</div><div class="ppx-row-track">${r.items.map(x=>hlMini(x.p,x.d,{sub:subOf(x)})).join('')}</div></div>`;
+      return `<div class="ppx-row" data-row="${H(r.key)}"><div class="ppx-row-head"><div><h3>${H(r.title)}</h3><small>${H(r.sub)}</small></div>${see}</div><div class="ppx-row-track">${r.items.map(x=>hlMini(x.p,x.d,optOf(x))).join('')}</div></div>`;
     }).join('');
   const html=`<div class="container">${head}${body}</div>`;
   if(host.__h!==html){host.innerHTML=html;host.__h=html;}

@@ -529,7 +529,7 @@ function stackHTML(rows){
   return `<aside class="ppf-stack" aria-label="Saving stack">
     <div class="ppf-stk-h"><b>Saving stack</b><small>${H(storeLabel(r.store))} · ${M(r.price)}</small></div>${tabs}
     <div class="ppf-stk-best"><span>Best you can pay</span><b>${M(final)}</b><small>${[calc.coupon&&pl.offers?`coupon -${M(calc.coupon.save)}`:'',calc.bank&&!pl.dropBank?`${H(calc.bank.offer.bank||'bank')} card offer -${M(calc.bank.save)}`:'',calc.gift?`gift card -${M(calc.gift.save)}`:'',bc?`${H(bc.card.replace(/ credit card$/i,''))} -${M(bc.save)}`:''].filter(Boolean).join(' · ')||'No extra savings found'}</small>${calc.bank&&!pl.dropBank&&!pl.card?`<small class="ppf-stk-why">This price needs a ${H(calc.bank.offer.bank||'bank')} card. The card rewards below are other ways to pay, not extra on top.</small>`:''}${pl.dropBank?`<small class="ppf-stk-why">Paying with this card saves more than the ${H(calc.bank.offer.bank||'bank')} offer, so that offer is left out.</small>`:''}</div>
-    ${window.ppCashback?window.ppCashback.span(r.store,final,stackCats[0]||'','stack'):''}
+    ${window.ppCashback?window.ppCashback.span(r.store,r.price,stackCats[0]||'','stack'):''}
     ${calc.gift?`<div class="ppf-stk-s"><h3>Gift card</h3><div class="ppf-cr">${bankBadge('GC')}<span class="ppf-cr-n"><b>${H(storeLabel(r.store))} gift card</b><small>${H(calc.gift.offer.text||'')}</small></span><span class="ppf-cr-v"><b>-${M(calc.gift.save)}</b><em>${calc.gift.offer.pct?calc.gift.offer.pct+'% off':''}</em></span></div></div>`:''}
     <div class="ppf-stk-s"><div class="ppf-stk-sh"><h3>Credit card rewards</h3><button type="button" class="ppf-addc" data-ppf-cards>${mine.length?`My cards (${mine.length})`:'+ Add your cards'}</button></div>
       ${shown.length?shown.slice(0,8).map(cardRowHTML).join(''):'<p class="ppf-muted">No card rewards for this store yet.</p>'}</div>
@@ -1257,11 +1257,9 @@ window.ppRegisterRoute('welcome',renderWelcome);
     const nCards=(cardRewards||[]).length?new Set(cardRewards.map(c=>c.card)).size:0;
     return `<div class="ppx-product ppx-list-page container ppf-page ppf-cpp">${K.crumbs('Coupons & Offers')}
       <div class="pp-head-unit">
-      <section class="ppf-cp-hero">
-        <div class="ppf-cp-copy"><span class="ppf-os-eb"><i aria-hidden="true"></i>UPDATED EVERY MORNING</span><h1>Coupons &amp; offers <span class="ppx-gold-text">that actually work</span></h1>
-          <p>Checked every morning. Copy a code, shop, paste it at checkout. Then see what you really pay: <a class="pp-pill-link" href="#/find">Price Check <i aria-hidden="true">→</i></a></p>
-          <ol class="ppf-cp-how"><li><b>1</b>Copy the code</li><li><b>2</b>Shop on the store</li><li><b>3</b>Paste at checkout</li></ol></div>
-        <div class="ppf-cp-stats"><div><b>${all.length}</b><span>live offers</span></div><div><b>${stores.length}</b><span>stores</span></div><div><b>${nCards}</b><span>credit cards</span></div></div>
+      <section class="ppf-cp-hero pp-onebar"><h1>Coupons &amp; offers <span class="ppx-gold-text">that actually work</span></h1>
+        <div class="pp-ob-stats"><span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${all.length}</b> live offers</span><span><b>${stores.length}</b> stores</span><span><b>${nCards}</b> credit cards</span><span>Updated every morning</span></div>
+        <div class="pp-ob-acts"><a class="pp-ob-btn" href="#/find">Price Check <i aria-hidden="true">→</i></a></div>
       </section>
       <div class="ppf-cp-bar"><div class="ppf-cp-row">${logoChip('store','',st.store,'All stores')}${stores.map(x=>logoChip('store',x,st.store)).join('')}</div>
         <div class="ppf-cp-row">${[['','All'],['coupon','🏷 Coupons'],['bank','🏦 Bank offers'],['giftcard','🎁 Gift cards']].map(([v,t])=>`<button type="button" class="ppf-tchip${st.kind===v?' is-on':''}" data-ppf-of="kind:${v}">${t}</button>`).join('')}</div></div>
@@ -1299,7 +1297,9 @@ window.ppRegisterRoute('welcome',renderWelcome);
   }
   window.ppRegisterRoute('offers',renderOffers);
   window.ppOffersKit={load:()=>Promise.all([loadAdminOffers(),loadCardRewards()]),all:allOffers,ticket,logo,storeLabel,sameStore,markScrollers,scroller,
-    best:p=>Array.isArray(adminOffers)&&Array.isArray(cardRewards)?bestWithOffers(p):null};
+    best:p=>Array.isArray(adminOffers)&&Array.isArray(cardRewards)?bestWithOffers(p):null,
+    /* V278 (L3): coupons + bank offers + card rewards of ONE store, for the Deal Radar total */
+    netAt:(p,store,price)=>{if(!Array.isArray(adminOffers)||!Array.isArray(cardRewards)||!Number.isFinite(price))return null;const cats=p&&p.category?[String(p.category).toLowerCase()]:[];const pl=plan(store,price,adminOffersFor(store,cats));return {final:pl.final,save:price-pl.final};}};
   /* V277 (P26): Deal Radar "Biggest total saving" needs the offers - redraw the home rows once they are in */
   Promise.all([loadAdminOffers(),loadCardRewards()]).then(()=>{try{window.ppHomeLayout&&window.ppHomeLayout();}catch(_){}});
   window.addEventListener('pp-cashback',()=>{try{window.ppHomeLayout&&window.ppHomeLayout();}catch(_){}});

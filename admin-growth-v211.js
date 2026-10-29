@@ -1,4 +1,4 @@
-/* PricePulse V211 — Admin: Track requests + Sale countdown.
+/* PricePulse V211 — Admin: Track requests + Sale countdown. V278: Cashback panel (Cuelinks sync status, own rules, share, app links).
    Needs supabase-hero-growth-v211.sql installed once. */
 (function(){
   const $=id=>document.getElementById(id);
@@ -50,25 +50,53 @@
       <div class="pp-deals-guidance"><b>Rule:</b> enter only official sale dates announced by the store. Wrong dates break trust faster than no countdown.</div>
       <div id="ppSaleList" class="pp-deals-list"></div>
     </section>
-    <section class="pp-deals-admin-card pp-growth-card">
-      <div class="pp-deals-admin-head"><div><h2>Cashback rates (V277)</h2><p class="muted">Enter the <b>commission %</b> the store pays PricePulse (from Cuelinks / the affiliate dashboard). The website shows a range <b>"+ ₹A–₹B cashback (est.)"</b>: B = price × commission × <b>40%</b> (the shopper's share), A ≈ 60% of B. No rate = no cashback line. <b>Amazon is never allowed</b> (Associates rules). This is display only; real payouts come with the wallet (Step 4).</p></div><span class="pp-deals-admin-badge">💸 CASHBACK</span></div>
+    <section class="pp-deals-admin-card pp-growth-card" id="ppCbCard">
+      <div class="pp-deals-admin-head"><div><h2>Cashback (V278)</h2><p class="muted">Rates come from <b>Cuelinks every morning</b> (Edge Function <b>cuelinks-rates</b>): store + category + <b>brand</b> + model rows + <b>cap per sale</b>. There is <b>no store-wide rate</b>: a product with no matching rule shows no cashback. The shopper gets the <b>share</b> below of our commission. Synced rules count only for stores whose links go through Cuelinks (Links settings). <b>Amazon is never allowed.</b> Display only; payouts come with the wallet (Step 4).</p></div><span class="pp-deals-admin-badge">💸 CASHBACK</span></div>
+      <form id="ppCbSetForm" class="pp-deals-form" onsubmit="return false">
+        <label>Shopper share of our commission (%)<input id="ppCbShare" type="number" min="1" max="90" step="1" value="40"></label>
+        <label>Smallest amount shown (₹)<input id="ppCbMin" type="number" min="1" max="500" step="1" value="5"></label>
+        <label class="wide">Last Cuelinks sync<input id="ppCbLast" readonly value="—"></label>
+      </form>
+      <div class="pp-deals-actions"><button id="ppCbSetSave" type="button">Save share</button><button id="ppCbReload" type="button" class="ghost">Refresh</button></div>
+      <p id="ppCbSetMsg" class="muted" role="status"></p>
+      <h3 class="pp-cb-h" style="margin:24px 0 8px;display:flex;align-items:center;gap:10px;font-size:16px">Stores (what the last sync saw)</h3>
+      <div id="ppCbStores" class="pp-deals-list"></div>
+      <h3 class="pp-cb-h" style="margin:24px 0 8px;display:flex;align-items:center;gap:10px;font-size:16px">Products with no cashback <button id="ppCbNoMatchBtn" type="button" class="ghost">Check now</button></h3>
+      <p class="muted">Products sold on a cashback store that match no rule (or a "no commission" rule). Add your own rule below if Cuelinks does pay for them.</p>
+      <div id="ppCbNoMatch" class="pp-deals-list"></div>
+      <h3 class="pp-cb-h" style="margin:24px 0 8px;display:flex;align-items:center;gap:10px;font-size:16px">Lines from Cuelinks we did not understand</h3>
+      <div id="ppCbLines" class="pp-deals-list"></div>
+      <h3 class="pp-cb-h" style="margin:24px 0 8px;display:flex;align-items:center;gap:10px;font-size:16px">Your own rules (they win over the synced rules)</h3>
       <form id="ppCbForm" class="pp-deals-form" onsubmit="return false">
-        <label>Store<select id="ppCbStore"><option>Flipkart</option><option>Croma</option><option>Myntra</option><option>AJIO</option><option>Meesho</option><option>Nykaa</option><option>Nykaa Fashion</option><option>Tata CLiQ</option><option>Vijay Sales</option><option>Reliance Digital</option><option>JioMart</option><option>Purplle</option><option>Shopsy</option></select></label>
-        <label>Category<select id="ppCbCat"><option value="*">All categories</option><option value="mobiles">Mobiles</option><option value="laptops">Laptops</option><option value="electronics">Electronics</option><option value="home">Home &amp; Kitchen</option><option value="appliances">Appliances</option><option value="fashion">Fashion</option><option value="beauty">Beauty</option><option value="watches">Watches</option></select></label>
-        <label>Commission %<input id="ppCbPct" type="number" min="0.1" max="50" step="0.1" placeholder="e.g. 4"></label>
+        <input id="ppCbId" type="hidden">
+        <label>Store<select id="ppCbStore"><option>Flipkart</option><option>Croma</option><option>Myntra</option><option>AJIO</option><option>Meesho</option><option>Nykaa</option><option>Nykaa Fashion</option><option>Tata CLiQ</option><option>Vijay Sales</option><option>Reliance Digital</option><option>JioMart</option><option>Purplle</option><option>Shopsy</option><option>Adidas</option></select></label>
+        <label>Category<select id="ppCbCat"><option value="*">Any category (needs brand or words)</option><option value="mobiles">Mobiles</option><option value="laptops">Laptops</option><option value="electronics">Electronics</option><option value="home">Home &amp; Kitchen</option><option value="appliances">Appliances</option><option value="fashion">Fashion</option><option value="beauty">Beauty</option><option value="watches">Watches</option></select></label>
+        <label>Brands (comma list, optional)<input id="ppCbBrands" maxlength="200" placeholder="e.g. Motorola, Poco"></label>
+        <label>Product name has (comma list, optional)<input id="ppCbWords" maxlength="300" placeholder="e.g. iPhone 16, Galaxy S25"></label>
+        <label>Commission %<input id="ppCbPct" type="number" min="0" max="50" step="0.01" placeholder="0 = no cashback"></label>
+        <label>or flat ₹ per sale<input id="ppCbFlat" type="number" min="0" step="1" placeholder="optional"></label>
+        <label>Max commission ₹ per sale (cap)<input id="ppCbCap" type="number" min="0" step="1" placeholder="optional"></label>
         <label class="wide">Note (optional)<input id="ppCbNote" maxlength="200" placeholder="From Cuelinks, checked 30 Oct"></label>
         <div class="full pp-deals-checks"><label><input id="ppCbActive" type="checkbox" checked> Active / show on website</label></div>
       </form>
-      <div class="pp-deals-actions"><button id="ppCbSave" type="button">Save rate</button></div>
+      <div class="pp-deals-actions"><button id="ppCbSave" type="button">Save rule</button><button id="ppCbClear" type="button" class="ghost">Clear</button></div>
       <p id="ppCbMsg" class="muted" role="status"></p>
-      <div class="pp-deals-guidance"><b>Rule:</b> a category rate wins over the "All categories" rate of the same store. Check each store's program terms allow cashback sites before you add it.</div>
+      <div class="pp-deals-guidance"><b>How a rule is picked:</b> model rows &gt; brand rows &gt; sub-category words &gt; category. Your own rules always win. 0% = no cashback for those products.</div>
       <div id="ppCbList" class="pp-deals-list"></div>
+      <details class="pp-cb-synced" style="margin:14px 0"><summary>Synced Cuelinks rules (<span id="ppCbSyncedN">0</span>)</summary><div id="ppCbSynced" class="pp-deals-list"></div></details>
+      <h3 class="pp-cb-h" style="margin:24px 0 8px;display:flex;align-items:center;gap:10px;font-size:16px">App links (shown on the website)</h3>
+      <form id="ppAppForm" class="pp-deals-form" onsubmit="return false">
+        <label class="wide">Chrome Web Store link<input id="ppAppExt" type="url" placeholder="https://chromewebstore.google.com/detail/..."></label>
+        <label class="wide">Android app link<input id="ppAppAndroid" type="url" placeholder="https://play.google.com/store/apps/details?id=..."></label>
+      </form>
+      <div class="pp-deals-actions"><button id="ppAppSave" type="button">Save links</button></div>
+      <p id="ppAppMsg" class="muted" role="status">Empty = the website shows "Coming soon".</p>
     </section>`;
     anchor.parentElement.insertBefore(wrap,anchor);
     wrap.addEventListener('click',onClick);
     wrap.addEventListener('input',e=>{const m={ppSaleColorPick:'ppSaleColor',ppSaleDarkPick:'ppSaleDark'}[e.target.id];if(m)$(m).value=e.target.value;}); /* V276 colour pickers */
     $('ppSaleSave').addEventListener('click',saveSale);
-    $('ppCbSave').addEventListener('click',saveCb);
+    $('ppCbSave').addEventListener('click',saveCb);$('ppCbClear').addEventListener('click',clearCb);$('ppCbSetSave').addEventListener('click',saveCbSet);$('ppCbReload').addEventListener('click',loadCb);$('ppCbNoMatchBtn').addEventListener('click',loadNoMatch);$('ppAppSave').addEventListener('click',saveApps);
     $('ppSaleReset').addEventListener('click',resetSale);
     $('ppReqRefresh').addEventListener('click',loadAll);
     document.querySelector('[data-admin-view="growth"]')?.addEventListener('click',()=>setTimeout(loadAll,0));
@@ -77,26 +105,67 @@
   }
   const msg=(id,t,bad)=>{const el=$(id);if(el){el.textContent=t||'';el.style.color=bad?'#a33':'#64756e'}};
   async function loadAll(){await Promise.all([loadReqs(),loadSales(),loadCb()]);}
-  /* V277 (P22): cashback rates */
-  let cbRows=[];
+  /* V278: cashback - synced Cuelinks rules + own rules + share setting + status + products with no match + app links */
+  let cbRows=[],cbStat=null;
+  const rs=v=>'₹'+Number(v).toLocaleString('en-IN',{maximumFractionDigits:2});
+  const cbNeedSql=e=>missing(e)?'Run supabase-cashback-v278.sql once in Supabase, then refresh.':(e?.message||'Error');
+  const ruleText=r=>[r.category==='*'?'any category':h(r.category),r.brands?`brand ${h(r.brands)}`:r.brand_rx?'brand rule':'',r.words?`name has ${h(r.words)}`:r.name_rx?'model / words rule':''].filter(Boolean).join(' · ');
+  const payText=r=>Number(r.flat_amount)>0?`${rs(r.flat_amount)} flat`:Number(r.commission_pct)>0?`${Number(r.commission_pct)}%`:'no cashback';
   async function loadCb(){
     if(!ready())return;
-    const q=await api.rpc('pp_admin_list_cashback_rates');
-    if(q.error){msg('ppCbMsg',missing(q.error)?'Run supabase-cashback-v277.sql once in Supabase, then refresh.':q.error.message,true);return}
-    cbRows=Array.isArray(q.data)?q.data:[];
-    const list=$('ppCbList');
-    list.innerHTML=cbRows.length?cbRows.map(r=>`<article class="pp-deals-row" data-cb="${h(r.id)}"><div><h3>${h(r.store)} · ${r.category==='*'?'All categories':h(r.category)} · <span class="pp-deals-chip">${Number(r.commission_pct)}% commission</span> ${r.active?'':'<span class="pp-deals-chip">OFF</span>'}</h3><p>Shopper sees about ${(Number(r.commission_pct)*0.4).toFixed(2).replace(/\.?0+$/,'')}% back · e.g. ₹10,000 → shown as +₹${(Math.floor(Math.floor(10000*Number(r.commission_pct)/100*0.4)*0.6/5)*5).toLocaleString('en-IN')}–₹${(Math.floor(Math.floor(10000*Number(r.commission_pct)/100*0.4)/5)*5).toLocaleString('en-IN')} cashback${r.note?` · ${h(r.note)}`:''}</p></div><div class="pp-deals-row-actions"><button type="button" class="ghost" data-cb-edit>Edit</button><button type="button" class="ghost" data-cb-del>Delete</button></div></article>`).join(''):'<div class="pp-deals-row"><div><h3>No rates yet</h3><p>Without a rate the website shows no cashback for that store.</p></div></div>';
+    const [q,st,ap]=await Promise.all([api.rpc('pp_admin_list_cashback_rates'),api.rpc('pp_admin_cashback_status'),api.rpc('pp_public_settings')]);
+    if(q.error){msg('ppCbMsg',cbNeedSql(q.error),true);return}
+    cbRows=Array.isArray(q.data)?q.data:[];cbStat=st.error?null:st.data;
+    if(st.error)msg('ppCbSetMsg',cbNeedSql(st.error),true);
+    const set=cbStat&&cbStat.settings||{};
+    if(set.share)$('ppCbShare').value=Math.round(Number(set.share)*100);if(set.min)$('ppCbMin').value=set.min;
+    $('ppCbLast').value=set.last_sync?new Date(set.last_sync).toLocaleString('en-IN'):'Not synced yet - deploy the Edge Function cuelinks-rates';
+    const apps=!ap.error&&ap.data&&ap.data.apps||{};$('ppAppExt').value=apps.extension_url||'';$('ppAppAndroid').value=apps.android_url||'';
+    const ST={ok:['Cashback allowed','#137A52'],cashback_not_allowed:['Cashback NOT allowed by the store','#a33'],no_campaign:['No Cuelinks campaign found','#8a6d1f'],error:['Sync error','#a33']};
+    const camps=cbStat&&Array.isArray(cbStat.campaigns)?cbStat.campaigns:[];
+    $('ppCbStores').innerHTML=camps.length?camps.map(c=>{const [t,col]=ST[c.status]||[c.status,'#555'];return `<article class="pp-deals-row"><div><h3>${h(c.store)} · <span class="pp-deals-chip" style="color:${col}">${h(t)}</span>${c.campaign_id?` <span class="pp-deals-chip">Cuelinks #${h(c.campaign_id)}</span>`:''}</h3><p>${c.rules||0} rules · ${c.unmatched||0} lines not understood${c.coupons_allowed===false?' · <b>Coupons not allowed</b>':''}${c.deals_allowed===false?' · <b>Deals not allowed</b>':''}${c.validation_time?` · validation ${h(c.validation_time)}`:''}${c.payment_time?` · payment ${h(c.payment_time)}`:''}${c.error?` · ${h(c.error)}`:''}</p></div></article>`;}).join(''):'<div class="pp-deals-row"><div><h3>No sync yet</h3><p>Deploy the Edge Function <b>cuelinks-rates</b> and run it once (see README).</p></div></div>';
+    const lines=cbStat&&Array.isArray(cbStat.lines)?cbStat.lines.filter(l=>l.result==='unmatched'):[];
+    $('ppCbLines').innerHTML=lines.length?lines.map(l=>`<article class="pp-deals-row"><div><h3>${h(l.store)} · ${h(String(l.raw_name).slice(0,140))}</h3><p>${h(l.payout_type||'')} ${h(l.payout)} · ${h(l.detail||'')}</p></div></article>`).join(''):'<p class="muted">Nothing - every line was understood (or no sync yet).</p>';
+    const own=cbRows.filter(r=>r.source!=='cuelinks'),syn=cbRows.filter(r=>r.source==='cuelinks');
+    $('ppCbList').innerHTML=own.length?own.map(r=>`<article class="pp-deals-row" data-cb="${h(r.id)}"><div><h3>${h(r.store)} · ${ruleText(r)} · <span class="pp-deals-chip">${payText(r)}</span>${r.cap_amount?` <span class="pp-deals-chip">max ${rs(r.cap_amount)} / sale</span>`:''} ${r.active?'':'<span class="pp-deals-chip">OFF</span>'}</h3><p>e.g. ₹20,000 → shopper sees "Earn up to ${eg(r)}"${r.note?` · ${h(r.note)}`:''}</p></div><div class="pp-deals-row-actions"><button type="button" class="ghost" data-cb-edit>Edit</button><button type="button" class="ghost" data-cb-del>Delete</button></div></article>`).join(''):'<p class="muted">No own rules. The synced Cuelinks rules are used.</p>';
+    $('ppCbSyncedN').textContent=syn.length;
+    $('ppCbSynced').innerHTML=syn.map(r=>`<article class="pp-deals-row"><div><h3>${h(r.store)} · ${h(String(r.raw_name||'').slice(0,90))} · <span class="pp-deals-chip">${payText(r)}</span>${r.cap_amount?` <span class="pp-deals-chip">max ${rs(r.cap_amount)} / sale</span>`:''}</h3><p>${ruleText(r)} · priority ${r.priority}</p></div></article>`).join('');
   }
+  function eg(r){const sh=(Number($('ppCbShare').value)||40)/100;let c=Number(r.flat_amount)>0?Number(r.flat_amount):20000*Number(r.commission_pct)/100;if(Number(r.cap_amount)>0)c=Math.min(c,Number(r.cap_amount));const a=Math.floor(c*sh);return a>=5?'₹'+a.toLocaleString('en-IN'):'no cashback';}
+  async function loadNoMatch(){
+    if(!ready())return;const box=$('ppCbNoMatch');box.innerHTML='<p class="muted">Checking…</p>';
+    const q=await api.rpc('pp_admin_cashback_no_match');
+    if(q.error){box.innerHTML=`<p class="muted" style="color:#a33">${h(cbNeedSql(q.error))}</p>`;return}
+    const l=Array.isArray(q.data)?q.data:[];
+    box.innerHTML=l.length?l.map(x=>`<article class="pp-deals-row"><div><h3>${h(x.name)} · ${h(x.store)}</h3><p>${h(x.brand||'')} · ${h(x.category||'')} · ${h(x.why||'')}</p></div><div class="pp-deals-row-actions"><button type="button" class="ghost" data-cb-fix="${h(x.store)}|${h(x.category||'*')}|${h(x.brand||'')}">Add rule</button></div></article>`).join(''):'<p class="muted">Every product on a cashback store has a rule.</p>';
+  }
+  async function saveCbSet(){
+    if(!ready())return;const sh=Number($('ppCbShare').value),mn=Number($('ppCbMin').value);
+    if(!(sh>=1&&sh<=90)){msg('ppCbSetMsg','Share must be 1-90 %.',true);return}
+    const q=await api.rpc('pp_admin_save_cashback_settings',{p_share:sh/100,p_min:Math.round(mn)||5,p_campaigns:null});
+    if(q.error){msg('ppCbSetMsg',cbNeedSql(q.error),true);return}
+    msg('ppCbSetMsg',`Saved. Shoppers now see ${sh}% of our commission (on the next page load).`);await loadCb();
+  }
+  function clearCb(){['ppCbId','ppCbBrands','ppCbWords','ppCbPct','ppCbFlat','ppCbCap','ppCbNote'].forEach(i=>$(i).value='');$('ppCbCat').value='*';$('ppCbActive').checked=true;msg('ppCbMsg','');}
   async function saveCb(){
     if(!ready()){msg('ppCbMsg','Admin database access required.',true);return}
-    const store=$('ppCbStore').value,cat=$('ppCbCat').value||'*',pct=Number($('ppCbPct').value);
+    const store=$('ppCbStore').value,cat=$('ppCbCat').value||'*',brands=clean($('ppCbBrands').value),words=clean($('ppCbWords').value);
+    const pct=Number($('ppCbPct').value||0),flat=Number($('ppCbFlat').value||0),cap=Number($('ppCbCap').value||0);
     if(/^amazon/i.test(store)){msg('ppCbMsg','Amazon cannot have cashback (Associates rules).',true);return}
-    if(!(pct>0&&pct<=50)){msg('ppCbMsg','Enter a commission between 0.1 and 50 %.',true);return}
+    if(cat==='*'&&!brands&&!words){msg('ppCbMsg','Pick a category, or type brands / product words. A store-wide rate is not allowed.',true);return}
+    if(!(pct>=0&&pct<=50)){msg('ppCbMsg','Commission must be 0-50 %.',true);return}
     const btn=$('ppCbSave');btn.disabled=true;
-    const q=await api.rpc('pp_admin_upsert_cashback_rate',{p_store:store,p_category:cat,p_pct:pct,p_active:$('ppCbActive').checked,p_note:clean($('ppCbNote').value)||null});
+    const q=await api.rpc('pp_admin_save_cashback_rate',{p_id:$('ppCbId').value||null,p_store:store,p_category:cat,p_brands:brands,p_words:words,p_pct:pct,p_flat:flat||null,p_cap:cap||null,p_active:$('ppCbActive').checked,p_note:clean($('ppCbNote').value)||null});
     btn.disabled=false;
-    if(q.error){msg('ppCbMsg',missing(q.error)?'Run supabase-cashback-v277.sql once in Supabase first.':q.error.message,true);return}
-    $('ppCbPct').value='';$('ppCbNote').value='';await loadCb();msg('ppCbMsg','Rate saved. The website shows it on the next page load.');
+    if(q.error){msg('ppCbMsg',cbNeedSql(q.error),true);return}
+    clearCb();await loadCb();msg('ppCbMsg','Rule saved. The website uses it on the next page load.');
+  }
+  async function saveApps(){
+    if(!ready())return;const ext=clean($('ppAppExt').value),and=clean($('ppAppAndroid').value);
+    if((ext&&!/^https:\/\//i.test(ext))||(and&&!/^https:\/\//i.test(and))){msg('ppAppMsg','Links must start with https://',true);return}
+    const q=await api.rpc('pp_admin_save_setting',{set_key:'apps',set_value:{extension_url:ext,android_url:and},set_public:true});
+    if(q.error){msg('ppAppMsg',q.error.message,true);return}
+    msg('ppAppMsg','Saved. Empty = "Coming soon" on the website.');
   }
   async function loadReqs(){
     if(!ready()){msg('ppReqMsg','Sign in with an admin account to see requests.');return}
@@ -163,11 +232,13 @@
         if(q.error){msg('ppReqMsg',q.error.message,true);return}await loadReqs();}
       return;
     }
+    const fix=e.target.closest('[data-cb-fix]');
+    if(fix){const [st,cat,br]=fix.dataset.cbFix.split('|');clearCb();$('ppCbStore').value=st;$('ppCbCat').value=cat||'*';$('ppCbBrands').value=br||'';$('ppCbPct').focus();$('ppCbForm').scrollIntoView({block:'center'});return}
     const crow=e.target.closest('[data-cb]');
     if(crow){
       const r=cbRows.find(x=>x.id===crow.dataset.cb);if(!r)return;
-      if(e.target.closest('[data-cb-edit]')){$('ppCbStore').value=r.store;$('ppCbCat').value=r.category||'*';$('ppCbPct').value=r.commission_pct;$('ppCbNote').value=r.note||'';$('ppCbActive').checked=!!r.active;$('ppCbPct').focus();return}
-      if(e.target.closest('[data-cb-del]')){if(!confirm(`Delete the ${r.store} rate?`))return;const q=await api.rpc('pp_admin_delete_cashback_rate',{p_id:r.id});if(q.error){msg('ppCbMsg',q.error.message,true);return}await loadCb();}
+      if(e.target.closest('[data-cb-edit]')){$('ppCbId').value=r.id;$('ppCbStore').value=r.store;$('ppCbCat').value=r.category||'*';$('ppCbBrands').value=r.brands||'';$('ppCbWords').value=r.words||'';$('ppCbPct').value=r.commission_pct;$('ppCbFlat').value=r.flat_amount||'';$('ppCbCap').value=r.cap_amount||'';$('ppCbNote').value=r.note||'';$('ppCbActive').checked=!!r.active;$('ppCbPct').focus();return}
+      if(e.target.closest('[data-cb-del]')){if(!confirm(`Delete this ${r.store} rule?`))return;const q=await api.rpc('pp_admin_delete_cashback_rate',{p_id:r.id});if(q.error){msg('ppCbMsg',q.error.message,true);return}await loadCb();}
       return;
     }
     const srow=e.target.closest('[data-sale]');
