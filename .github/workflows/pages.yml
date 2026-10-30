@@ -75,3 +75,10 @@ jobs:
             echo "$U -> HTTP $(curl -s -o /dev/null -w '%{http_code}' "$U")" >> $GITHUB_STEP_SUMMARY
           done
           curl -s "https://price-pulse.in/p/$ID/?c=$RANDOM" | grep -o '<meta property="og:title"[^>]*>' | head -1 >> $GITHUB_STEP_SUMMARY || true
+          echo "### Headers" >> $GITHUB_STEP_SUMMARY
+          for U in "https://price-pulse.in/p/$ID/?c=$RANDOM" "https://price-pulse.in/404.html?c=$RANDOM" "https://price-pulse.in/sitemap.xml?c=$RANDOM"; do
+            echo "$U" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            curl -sI "$U" | grep -iE '^(HTTP|server|via|cf-|x-github|x-served|x-cache|age|last-modified|etag)' >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          done
