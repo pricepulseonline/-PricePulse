@@ -19,6 +19,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    outputs:
+      sample: ${{ steps.chk.outputs.sample }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,6 +42,15 @@ jobs:
           echo "### Share pages" >> $GITHUB_STEP_SUMMARY
           echo "folders made: $(ls -d p/*/ 2>/dev/null | wc -l)" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY; tail -n 25 /tmp/share.log >> $GITHUB_STEP_SUMMARY 2>/dev/null; echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Check p/ folder before upload (see Summary tab)
+        id: chk
+        if: always()
+        run: |
+          echo "### Upload check" >> $GITHUB_STEP_SUMMARY
+          echo "p/ folders: $(ls -d p/*/ 2>/dev/null | wc -l) | size: $(du -sh p 2>/dev/null | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "example: $(ls p 2>/dev/null | head -3 | tr '\n' ' ')" >> $GITHUB_STEP_SUMMARY
+          echo "sample=$(ls p 2>/dev/null | head -1)" >> $GITHUB_OUTPUT
+          echo "404.html: $(test -f 404.html && echo yes || echo no) | .nojekyll: $(test -f .nojekyll && echo yes || echo no)" >> $GITHUB_STEP_SUMMARY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -53,3 +64,14 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Live check of one share page (see Summary tab)
+        if: always()
+        run: |
+          sleep 20
+          ID='${{ needs.build.outputs.sample }}'
+          echo "### Live check" >> $GITHUB_STEP_SUMMARY
+          echo "id: $ID" >> $GITHUB_STEP_SUMMARY
+          for U in "https://price-pulse.in/p/$ID/?c=$RANDOM" "https://price-pulse.in/p/$ID/og.png?c=$RANDOM"; do
+            echo "$U -> HTTP $(curl -s -o /dev/null -w '%{http_code}' "$U")" >> $GITHUB_STEP_SUMMARY
+          done
+          curl -s "https://price-pulse.in/p/$ID/?c=$RANDOM" | grep -o '<meta property="og:title"[^>]*>' | head -1 >> $GITHUB_STEP_SUMMARY || true
