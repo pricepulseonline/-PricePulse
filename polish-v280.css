@@ -1,0 +1,788 @@
+/* PricePulse V280 (1 Nov 2026) - polish stage 1. Loaded last. */
+
+/* ===== L46 bank badge: round, same size as store icons; real logo (logos/bank-icons/<slug>.png) covers it when the file exists ===== */
+.ppf-bk.ppf-bkc{position:relative;width:32px;height:32px;min-width:32px;padding:0;border-radius:50%;overflow:hidden;background:var(--bk,#616D66);box-shadow:0 0 0 1px rgba(16,35,28,.10),inset 0 -6px 10px rgba(0,0,0,.12);font-style:normal;flex:none}
+.ppf-bkc em{font:800 9.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.01em;font-style:normal;color:#fff}
+.ppf-bkc.is-l em{font-size:8px;letter-spacing:0}
+.ppf-bkc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;background:#fff}
+.ppf-bkc.has-img em{visibility:hidden}
+
+/* ===== L47 line icons (replace emoji) ===== */
+.ppf-ei{display:inline-flex;vertical-align:-.14em;font-style:normal;margin-right:.35em}
+.ppf-ei svg{width:1.05em;height:1.05em;display:block}
+.ppf-cp-soon>span .ppf-ei{margin:0}.ppf-cp-soon>span .ppf-ei svg{width:34px;height:34px}
+
+/* ===== L38 Price Check store list: no bubbles, two fixed groups ===== */
+.ppf-stores{display:block!important;max-width:1000px;margin:22px auto 0!important;text-align:center}
+.ppf-sg+.ppf-sg{margin-top:12px}
+.ppf-sg>small{display:block;margin-bottom:6px;font:800 10.5px/1 Manrope,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7C8A83}
+.ppf-sg-r{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 4px}
+.ppf-stores .ppf-sm{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 10px;background:none!important;border:0!important;border-radius:10px;box-shadow:none!important}
+.ppf-stores .ppf-sm img.pp79-sic{width:24px!important;height:24px!important;max-width:none!important;max-height:none!important}
+.ppf-stores .ppf-sm b{font:700 13.5px/1 Manrope,system-ui,sans-serif;color:#10231C;letter-spacing:-.005em;background:none}
+.ppf-sg.is-also .ppf-sm{height:32px}.ppf-sg.is-also .ppf-sm img.pp79-sic{width:20px!important;height:20px!important}.ppf-sg.is-also .ppf-sm b{font-size:12.5px;font-weight:600;color:#42524B}
+
+/* ===== L37 store filter chips: brand mark, no pill ===== */
+.ppf-lchip{background:transparent!important;border-color:transparent!important;box-shadow:none!important;gap:8px;padding:0 12px 0 8px;transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.ppf-lchip:hover{background:rgba(31,157,116,.08)!important}
+.ppf-lchip.is-on{background:#E6F4EE!important;color:#0f5f45!important;box-shadow:inset 0 -2px 0 #1F9D74!important}
+.ppf-lchip.is-on .ppf-lchip-i{box-shadow:none}
+.ppf-lchip-i:has(img.pp79-sic){width:26px!important;height:26px!important}
+.ppf-lchip-i img.pp79-sic{width:26px!important;height:26px!important}
+section.ppf-os .ppf-lchip{background:transparent!important;border-color:transparent!important;color:#EAF2EF}
+section.ppf-os .ppf-lchip:hover{background:rgba(255,255,255,.08)!important}
+section.ppf-os .ppf-lchip.is-on{background:rgba(246,217,138,.16)!important;color:#F6D98A!important;box-shadow:inset 0 -2px 0 #F6D98A!important}
+/* type chips (All / Coupons / Bank offers / Gift cards) */
+.ppf-tchip{display:inline-flex;align-items:center}
+
+/* ===== L31 "Works with": icons stand alone (no extra white ring box) ===== */
+.pp-ob-ic{width:36px!important;height:36px!important;margin-left:6px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;overflow:visible!important}
+.pp-ob-works i+.pp-ob-ic{margin-left:0!important}
+.pp-ob-ic img.pp79-sic{position:absolute;inset:0;margin:0!important;max-width:none!important;max-height:none!important}
+.pp-ob-ic img.pp79-sic{box-shadow:0 0 0 1px rgba(16,35,28,.12),0 2px 6px -2px rgba(16,35,28,.25)!important}
+
+/* ===== L28/L30 menu: nothing is active on Home (not even Home) ===== */
+body .category-nav .pp-home-nav.is-on{color:inherit!important;background:transparent!important;border-radius:inherit}
+body .category-nav .pp-home-nav.is-on::after{transform:scaleX(0)!important}
+
+/* ===== L43 header Search icon = Wishlist / Deal alerts hover ===== */
+.pp-v276 .pp-search-ic{transition:color .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease}
+.pp-v276 .pp-search-link:hover .pp-search-ic,.pp-v276.pp-search-open .pp-search-link .pp-search-ic{color:#18d49d;border-color:rgba(24,212,157,.72);background:rgba(24,212,157,.08);box-shadow:0 0 0 3px rgba(24,212,157,.08),0 0 18px rgba(24,212,157,.2);transform:translateY(-1px)}
+
+/* ===== L43 one hover / press feel for every button on the site (uses the independent translate/scale properties so no component's own transform is overwritten) ===== */
+:where(button,[role="button"],a[class*="btn"],a[class*="chip"],a[class*="pill"],[class*="-btn"],[class*="chip"],[class*="tab"],summary,.footer a,.footer-app-button,.ppf-tchip,.ppf-lchip,.ppx-pc-buy,.ppx-pc-cmp,.ppf-tk-go,.ppf-tk-code,.pp-mnav,.pp-bn a,.pp-bottom-nav a):not(:disabled):not([aria-disabled="true"]){
+  transition:translate .18s ease,scale .12s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease,color .18s ease,filter .18s ease}
+@media (hover:hover){
+  :where(button,[role="button"],a[class*="btn"],a[class*="chip"],a[class*="pill"],[class*="-btn"],[class*="chip"],[class*="tab"],summary,.footer-app-button,.ppf-tchip,.ppf-lchip,.ppx-pc-buy,.ppx-pc-cmp,.ppf-tk-go,.ppf-tk-code):not(:disabled):not([aria-disabled="true"]):not(.no-lift):hover{translate:0 -1px}
+  :where(button,[role="button"],a[class*="btn"],.ppx-pc-buy,.ppf-tk-go):not(:disabled):not(.no-lift):hover{box-shadow:0 8px 18px -10px rgba(15,31,26,.5)}
+}
+:where(button,[role="button"],a[class*="btn"],a[class*="chip"],a[class*="pill"],[class*="-btn"],[class*="chip"],[class*="tab"],.ppf-tchip,.ppf-lchip,.ppx-pc-buy,.ppx-pc-cmp,.ppf-tk-go,.ppf-tk-code,.pp-mnav):not(:disabled):not([aria-disabled="true"]):active{translate:0 0;scale:.98}
+:where(button,[role="button"],a,summary,input,select,textarea):focus-visible{outline:2px solid #1F9D74;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){:where(button,[role="button"],a,summary){transition:none!important;translate:none!important;scale:none!important}}
+
+/* ===== L24 "View all stores": round store icons, not 4-letter text ===== */
+.ppx-dx-stack{padding-left:10px}
+.ppx-dx-stack i:has(img){background:none!important;border:0!important;width:34px;height:34px;margin-left:-8px;overflow:visible}
+.ppx-dx-stack i img.pp79-sic{width:34px!important;height:34px!important;box-shadow:0 0 0 2px #fff,0 0 0 3px #E8B954!important}
+
+/* ===== L23 + L37 Top stores tiles: icon + full store name as one mark (no pill), count badge on its own line ===== */
+.ppx-dx-hd{flex-wrap:wrap!important;row-gap:7px!important;align-items:center}
+.ppx-dx-hd .ppx-dx-pill{flex:1 1 100%!important;max-width:100%!important;width:auto!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;height:auto!important;justify-content:flex-start}
+.ppx-dx-hd .ppx-dx-pill .pp79-named{display:inline-flex!important;gap:9px;max-width:100%}
+.ppx-dx-hd .ppx-dx-pill img.pp79-sic{width:30px!important;height:30px!important}
+.ppx-dx-hd .ppx-dx-pill .pp79-sname{overflow:visible!important;text-overflow:clip!important;font-size:15px;white-space:normal;line-height:1.15}
+
+/* ===== L42 sentence case: badges, labels and card tags are not ALL CAPS (only tiny eyebrow labels stay capitals) ===== */
+.ppx-badge,.ppx-verdict,.ppx-pc-verdict,.ppx-det-f span,.ppx-det-price>span:first-child,.ppx-dl-selects label,.ppx-dl-cat,.ppx-pc-prod .nm small,.ppx-mini-brand,.ppx-mini .br,.ppf-okind,.pp-sale-chip,.ppx-dx-tag,.ppx-hero-kicker,.ppx-tag,.ppx-v-pre,.ppx-tile-badge,.ppx-dx-low,.pp-soon,.pcs-scene small,.pp-lf-c small,.ppf-os-row,.ppx-pc-score small,.ppx-pc-meta span{text-transform:none!important;letter-spacing:.005em!important}
+
+/* ===== L32 Deal Radar "Biggest total saving" (desktop): white photo box hugs the photo, no empty white sides ===== */
+@media (min-width:901px){.pp-lf-top .ph{display:flex!important;align-items:center;justify-content:center;width:fit-content!important;min-width:0;max-width:100%;margin-inline:auto!important}
+  .pp-lf-top .ph img{flex:none}}
+
+/* ===== L34 tablet + phone: Top brands / Top stores = spotlight full width on top (photo left, info right), 2 cards below; the Brand/Store switch sits right of the title ===== */
+@media (max-width:1100px){
+  .ppx-discover-head{display:flex!important;flex-direction:row!important;align-items:flex-start!important;justify-content:space-between!important;gap:12px!important}
+  .ppx-discover-head>div:first-child{min-width:0;flex:1 1 auto}
+  .ppx-discover-tools{flex:none!important;width:auto!important;margin:0!important}
+  .ppx-discover-tools .ppx-tabs{width:auto!important}
+  body .ppx-dx-row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;overflow:visible!important;margin:0!important;padding:4px 0 6px!important;height:auto!important;scroll-snap-type:none!important}
+  body .ppx-dx-row .ppx-dx-tiles{display:contents!important}
+  body .ppx-dx-row .ppx-dx-tile{flex:none!important;width:auto!important;min-width:0;height:auto!important;min-height:0}
+  body .ppx-dx-row .ppx-dx-spot{grid-column:1/-1;flex-direction:row!important;align-items:stretch!important;gap:14px!important;flex:none!important;width:auto!important;height:auto!important;min-height:0!important;padding:12px!important;container-type:normal}
+  body .ppx-dx-row .ppx-dx-spot-img{flex:0 0 42%!important;width:42%!important;height:auto!important;min-height:132px;align-self:stretch}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-tag{position:static!important;align-self:flex-start;margin:0 0 4px!important;font-size:9.5px!important;padding:3px 8px!important}
+  body .ppx-dx-row .ppx-dx-spot-info{flex:1 1 0!important;justify-content:center!important;align-content:center;row-gap:5px!important}
+  body .ppx-dx-row .ppx-dx-all{grid-column:1/-1;flex:none!important;height:auto!important;min-height:0;flex-direction:row;gap:12px;padding:10px 14px}
+  body .ppx-dx-row .ppx-dx-all b{font-size:13.5px}
+  body .ppx-dx-row .ppx-dx-all b br{display:none}
+  body .ppx-dx-row .ppx-dx-all .ppx-dx-ar{margin-left:auto}
+}
+@media (max-width:560px){
+  .ppx-discover-tools .ppx-tabs{flex-direction:column;gap:4px;padding:4px}
+  .ppx-discover-tools .ppx-tabs button{padding:7px 10px!important;font-size:12px!important;min-height:0!important;white-space:nowrap;justify-content:flex-start}
+  .ppx-discover-tools .ppx-tabs button small{display:none}
+  .ppx-discover-head h2{font-size:clamp(22px,7vw,28px)!important}
+  body .ppx-dx-row .ppx-dx-spot-img{flex-basis:40%!important;width:40%!important}
+}
+@media (max-width:1100px){
+  .ppx-discover-head{flex-wrap:nowrap!important}
+  .ppx-discover-tools{flex-wrap:nowrap!important;width:auto!important}
+  .ppx-discover-tools .ppx-tabs button{flex:none}
+  /* 3 tiles + "View all" = a 2x2 grid; with 4 tiles "View all" is a full-width row */
+  body .ppx-dx-row .ppx-dx-tile:nth-child(3):nth-last-child(2)+.ppx-dx-all{grid-column:auto;flex-direction:column;justify-content:center;padding:14px 10px;gap:10px;min-height:150px}
+  body .ppx-dx-row .ppx-dx-tile:nth-child(3):nth-last-child(2)+.ppx-dx-all b br{display:inline}
+  body .ppx-dx-row .ppx-dx-tile:nth-child(3):nth-last-child(2)+.ppx-dx-all .ppx-dx-ar{margin:0}
+}
+@media (max-width:1100px){
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-pi{min-height:118px;margin:4px 0}
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-pi img{max-height:92px}
+  body .ppx-dx-row .ppx-dx-spot{text-align:left}
+  body .ppx-dx-row .ppx-dx-spot-info{align-items:baseline!important;justify-content:flex-start!important;text-align:left}
+  body .ppx-dx-row .ppx-dx-spot-info>*{text-align:left}
+  body .ppx-dx-row .ppx-dx-spot-img{flex:0 0 34%!important;width:34%!important;min-height:150px}
+}
+@media (max-width:560px){
+  body .ppx-dx-row .ppx-dx-spot-img{flex:0 0 40%!important;width:40%!important;min-height:132px}
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-pi{min-height:100px}
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-pi::before{width:min(92px,80%)}
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-pi img{max-height:74px}
+  body .ppx-dx-row .ppx-dx-tile{padding:10px}
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-hd .ppx-dx-pill img.pp79-sic{width:26px!important;height:26px!important}
+  body .ppx-dx-row .ppx-dx-tile .ppx-dx-hd .pp79-sname{font-size:14px}
+}
+@media (max-width:560px){
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-low{font-size:9px!important;padding:3px 6px!important;left:4px!important;top:4px!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-btn{font-size:11.5px!important;line-height:1.15;padding:9px 6px!important;white-space:normal}
+}
+
+/* ===== L39 + L39b phone: coupons / card rewards = compact cards. Coupons page = 2 per row; Home dark strip = swipe row with ~2 narrow cards visible ===== */
+@media (max-width:640px){
+  .ppf-cp-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .ppf-cp-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .ppf-tk{padding:10px 10px 9px!important;border-radius:15px}
+  .ppf-tk::before{top:10px;bottom:10px;width:3px}
+  .ppf-tk-top{min-height:24px;gap:4px}
+  .ppf-tk-logo{height:auto!important;max-width:100%!important;overflow:visible!important}
+  .ppf-tk-logo img.pp79-sic{height:22px!important}
+  .ppf-tk-logo .pp79-sname{font-size:12px!important;white-space:normal;line-height:1.15}
+  .ppf-tk-k{display:none}
+  .ppf-tk-v{margin-top:7px;font-size:22px}
+  .ppf-tk-v small{font-size:10px}
+  .ppf-tk-l{font-size:10.5px;margin-top:3px;line-height:1.3}
+  .ppf-tk-x{font-size:10.5px;min-height:0;-webkit-line-clamp:2;margin-top:4px}
+  .ppf-tk-tags{margin-top:6px;gap:4px}.ppf-tk-tags em{font-size:9.5px;padding:2px 6px}
+  .ppf-tk-act{margin-top:auto;padding-top:8px}
+  .ppf-tk-code{font-size:11px!important;padding:0 8px!important;height:32px!important}
+  .ppf-tk-go{font-size:11.5px!important;height:32px!important;padding:0 8px!important;width:100%;justify-content:center;margin-top:6px}
+  .ppf-tk-act{display:flex;flex-direction:column;align-items:stretch}
+  /* card reward tiles on the Coupons page: 2 per row, name under the badge */
+  .ppf-cp-card{display:grid!important;grid-template-columns:auto 1fr;grid-template-areas:"b v" "n n";gap:6px 8px;padding:10px!important;margin:0!important;align-items:center}
+  .ppf-cp-card>.ppf-bk{grid-area:b}
+  .ppf-cp-card>.ppf-cp-pct{grid-area:v;justify-self:end;text-align:right;display:grid;justify-items:end;padding:0}
+  .ppf-cp-card>.ppf-cr-n{grid-area:n}
+  .ppf-cp-cards .ppf-cr-n b{font-size:12px}
+  .ppf-cp-cards .ppf-cr-n small{font-size:10.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .ppf-cp-cards .ppf-cr-v b{font-size:13px}
+  /* Home dark strip: narrower cards so about two fit on the screen */
+  .ppf-sc .ppf-ocs>.ppf-tk{flex:0 0 min(44vw,176px)!important}
+  .ppf-sc .ppf-cr,.ppf-sc .ppf-crt{flex:0 0 min(44vw,176px)!important}
+  .ppf-sc .ppf-oc{flex:0 0 min(44vw,176px)!important}
+}
+
+/* ===== L27 phone product page "All N stores": icon with the full store name under it (was icon only / "Am...") ===== */
+@media (max-width:600px){
+  .ppx-store .pp-v787-logo-wrap.pp79-has-sic{flex-direction:column!important;justify-content:center;gap:4px!important;width:76px!important;min-width:76px;text-align:center}
+  .ppx-store .pp-v787-logo-wrap .pp79-sname{display:block!important;font-size:11px!important;line-height:1.15;white-space:normal!important;text-align:center;overflow:visible!important;text-overflow:clip!important;max-width:76px;font-weight:800}
+  .ppx-store .pp-v787-logo-wrap img.pp79-sic{height:34px!important}
+}
+
+/* ===== L36 lowest-price store badge on small product photos ===== */
+.ppx-mini .ph{position:relative}
+.ppx-mini .ph img.pp80-lb{position:absolute!important;right:7px;bottom:7px;width:24px!important;height:24px!important;max-width:none!important;max-height:none!important;transform:none!important;border-radius:50%!important;box-shadow:0 0 0 2px #fff,0 3px 8px -2px rgba(0,0,0,.3)!important;z-index:3;object-fit:cover!important}
+
+/* ===== L35 Popular deals / Live deals cards (laptop + tablet widths): shorter, same information ===== */
+@media (min-width:761px){
+  .ppx-pc .ppx-pc-in{padding-top:12px!important;padding-bottom:12px!important}
+  .ppx-pc .ppx-pc-prod{margin-top:10px!important;gap:12px!important}
+  .ppx-pc .ppx-pc-prod .ph{width:84px!important;height:84px!important}
+  .ppx-pc .ppx-pc-price{margin-top:8px!important}
+  .ppx-pc .ppx-pc-chart{margin-top:6px!important}
+  .ppx-pc .ppx-pc-chart svg{height:50px!important}
+  .ppx-pc .ppx-pc-ladder{margin-top:8px!important;gap:5px}
+  .ppx-pc .ppx-pc-btns{padding-top:8px!important}
+  .ppx-pc .ppx-pc-buy,.ppx-pc .ppx-pc-btns>a,.ppx-pc .ppx-pc-btns>button{min-height:44px!important}
+  .ppx-pc .ppx-pc-meta{margin-top:6px!important}
+}
+
+/* ===== L41 phone: product page ===== */
+.pp80-buybar{display:none}
+@media (max-width:760px){
+  .pp80-titlerow{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .pp80-titlerow h1{flex:1 1 auto;min-width:0;margin:0}
+  .pp80-titlerow .ppx-id-actions{flex:none;display:flex;gap:6px;margin:0!important;padding:0!important;width:auto!important}
+  .pp80-titlerow .ppx-id-actions .ppx-btn{width:38px;height:38px;min-width:38px;padding:0!important;border-radius:12px;justify-content:center}
+  .pp80-titlerow .ppx-id-actions .ppx-btn span{display:none}
+  .pp80-titlerow .ppx-id-actions .ppx-btn svg{width:18px;height:18px;margin:0}
+  /* folded panels */
+  .pp80-fold-h{cursor:pointer;position:relative;padding-right:30px!important}
+  .pp80-fold-h::after{content:"";position:absolute;right:6px;top:50%;width:9px;height:9px;margin-top:-6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s ease;opacity:.6}
+  .pp80-fold:not(.is-folded) .pp80-fold-h::after{transform:rotate(-135deg);margin-top:-2px}
+  .pp80-fold.is-folded>*:not(.pp80-fold-h):not(.ppx-panel-head){display:none!important}
+  .pp80-fold.is-folded .ppx-panel-head~*{display:none!important}
+  .pp80-fold.is-folded{padding-bottom:14px!important}
+  /* sticky buy bar sits right above the bottom navigation */
+  .pp80-buybar{display:flex;position:fixed;left:10px;right:10px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:60;align-items:center;justify-content:space-between;gap:12px;padding:8px 8px 8px 14px;border-radius:16px;background:#10211B;color:#fff;box-shadow:0 14px 30px -10px rgba(0,0,0,.55);transform:translateY(140%);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
+  .pp80-buybar.is-on{transform:none;opacity:1;pointer-events:auto}
+  .pp80-buybar small{display:block;font:700 10.5px/1 Manrope,system-ui,sans-serif;color:#9FB8AD;margin-bottom:3px}
+  .pp80-buybar b{font:800 19px/1 Sora,Manrope,system-ui,sans-serif;letter-spacing:-.01em}
+  .pp80-buybar button{border:0;border-radius:12px;padding:0 16px;height:42px;font:800 13.5px Manrope,system-ui,sans-serif;color:#2A1E05;background:linear-gradient(135deg,#F6D98A,#E8B954);white-space:nowrap}
+}
+
+/* Live deals filters: never wider than the screen at tablet width */
+.ppx-dl-selects{max-width:100%;min-width:0}.ppx-dl-selects label{min-width:0;max-width:100%}.ppx-dl-selects select{min-width:0;max-width:100%}
+@media (min-width:561px) and (max-width:900px){.ppx-dl-selects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.ppx-dl-selects label>span{display:none}.ppx-dl-selects select{width:100%}}
+
+/* ===== L41/L37 Alerts + Wishlist cards: store chips = flat brand marks that wrap (no cut-off, no overlap) ===== */
+.pp-da-retailers,.pp-wish-retailers,[class*="retailers"]{display:flex!important;flex-wrap:wrap!important;gap:6px 12px!important;overflow:visible!important}
+body .pp-da-retailers{flex-wrap:nowrap!important;gap:6px 8px!important;justify-content:flex-start!important;min-width:0;max-width:100%;white-space:nowrap}
+@media(max-width:760px){body .pp-da-retailers{flex-wrap:wrap!important}}
+body .pp-retailer-chip,body .pp-retailer-chip.is-lowest,body .pp-da-retailers .pp-retailer-chip,body .pp-da-retailers .pp-retailer-chip.is-lowest{outline:0!important;display:inline-flex!important;align-items:center;gap:6px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;height:auto!important;min-height:0!important;width:auto!important;max-width:100%}
+.pp-retailer-chip img.pp79-sic{width:20px!important;height:20px!important}
+.pp-retailer-chip .pp79-sname{font:700 12.5px/1.1 Manrope,system-ui,sans-serif!important;color:#2F3F39}
+body .pp-retailer-chip .pp-retailer-status,body .pp-da-retailers .pp-retailer-chip .pp-retailer-status{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;position:static!important;margin:0 0 0 2px!important;font:800 9.5px/1 Manrope,system-ui,sans-serif;padding:3px 6px;border-radius:99px;background:#E6F4EE;color:#13805A;transform:none!important}
+.pp-retailer-chip.is-lowest .pp79-sname{color:#10231C}
+body .pp-retailers>.pp-retailer-chip,body .pp-retailers>.pp-retailer-chip.is-lowest,body .pp-retailers>.pp-retailer-chip.is-tied,body .pp-da-retailers>.pp-retailer-chip,body .pp-da-retailers>.pp-retailer-chip.is-lowest,body .pp-deal-flyout .pp-da-retailers>.pp-retailer-chip,body .pp-deal-flyout .pp-da-retailers>.pp-retailer-chip.is-lowest{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;min-width:0!important;width:auto!important;height:auto!important;margin:0!important}
+body .pp-retailers>.pp-retailer-chip .pp-retailer-status,body .pp-retailers>.pp-retailer-chip.is-tied .pp-retailer-status,body .pp-wish-product-main .pp-retailers>.pp-retailer-chip .pp-retailer-status,body .pp-deal-flyout .pp-da-retailers>.pp-retailer-chip .pp-retailer-status{position:static!important;bottom:auto!important;left:auto!important;transform:none!important;font-size:9.5px!important;min-height:0!important;padding:3px 6px!important;margin-left:2px!important}
+
+/* plain links inside page text are brand green, not browser blue */
+.ppx-list-page p a:not([class]),.ppx-list-page div>a:not([class]){color:#13805A;font-weight:700;text-decoration-color:rgba(19,128,90,.4);text-underline-offset:2px}
+
+/* ===== V281 (1 Nov 2026) L1-L4 ===== */
+/* L1: "Works with" circles overlap a little, white ring between them */
+.pp-ob-works .pp-ob-ic{margin-left:-9px!important}
+.pp-ob-works i+.pp-ob-ic{margin-left:0!important}
+.pp-ob-works .pp-ob-ic img.pp79-sic{border-radius:50%!important;background:#fff;box-shadow:0 0 0 2px #fff,0 2px 6px -1px rgba(16,35,28,.28)!important;display:none}
+.pp-ob-works .pp-ob-ic img.pp79-sic.is-on{display:block}
+/* L3/L4: top stores, ONE line, white boxes with logo + name, no labels */
+.ppf-stores .ppf-sg+.ppf-sg{display:none}
+.ppf-stores .ppf-sg-r{display:flex;flex-wrap:nowrap;justify-content:center;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;-webkit-overflow-scrolling:touch}
+.ppf-stores .ppf-sg-r::-webkit-scrollbar{display:none}
+.ppf-stores .ppf-sm{flex:0 0 auto;height:42px;padding:0 14px 0 8px;gap:8px;background:#fff!important;border:1px solid #DAE0DC!important;border-radius:12px;box-shadow:0 1px 2px rgba(16,35,28,.06)!important;white-space:nowrap}
+.ppf-stores .ppf-sm img.pp79-sic{width:26px!important;height:26px!important}
+@media (max-width:760px){.ppf-stores .ppf-sg-r{justify-content:flex-start}}
+.ppf-stores>.ppf-sg{width:100%;min-width:0}
+
+/* ===== V281 L8 phone header: bigger logo icon + tagline (like desktop) ===== */
+@media (max-width:760px){
+  body .site-header .brand{gap:9px!important;align-items:center!important}
+  body .site-header .brand-mark{width:48px!important;height:48px!important}
+  body .site-header .brand-copy{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0}
+  body .site-header .brand-copy strong{font-size:23px!important;line-height:1!important}
+  body .site-header .brand-copy small{display:block!important;font-size:7.5px!important;line-height:1!important;letter-spacing:.13em!important;white-space:nowrap!important;font-weight:700!important;opacity:.85}
+}
+@media (max-width:359px){body .site-header .brand-copy small{font-size:6.5px!important;letter-spacing:.09em!important}body .site-header .brand-mark{width:42px!important;height:42px!important}}
+
+/* ===== V281 L9 phone menu: ONE swipe row like desktop - All categories, Sales, Coupons, Gift cards (Soon), Price check, Live deals (last) ===== */
+@media (max-width:700px){
+  body .category-nav{justify-content:flex-start!important;overflow-x:auto!important;flex-wrap:nowrap!important;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-right:14px!important}
+  body .category-nav::-webkit-scrollbar{display:none}
+  body .category-nav>*{flex:0 0 auto!important;scroll-snap-align:start}
+  body .category-nav a.pp-mnav,body .category-nav #allCategoriesBtn{min-width:64px;padding:6px 8px 7px!important}
+  body .category-nav a.pp-mnav[data-pp-mnav="gift-cards"]{display:flex!important}
+  body .category-nav .pp-soon{display:inline-block!important;font-size:8px!important;line-height:1;padding:2px 4px;border-radius:6px;margin-top:1px}
+  body .category-nav .deals-nav{margin-left:6px!important;flex:0 0 auto!important}
+}
+
+/* ===== V281 L5: Top brands / Top stores spotlight = old look on desktop too: BIG photo box left, info right ===== */
+@media (min-width:1101px){
+  body .ppx-dx-row .ppx-dx-spot{flex-direction:row!important;align-items:stretch!important;gap:16px!important;padding:14px!important;height:auto!important;min-height:250px!important}
+  body .ppx-dx-row .ppx-dx-spot-img{flex:0 0 44%!important;width:44%!important;height:auto!important;min-height:220px!important;padding:12px!important;align-self:stretch}
+  body .ppx-dx-row .ppx-dx-spot-img img{width:auto!important;height:auto!important;max-width:88%!important;max-height:210px!important;margin:0!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-tag{position:static!important;align-self:flex-start;margin:0 0 8px!important}
+  body .ppx-dx-row .ppx-dx-spot-info{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:flex-start!important;justify-content:center!important;flex:1 1 0!important;row-gap:0!important}
+  body .ppx-dx-row .ppx-dx-spot-info>*{flex:0 0 auto!important;width:auto}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-spot-logo{margin:4px 0 8px!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-pn{font-size:18px!important;margin-bottom:6px!important;-webkit-line-clamp:2}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-pr b{font-size:30px!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-btn{width:100%!important;margin-top:12px!important}
+}
+
+/* ===== V281 L7 phone: Popular deals + Live deals = the normal (desktop-style) card, ONE row per section, swipe sideways. Next card peeks in + arrow ===== */
+@media (max-width:760px){
+  body #deals.ppx-pc-section .deal-grid[data-pp-swipe]>.deal-card{flex:0 0 84%!important;max-width:84%!important}
+  body .ppx-deals-page .ppx-dl-grid,body .ppx-deals-page .ppx-dl-grid.is-big,body .ppx-deals-page .ppx-dl-plus .ppx-dl-grid{display:flex!important;flex-wrap:nowrap!important;grid-template-columns:none!important;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;gap:12px!important;margin:0 -16px;padding:4px 16px 10px;scroll-padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  body .ppx-deals-page .ppx-dl-grid::-webkit-scrollbar{display:none}
+  body .ppx-deals-page .ppx-dl-grid>*{flex:0 0 84%!important;max-width:84%!important;min-width:0;scroll-snap-align:start;height:auto}
+  body .ppx-deals-page .ppx-dl-sec,body #deals.ppx-pc-section .container{position:relative}
+}
+.pp81-next{position:absolute;right:6px;z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid rgba(16,35,28,.18);background:#fff;color:#12211C;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.pp81-next svg{width:16px;height:16px}
+@media (max-width:760px){.pp81-next.is-on{display:flex}}
+/* V281 L3: 9 stores must fit one line on desktop */
+.ppf-stores .ppf-sg-r{justify-content:safe center;gap:6px}
+.ppf-stores .ppf-sm{height:40px;padding:0 10px 0 6px!important;gap:6px!important}
+.ppf-stores .ppf-sm img.pp79-sic{width:24px!important;height:24px!important}
+.ppf-stores .ppf-sm b{font-size:12.5px!important}
+.ppf-stores .ppf-sg-r{gap:5px}
+.ppf-stores .ppf-sm{padding:0 8px 0 5px!important;gap:5px!important}
+.ppf-stores .ppf-sm b{font-size:12px!important}
+.ppf-stores .ppf-sm img.pp79-sic{width:22px!important;height:22px!important}
+
+/* ===== V281 (second batch): L6 L10 L12 L14 L15 L16 ===== */
+/* L12 Works-with: softer overlap */
+.pp-ob-works .pp-ob-ic{margin-left:-4px!important}
+.pp-ob-works i+.pp-ob-ic{margin-left:0!important}
+
+/* L15 menu: gap before Live deals, Live deals always last (phone + tablet). The empty spacer button in the nav pushes it right. */
+@media (max-width:1100px){
+  body .category-nav .pp-mnav-space{display:block!important;flex:1 0 16px!important;min-width:16px!important;width:auto}
+  body .category-nav .deals-nav{margin-left:0!important}
+}
+
+/* L6 Biggest total saving: first card = small photo LEFT, text right, on every width */
+body .pp-lf-top{flex-direction:row!important;align-items:center!important;gap:16px!important}
+body .pp-lf-top .ph{flex:0 0 auto!important;width:128px!important;height:128px!important;min-width:0!important;margin:0!important;padding:8px!important;align-self:center}
+body .pp-lf-top .ph img{width:auto!important;height:100%!important;max-width:100%!important}
+body .pp-lf-top .pp-lf-c{flex:1 1 0;min-width:0}
+@media (max-width:520px){body .pp-lf-top{gap:12px!important}body .pp-lf-top .ph{width:96px!important;height:96px!important;padding:6px!important}}
+
+/* L14 coupon cards: shorter (no stretched gap above the code box), smaller on tablet + phone */
+@media (max-width:1100px){
+  body .ppf-tk{align-self:flex-start!important;flex-basis:min(236px,76vw)!important;padding:11px 12px 10px!important}
+  body .ppf-tk-v{margin-top:6px!important;font-size:24px!important}
+  body .ppf-tk-x{min-height:0!important;-webkit-line-clamp:1!important;font-size:11.5px!important;margin-top:3px!important}
+  body .ppf-tk-tags{margin-top:5px!important}
+  body .ppf-tk-cut{margin:8px -12px 8px!important}
+  body .ppf-tk-act{margin-top:0!important}
+  body .ppf-tk-code{height:34px!important}
+  body .ppf-tk-go{height:34px!important}
+}
+
+/* L16 brand / store tiles: header never hides under the photo circle; brand logos keep a white backing (white parts of a logo vanished on the coloured tile) */
+.ppx-dx-tile .ppx-dx-hd{position:relative;z-index:3}
+.ppx-dx-hd .ppx-dx-pill:has(>img:not(.pp79-sic)),.ppx-dx-hd .ppx-dx-pill:has(>span>img:not(.pp79-sic)){background:#fff!important;border-radius:10px!important;padding:5px 10px!important;flex:0 0 auto!important;width:max-content!important;max-width:100%!important;overflow:visible!important;box-shadow:0 3px 10px -6px rgba(0,0,0,.35)!important;height:auto!important}
+.ppx-dx-hd .ppx-dx-pill>img:not(.pp79-sic){height:18px!important;width:auto!important;max-width:100%!important}
+.ppx-dx-hd .ppx-dx-cnt{max-width:100%;overflow:visible!important;white-space:normal!important;text-align:left}
+
+/* L10 Top brands / stores (tablet + phone): small photo left; tag + logo, title, price, small button right; Shop by brand / store buttons in the card's free right side */
+@media (max-width:1100px){
+  body .ppx-discover .ppx-discover-head{display:block!important}
+  body .ppx-dx-row{position:relative}
+  body .ppx-dx-row>.ppx-discover-tools{position:absolute!important;top:14px;right:14px;z-index:5;margin:0!important;width:auto!important;flex:none}
+  body .ppx-dx-row>.ppx-discover-tools .ppx-tabs{display:flex!important;flex-direction:column!important;gap:6px!important;width:auto!important;padding:5px!important}
+  body .ppx-dx-row>.ppx-discover-tools .ppx-tabs button{white-space:nowrap!important;font-size:12.5px!important;padding:8px 12px!important;min-height:0!important;justify-content:space-between!important;gap:10px}
+  body .ppx-dx-row .ppx-dx-spot{padding-right:172px!important}
+  body .ppx-dx-row .ppx-dx-spot-img{flex:0 0 30%!important;width:30%!important;min-height:118px!important}
+  body .ppx-dx-row .ppx-dx-spot-info{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;align-content:center!important;justify-content:flex-start!important;gap:6px 8px!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-tag{flex:0 0 auto!important;margin:0!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-spot-logo{flex:0 0 auto!important;margin:0!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-pn,body .ppx-dx-row .ppx-dx-spot .ppx-dx-pr,body .ppx-dx-row .ppx-dx-spot .ppx-dx-save{flex:1 1 100%!important}
+  body .ppx-dx-row .ppx-dx-spot .ppx-dx-btn{flex:0 0 auto!important;width:auto!important;padding:7px 14px!important;font-size:12px!important;margin-top:2px!important}
+}
+@media (max-width:560px){
+  /* real phone: no room beside the card - the two buttons become one slim bar above it */
+  body .ppx-dx-row>.ppx-discover-tools{position:static!important;grid-column:1/-1;width:100%!important}
+  body .ppx-dx-row>.ppx-discover-tools .ppx-tabs{flex-direction:row!important;width:100%!important}
+  body .ppx-dx-row>.ppx-discover-tools .ppx-tabs button{flex:1 1 0!important;justify-content:center!important;padding:8px 6px!important;font-size:12px!important}
+  body .ppx-dx-row .ppx-dx-spot{padding-right:12px!important}
+  body .ppx-dx-row .ppx-dx-spot-img{flex:0 0 34%!important;width:34%!important;min-height:112px!important}
+}
+
+/* ===== V284: Login / OTP / Profile popup in the premium theme ===== */
+.modal-panel:has(.auth-shell){padding:0!important;border-radius:20px!important;overflow:auto;background:#fff}
+.modal-panel:has(.auth-shell) .auth-shell{padding:0 24px 22px}
+.modal-panel:has(.auth-shell) .auth-heading{margin:0 -24px 20px;padding:22px 64px 20px 24px;border-radius:20px 20px 0 0;background:radial-gradient(circle at 92% 0%,rgba(232,185,84,.18),transparent 45%),var(--pp-dark,#0F1F1A)}
+.modal-panel:has(.auth-shell) .auth-heading h2{color:#fff}
+.modal-panel:has(.auth-shell) .auth-heading p{color:#B7CBC4}
+.modal-panel:has(.auth-shell)>.modal-close{z-index:3;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.modal-panel:has(.auth-shell)>.modal-close:hover{background:rgba(255,255,255,.22)}
+.auth-shell .auth-primary{background:var(--pp-green,#1F7A55)!important;border-radius:12px;box-shadow:none}
+.auth-shell .auth-primary:hover:not(:disabled){background:var(--pp-green-h,#18684A)!important}
+.auth-shell .auth-back,.auth-shell .auth-resend{color:var(--pp-green,#1F7A55)}
+.auth-shell input:focus,.auth-shell select:focus{outline:0;border-color:var(--pp-green,#1F7A55);box-shadow:0 0 0 3px rgba(31,122,85,.16)}
+.auth-shell .consent-row input{accent-color:var(--pp-green,#1F7A55)}
+@media(max-width:620px){
+  .modal-panel:has(.auth-shell) .auth-shell{padding:0 16px 18px}
+  .modal-panel:has(.auth-shell) .auth-heading{margin:0 -16px 16px;padding:18px 56px 16px 16px}
+}
+
+/* ===== V284b: readable text in login popup + My Account ===== */
+.auth-shell .auth-fineprint{font-size:13px;line-height:1.5;color:#3F4A45}
+.auth-shell .auth-step-copy p{font-size:14.5px;color:#3F4A45}
+.auth-shell .auth-field>span{font-size:14px;color:#24352E}
+.auth-shell .consent-row span{font-size:14px;color:#24352E}
+.auth-shell .auth-divider span{font-size:13px;color:#4A554F}
+.auth-shell input::placeholder{color:#6B756F;opacity:1}
+.auth-perks{list-style:none;margin:10px 0 14px;padding:0;display:grid;gap:8px}
+.auth-perks li{position:relative;padding-left:27px;font-size:14px;font-weight:600;color:#24352E;line-height:1.35}
+.auth-perks li::before{content:"\2713";position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:#E6F5EE;color:#1F7A55;font-size:11px;font-weight:900;display:grid;place-items:center;line-height:19px}
+.pp-refer .ppx-eyebrow{color:#F3D27A!important}
+.pp-refer p{font-size:14.5px!important;color:#D5E4DE!important}
+.ppx-acc-stats span{font-size:14px!important;color:#3F4A45!important}
+.ppx-acc-tile small{font-size:13.5px!important;color:#4A554F!important}
+.pp-ob-tag{font-size:12.5px!important}
+
+/* ===== V284c: bigger typed text in popup inputs + Invite & earn list ===== */
+.auth-shell input:not([type=checkbox]),.auth-shell select{font-size:16px!important;color:#0F1F1A}
+.pp-refer-pts{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;max-width:680px}
+.pp-refer-pts li{position:relative;padding-left:24px;font-size:14.5px;line-height:1.45;color:#D5E4DE}
+.pp-refer-pts li::before{content:"\2713";position:absolute;left:0;top:1px;width:17px;height:17px;border-radius:50%;background:rgba(232,185,84,.2);color:#F3D27A;font-size:10px;font-weight:900;display:grid;place-items:center;line-height:17px}
+
+/* ===== V284d: Invite & earn small terms link ===== */
+.pp-refer-how{display:inline-block;margin-top:8px;font-size:12.5px;color:#B7CBC4;text-decoration:underline;text-underline-offset:3px}
+.pp-refer-how:hover{color:#F3D27A}
+
+/* V284e: account email bigger + premium gift icon */
+body.pp-v276 .pp-onebar .pp-ob-stats{font-size:15px!important;color:#E3EEE9!important}
+body.pp-v276 .pp-ob-tag{font-size:13px!important;padding:4px 12px!important}
+.pp-refer{align-items:center!important}
+.pp-refer-ic{width:68px!important;height:68px!important;border-radius:20px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex:none!important;margin:0!important;line-height:0!important;background:radial-gradient(circle at 30% 20%,rgba(243,210,122,.30),rgba(232,185,84,.08) 70%)!important;border:1px solid rgba(243,210,122,.45)!important;box-shadow:0 0 0 5px rgba(232,185,84,.07),0 10px 26px rgba(232,185,84,.22),inset 0 1px 0 rgba(255,255,255,.18)!important}
+.pp-refer-ic svg{width:34px;height:34px;display:block;filter:drop-shadow(0 2px 6px rgba(232,185,84,.45))}
+@media(max-width:760px){body.pp-v276 .pp-onebar .pp-ob-stats{font-size:14px!important}.pp-refer-ic{width:58px!important;height:58px!important;border-radius:17px!important}.pp-refer-ic svg{width:30px;height:30px}}
+
+/* V284f: email calmer, tag stronger */
+body.pp-v276 .pp-onebar .pp-ob-stats{font-weight:500!important;color:#B9CCC5!important}
+body.pp-v276 .pp-onebar .pp-ob-stats .pp-ob-tag{font-size:14.5px!important;font-weight:800!important;padding:6px 16px!important;color:#F6D77F!important;background:rgba(232,185,84,.22)!important;border:1px solid rgba(243,210,122,.4)}
+body.pp-v276 .pp-onebar .pp-ob-stats .pp-ob-tag:not(.is-gold){color:#7EF0C0!important;background:rgba(61,220,151,.18)!important;border-color:rgba(126,240,192,.35)}
+
+/* V284g: tablet+phone only (<=1024px): account hero = line 1 name + tag (right), line 2 buttons; email lives in Profile details. Desktop unchanged. */
+@media(max-width:1024px){
+body.pp-v276 .pp-ob-mail{display:none!important}
+body.pp-v276 .ppx-acc-hero.pp-onebar .pp-ob-stats{order:1!important;flex:none!important;margin:0 0 0 auto!important}
+body.pp-v276 .ppx-acc-hero.pp-onebar h1{flex:1 1 0!important;min-width:0}
+body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-acc-hero-actions{order:3!important;flex:1 1 100%!important;margin:2px 0 0!important;justify-content:flex-start}
+body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-acc-hero-actions .ppx-btn{flex:1 1 0;height:40px;min-height:40px;justify-content:center}
+}
+.ppx-acc-details dd.pp-acc-mail{word-break:break-all;font-size:14px}
+@media(max-width:620px){body.pp-v276 .ppx-acc-hero.pp-onebar .ppx-acc-hero-actions .ppx-btn{flex:1 1 0}}
+
+/* Deal alerts: store logos sit left under the category inside the meta column (legacy v17 grid-column/height/overflow neutralised) */
+body.pp-v276 #ppxAlertHost .pp-da-meta .pp-da-retailers,
+body #ppxAlertHost .pp-da-meta .pp-da-retailers{grid-column:1!important;grid-row:auto!important;margin:0!important;height:auto!important;min-height:0!important;padding:0 0 8px!important;overflow:visible!important;justify-self:start!important;justify-content:flex-start!important}
+
+/* ======================================================================================================
+   V285 Deal alerts page fixes (F1-F13, 6 Nov). Only #ppxAlertHost / #ppxWishHost; Home and other pages untouched.
+   ====================================================================================================== */
+/* F3 product name: never cut with "..." on any size */
+body.pp-v276 #ppxAlertHost .pp-da-product-copy>strong{display:block!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;-webkit-line-clamp:unset!important;max-width:100%;overflow-wrap:anywhere}
+/* F1 status + "NEW / Triggered" row: left aligned under Target, readable size, never clipped */
+body.pp-v276 #ppxAlertHost .pp-da-state{width:auto!important;min-width:0!important;flex-direction:column!important;align-items:flex-start!important;gap:7px!important;text-align:left!important;padding:0!important}
+body.pp-v276 #ppxAlertHost .pp-da-state small.pp-da-trigger-meta{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex-wrap:wrap;gap:8px!important;width:auto!important;max-width:100%!important;margin:0!important;padding:0!important;white-space:normal!important;overflow:visible!important;font:700 13px/1.2 Manrope,system-ui,sans-serif!important;color:#3F5049!important}
+body.pp-v276 #ppxAlertHost .pp-da-state small.pp-da-trigger-meta b{flex:0 0 auto!important;min-height:0!important;padding:4px 8px!important;border-radius:999px!important;font:900 11px/1 Manrope,system-ui,sans-serif!important;letter-spacing:.04em!important}
+body.pp-v276 #ppxAlertHost .pp-da-state small.pp-da-trigger-meta span{font:700 13px/1.2 Manrope,system-ui,sans-serif!important;color:#3F5049!important;white-space:normal!important}
+body.pp-v276 #ppxAlertHost .pp-da-target-block{padding:12px 0 0!important}
+/* F2 desktop: product column wider, meta column narrower, so no big empty gap */
+@media (min-width:981px){
+  body.pp-v276 #ppxAlertHost .pp-da-card{grid-template-columns:108px minmax(0,1.7fr) minmax(120px,.75fr) 230px 180px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-meta{align-self:center!important}
+}
+/* F6 tablet (641-980): use the width - actions become a right column */
+@media (min-width:641px) and (max-width:980px){
+  body.pp-v276 #ppxAlertHost .pp-da-card{grid-template-columns:96px minmax(0,1fr) 230px!important;
+    grid-template-areas:"img copy actions" "img meta actions" "img target actions" "img state actions"!important;grid-template-rows:auto!important;column-gap:18px!important;row-gap:8px!important;align-items:start!important}
+  body.pp-v276 #ppxAlertHost .pp-da-product-image{width:96px!important;height:96px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions{grid-template-columns:1fr!important;align-self:center!important}
+}
+/* F8 phone + tablet buttons: Wishlist and View Deal full width, Edit | Remove side by side */
+@media (max-width:980px){
+  body.pp-v276 #ppxAlertHost .pp-da-actions .pp-da-heart,body.pp-v276 #ppxAlertHost .pp-da-actions .is-view{grid-column:1/-1!important}
+}
+@media (max-width:640px){
+  body.pp-v276 #ppxAlertHost .pp-da-actions{grid-template-columns:1fr 1fr!important}
+}
+/* F10 limit button: premium dark + gold like Get Plus, no emoji */
+body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions button.is-limit{background:#10231C!important;border:1px solid #B8923A!important;color:#F2D58C!important;box-shadow:none!important}
+body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions button.is-limit:hover{background:#17332A!important}
+/* F12 remove confirm: bigger readable text */
+.pp-da-confirm-card{width:min(420px,calc(100% - 24px))!important;padding:22px!important}
+.pp-da-confirm-card>div:nth-child(2)>span{font-size:11px!important}
+.pp-da-confirm-card h3{font-size:21px!important}
+.pp-da-confirm-card p{font-size:14px!important;margin:8px 0 4px!important}
+.pp-da-confirm-card small{font-size:13px!important;color:#4C615A!important}
+.pp-da-confirm-actions button{min-height:44px!important;font-size:13.5px!important}
+/* F13 Wishlist "Last checked" icon: theme green instead of blue */
+body.pp-v276 #ppxWishHost .pp-wish-last b{color:#137A52!important}
+/* F11 Plus page: breadcrumb was cut at the top by the page box (negative top margin). Show it fully above the dark hero. */
+body.pp-plus-page-open .pp-rd>.ppx-crumbs{margin-top:0!important;margin-bottom:10px!important}
+
+/* ======================================================================================================
+   V286 PREMIUM CARDS - Deal alerts + Wishlist (U1-U7). One design language for both pages.
+   Scope: #ppxAlertHost / #ppxWishHost only. Mock reference: DEALALERTS-MOCK-V1.html
+   ====================================================================================================== */
+/* ---- store chips: logo + name + tag in ONE pill (U2/U3) ---- */
+body.pp-v276 #ppxAlertHost .pp-da-retailers,body.pp-v276 #ppxWishHost .pp-retailers{display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:center!important;margin:0!important;padding:0!important;height:auto!important;min-height:0!important;overflow:visible!important;max-width:100%}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip,body.pp-v276 #ppxWishHost .pp-retailer-chip{position:relative!important;display:inline-flex!important;align-items:center!important;gap:7px!important;flex:0 0 auto!important;width:auto!important;height:auto!important;min-height:0!important;min-width:0!important;margin:0!important;
+  padding:5px 11px 5px 6px!important;border:1px solid #E1E9E5!important;border-radius:999px!important;background:#fff!important;box-shadow:none!important;outline:0!important;overflow:visible!important;font:700 13px/1 Manrope,system-ui,sans-serif!important;color:#10231C!important}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip img,body.pp-v276 #ppxWishHost .pp-retailer-chip img{width:22px!important;height:22px!important;min-width:22px;border-radius:50%!important;object-fit:contain!important;border:1px solid #EEF2F0!important;background:#fff!important;padding:0!important;margin:0!important}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip .pp79-sname,body.pp-v276 #ppxWishHost .pp-retailer-chip .pp79-sname,
+body.pp-v276 #ppxAlertHost .pp-retailer-chip .pp-retailer-name,body.pp-v276 #ppxWishHost .pp-retailer-chip .pp-retailer-name{font:700 13px/1 Manrope,system-ui,sans-serif!important;color:#10231C!important;white-space:nowrap}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip.is-lowest,body.pp-v276 #ppxWishHost .pp-retailer-chip.is-lowest{border-color:#E7CF8E!important;background:linear-gradient(#FFFBEF,#FFF4D4)!important}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip.is-tied,body.pp-v276 #ppxWishHost .pp-retailer-chip.is-tied{border-color:#BFE3D0!important;background:linear-gradient(#F7FCF9,#EAF7F0)!important}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip .pp-retailer-status,body.pp-v276 #ppxWishHost .pp-retailer-chip .pp-retailer-status{position:static!important;inset:auto!important;transform:none!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:inline-flex!important;align-items:center;
+  margin:0 0 0 1px!important;padding:3px 7px!important;min-height:0!important;border-radius:999px!important;border:0!important;font:900 10px/1 Manrope,system-ui,sans-serif!important;font-style:normal!important;letter-spacing:.06em!important;text-transform:uppercase;box-shadow:none!important}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip.is-lowest .pp-retailer-status,body.pp-v276 #ppxWishHost .pp-retailer-chip.is-lowest .pp-retailer-status{background:linear-gradient(90deg,#E8B954,#D9A53E)!important;color:#4A3508!important}
+body.pp-v276 #ppxAlertHost .pp-retailer-chip.is-tied .pp-retailer-status,body.pp-v276 #ppxWishHost .pp-retailer-chip.is-tied .pp-retailer-status{background:#D8EEE3!important;color:#1E5C45!important}
+body.pp-v276 #ppxAlertHost .pp-da-retailers>small{font:800 12px/1 Manrope,system-ui,sans-serif!important;color:#5B6E66!important;padding:0 4px}
+body.pp-v276 #ppxAlertHost .pp-da-meta-label,body.pp-v276 #ppxWishHost .pp-da-meta-label{display:block;margin:0 0 8px;font:800 11px/1 Manrope,system-ui,sans-serif!important;letter-spacing:.1em;text-transform:uppercase;color:#5B6E66!important}
+/* ---- trend graph (real history only) ---- */
+/* ---- target progress (shared) ---- */
+body.pp-v276 #ppxAlertHost .pp-da-prog,body.pp-v276 #ppxWishHost .pp-da-prog{height:8px;border-radius:99px;background:#E7EEEA;margin:10px 0 7px;overflow:hidden}
+body.pp-v276 #ppxAlertHost .pp-da-prog i,body.pp-v276 #ppxWishHost .pp-da-prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#16B07A,#0E8A5E)}
+body.pp-v276 #ppxAlertHost .pp-da-prog.is-gold i,body.pp-v276 #ppxWishHost .pp-da-prog.is-gold i{background:linear-gradient(90deg,#E8B954,#B8923A)}
+body.pp-v276 #ppxAlertHost .pp-da-gap,body.pp-v276 #ppxWishHost .pp-da-gap{font:700 12.5px/1.3 Manrope,system-ui,sans-serif!important;color:#5B6E66!important}
+body.pp-v276 #ppxAlertHost .pp-da-gap b,body.pp-v276 #ppxWishHost .pp-da-gap b{color:#10231C!important;font-weight:800!important}
+/* ---- Deal alerts card ---- */
+body.pp-v276 #ppxAlertHost .pp-da-card{position:relative;overflow:hidden;grid-template-columns:112px minmax(0,1.2fr) minmax(0,1.1fr) 250px 168px!important;column-gap:26px!important;padding:20px 24px 20px 28px!important;min-height:176px;border-radius:20px!important;border:1px solid #E1E9E5!important;background:#fff!important;box-shadow:0 18px 36px -26px rgba(15,31,26,.55)!important}
+body.pp-v276 #ppxAlertHost .pp-da-card::before,body.pp-v276 #ppxWishHost .pp-wish-track-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#137A52;display:block!important}
+body.pp-v276 #ppxAlertHost .pp-da-card.is-near::before,body.pp-v276 #ppxAlertHost .pp-da-card.is-hit::before{background:linear-gradient(#E8B954,#B8923A)}
+body.pp-v276 #ppxAlertHost .pp-da-product-image{width:112px!important;height:112px!important;border-radius:16px!important;text-decoration:none;cursor:pointer}
+body.pp-v276 #ppxAlertHost .pp-da-product-copy>strong{font:800 18px/1.25 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxAlertHost .pp-da-product-copy>strong a,body.pp-v276 #ppxWishHost .pp-wish-track-card h3 a{color:inherit!important;text-decoration:none!important}
+body.pp-v276 #ppxAlertHost .pp-da-product-copy>strong a:hover,body.pp-v276 #ppxWishHost .pp-wish-track-card h3 a:hover{color:#0E6B47!important;text-decoration:underline!important}
+body.pp-v276 #ppxAlertHost .pp-da-category{font:800 11.5px/1 Manrope,system-ui,sans-serif!important;letter-spacing:.06em;text-transform:uppercase;color:#5B6E66!important}
+body.pp-v276 #ppxAlertHost .pp-da-current-inline{margin-top:8px}
+body.pp-v276 #ppxAlertHost .pp-da-current-value{display:flex;align-items:center;gap:8px}
+body.pp-v276 #ppxAlertHost .pp-da-current-value strong{font:800 24px/1.2 Manrope,system-ui,sans-serif!important;letter-spacing:-.01em}
+body.pp-v276 #ppxAlertHost .pp-da-current-value b{padding:3px 8px;border-radius:999px;background:#E9F7F0;font:800 10.5px/1 Manrope,system-ui,sans-serif!important;color:#0E6B47}
+body.pp-v276 #ppxAlertHost .pp-da-meta{align-self:center!important;align-content:center}
+body.pp-v276 #ppxAlertHost .pp-da-target-block{padding:0!important;align-self:end!important}
+body.pp-v276 #ppxAlertHost .pp-da-target-block strong{font:800 22px/1.25 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxAlertHost .pp-da-state{align-self:start!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span{padding:6px 11px!important;font:800 12.5px/1 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span i{width:7px;height:7px;border-radius:50%;background:#137A52;display:inline-block}
+body.pp-v276 #ppxAlertHost .pp-da-state span.is-watching{background:#E9F7F0!important;color:#0E6B47!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span.is-near,body.pp-v276 #ppxAlertHost .pp-da-state span.is-triggered{background:linear-gradient(90deg,#FFF4D4,#FBE6A8)!important;color:#5C4108!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span.is-near i,body.pp-v276 #ppxAlertHost .pp-da-state span.is-triggered i{background:#B8923A}
+body.pp-v276 #ppxAlertHost .pp-da-actions{margin-top:34px!important}
+body.pp-v276 #ppxAlertHost .pp-da-actions button{height:38px!important;min-height:38px!important}
+/* heart = small round icon button (U1) */
+body.pp-v276 #ppxAlertHost .pp-da-actions .pp-da-heart{position:absolute!important;top:16px;right:20px;width:34px!important;height:34px!important;min-height:0!important;padding:0!important;display:grid!important;place-items:center;border-radius:50%!important;border:1px solid #E1E9E5!important;background:#fff!important;color:#4C615A!important;box-shadow:0 6px 14px -8px rgba(0,0,0,.35)!important;cursor:pointer}
+body.pp-v276 #ppxAlertHost .pp-da-actions .pp-da-heart svg{width:17px!important;height:17px!important}
+body.pp-v276 #ppxAlertHost .pp-da-actions .pp-da-heart.is-on{color:#137A52!important;border-color:#BFE3D0!important}
+body.pp-v276 #ppxAlertHost .pp-da-actions .pp-da-heart:hover{background:#F3FAF6!important}
+/* ---- Wishlist card (same language) ---- */
+body.pp-v276 #ppxWishHost .pp-wish-track-card{overflow:hidden;grid-template-columns:112px minmax(0,1.1fr) minmax(0,1.1fr) 200px 230px!important;
+  grid-template-areas:"status status status status heart" "media main stores price actions"!important;grid-template-rows:auto 1fr!important;column-gap:24px!important;row-gap:10px!important;align-items:start!important;padding:16px 24px 20px 28px!important;border-radius:20px!important;box-shadow:0 18px 36px -26px rgba(15,31,26,.55)!important}
+body.pp-v276 #ppxWishHost .pp-wish-product-media{width:112px!important;height:112px!important;border-radius:16px!important;text-decoration:none;cursor:pointer}
+body.pp-v276 #ppxWishHost .pp-wish-product-main{align-self:center!important}
+body.pp-v276 #ppxWishHost .pp-wish-track-card h3{font:800 18px/1.25 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxWishHost .pp-wish-stores{grid-area:stores;align-self:center;min-width:0}
+body.pp-v276 #ppxWishHost .pp-wish-best-price{align-self:center!important}
+body.pp-v276 #ppxWishHost .pp-wish-card-actions{align-self:center!important}
+body.pp-v276 #ppxWishHost .pp-wish-remove{position:static!important;width:34px!important;height:34px!important;min-height:0!important;padding:0!important;display:grid!important;place-items:center;border-radius:50%!important;border:1px solid #E1E9E5!important;background:#fff!important;color:#137A52!important;font-size:16px!important;line-height:1!important;box-shadow:0 6px 14px -8px rgba(0,0,0,.35)!important}
+body.pp-v276 #ppxWishHost .pp-wish-remove:hover{background:#F3FAF6!important}
+body.pp-v276 #ppxWishHost .pp-wish-status strong{padding:5px 11px!important;font:800 12px/1 Manrope,system-ui,sans-serif!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-box.is-active .pp-wish-alert-head small{color:#0E6B47!important;font-weight:800!important}
+/* ---- tablet 641-980: content left, actions right ---- */
+@media (min-width:641px) and (max-width:1100px){
+  body.pp-v276 #ppxAlertHost .pp-da-card{grid-template-columns:104px minmax(0,1fr) 230px!important;
+    grid-template-areas:"img copy actions" "img meta actions" "img target actions" "img state actions"!important;grid-template-rows:auto!important;column-gap:20px!important;row-gap:10px!important;align-items:start!important;min-height:0}
+  body.pp-v276 #ppxAlertHost .pp-da-product-image{width:104px!important;height:104px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions{grid-template-columns:1fr!important;margin-top:40px!important;align-self:start!important}
+  body.pp-v276 #ppxWishHost .pp-wish-track-card{grid-template-columns:104px minmax(0,1fr) 230px!important;
+    grid-template-areas:"status status heart" "media main actions" "media stores actions" "media price actions"!important;row-gap:10px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-product-media{width:104px!important;height:104px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-best-price{max-width:none!important}
+}
+/* ---- phone <=640 ---- */
+@media (max-width:640px){
+  body.pp-v276 #ppxAlertHost .pp-da-card{grid-template-columns:88px minmax(0,1fr)!important;grid-template-areas:"img copy" "meta meta" "target target" "state state" "actions actions"!important;grid-template-rows:auto!important;padding:16px 16px 16px 20px!important;row-gap:12px!important;column-gap:14px!important;min-height:0}
+  body.pp-v276 #ppxAlertHost .pp-da-product-image{width:88px!important;height:88px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions{margin-top:0!important;grid-template-columns:1fr 1fr!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions .pp-da-heart{top:12px;right:12px}
+  body.pp-v276 #ppxAlertHost .pp-da-product-copy{padding-right:34px}
+  body.pp-v276 #ppxAlertHost .pp-da-product-copy>strong{font-size:16px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-current-value strong{font-size:22px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-track-card{grid-template-columns:88px minmax(0,1fr)!important;grid-template-areas:"status heart" "media main" "stores stores" "price price" "actions actions"!important;padding:14px 16px 16px 20px!important;row-gap:12px!important;column-gap:14px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-product-media{width:88px!important;height:88px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-best-price{max-width:none!important}
+}
+/* V286 fix: wishlist actions always one column (tablet/phone) */
+body.pp-v276 #ppxWishHost .pp-wish-card-actions{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+body.pp-v276 #ppxWishHost .pp-wish-card-actions>*{grid-column:1/-1!important;min-width:0!important;width:100%!important}
+body.pp-v276 #ppxWishHost .pp-wish-alert-box{display:grid!important;gap:8px!important;width:100%!important}
+/* V286 tablet refinement: Deal alerts uses 2 columns (stores left, target right), actions in one row */
+@media (min-width:641px) and (max-width:1100px){
+  body.pp-v276 #ppxAlertHost .pp-da-card{grid-template-columns:104px minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:"img copy copy" "meta meta target" "meta meta state" "actions actions actions"!important;column-gap:22px!important;row-gap:12px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions{grid-template-columns:repeat(auto-fit,minmax(0,1fr))!important;margin-top:4px!important;align-self:stretch!important;display:grid!important;gap:10px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-product-copy{padding-right:44px}
+  body.pp-v276 #ppxAlertHost .pp-da-meta{align-self:start!important}
+  body.pp-v276 #ppxAlertHost .pp-da-target-block{align-self:start!important}
+}
+/* V286 desktop wishlist: text columns align to image top */
+@media (min-width:1101px){
+  body.pp-v276 #ppxWishHost .pp-wish-product-main,body.pp-v276 #ppxWishHost .pp-wish-stores,body.pp-v276 #ppxWishHost .pp-wish-best-price,body.pp-v276 #ppxWishHost .pp-wish-card-actions{align-self:start!important}
+  body.pp-v276 #ppxWishHost .pp-wish-product-main{padding-top:6px}
+}
+@media (min-width:641px) and (max-width:1100px){
+  body.pp-v276 #ppxAlertHost .pp-da-actions{grid-template-columns:1fr 1fr!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions .is-view{grid-column:1/-1!important}
+  body.pp-v276 #ppxAlertHost .pp-da-actions button:not(.pp-da-heart){position:static!important;width:100%!important;margin:0!important}
+}
+
+/* ===== V286 U7 audit: match leftover old styles to the premium site ===== */
+/* empty states: Deal alerts matches Wishlist (same title size, same deep-green button, same card) */
+body.pp-v276 #ppxAlertHost .pp-da-empty{display:grid!important;justify-items:center;gap:6px;padding:40px 20px!important;border-radius:20px!important;border:1px solid #E1E9E5!important;background:linear-gradient(#fff,#F9FCFA)!important;box-shadow:0 18px 36px -30px rgba(15,31,26,.5)!important}
+body.pp-v276 #ppxAlertHost .pp-da-empty>span{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#E9F7F0;font-size:22px!important;margin-bottom:6px}
+body.pp-v276 #ppxAlertHost .pp-da-empty>strong{font:800 20px/1.25 Manrope,system-ui,sans-serif!important;color:#10231C!important}
+body.pp-v276 #ppxAlertHost .pp-da-empty>p{margin:0 0 10px!important;font:500 14px/1.5 Manrope,system-ui,sans-serif!important;color:#5B6E66!important;max-width:420px}
+body.pp-v276 #ppxAlertHost .pp-da-empty button{height:42px!important;padding:0 22px!important;border-radius:999px!important;border:0!important;background:linear-gradient(180deg,#0E8A5E,#06704F)!important;color:#fff!important;box-shadow:0 10px 20px -12px rgba(6,112,79,.7)!important;font:800 14px Manrope,system-ui,sans-serif!important}
+/* wishlist footer: old tiny red text -> neat ghost pill + readable note */
+body.pp-v276 #ppxWishHost .pp-wishlist-foot{display:flex!important;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
+body.pp-v276 #ppxWishHost .pp-wishlist-foot button{display:inline-flex;align-items:center;gap:6px;height:34px!important;padding:0 14px!important;border-radius:999px!important;border:1px solid #F1CFCF!important;background:#fff!important;color:#B42318!important;font:800 12.5px Manrope,system-ui,sans-serif!important;cursor:pointer}
+body.pp-v276 #ppxWishHost .pp-wishlist-foot button:hover{background:#FFF3F2!important}
+body.pp-v276 #ppxWishHost .pp-wishlist-foot span{font:600 12.5px/1.4 Manrope,system-ui,sans-serif!important;color:#5B6E66!important}
+
+/* ===== V286 alert editor modal (home card / product page / compare) = same premium look as the Wishlist popover ===== */
+body.pp-v276 #dealAlertEditor{padding:0!important;border-radius:22px;overflow:hidden;background:#fff}
+body.pp-v276 #dealAlertEditor .pp-dae-brand{display:flex;align-items:center;gap:12px;padding:16px 64px 16px 22px!important;margin:0!important;background:linear-gradient(120deg,#0F241D 0%,#13372B 100%)!important;border:0!important}
+body.pp-v276 #dealAlertEditor .pp-dae-brand img{width:34px;height:34px;border-radius:10px}
+body.pp-v276 #dealAlertEditor .pp-dae-brand span{font:800 17px/1.2 Manrope,system-ui,sans-serif!important;color:#fff!important}
+body.pp-v276 #dealAlertEditor .pp-dae-brand b{margin-left:auto;padding:5px 10px;border-radius:999px;background:rgba(232,185,84,.16)!important;border:1px solid rgba(232,185,84,.45)!important;color:#F2D38A!important;font:800 11px/1 Manrope,system-ui,sans-serif!important;letter-spacing:.08em}
+body.pp-v276 #dealAlertEditor .pp-dae-product{padding:20px 24px 4px!important;gap:16px!important;align-items:center}
+body.pp-v276 #dealAlertEditor .pp-dae-product small{font:800 11.5px/1 Manrope,system-ui,sans-serif!important;letter-spacing:.1em;color:#0E6B47!important}
+body.pp-v276 #dealAlertEditor .pp-dae-product h2{font:800 20px/1.25 Manrope,system-ui,sans-serif!important;color:#10231C!important;margin:6px 0 4px!important}
+body.pp-v276 #dealAlertEditor .pp-dae-product p{font:500 13.5px/1.45 Manrope,system-ui,sans-serif!important;color:#5B6E66!important;margin:0!important}
+body.pp-v276 #dealAlertEditor form{padding:14px 24px 24px!important}
+body.pp-v276 #dealAlertEditor .pp-dae-field>span{font:800 13px/1.2 Manrope,system-ui,sans-serif!important;color:#10231C!important}
+body.pp-v276 #dealAlertEditor .pp-dae-money,body.pp-v276 #dealAlertEditor select{min-height:46px;border-radius:12px!important;font:700 15px Manrope,system-ui,sans-serif!important;border:1px solid #D6E2DC!important}
+body.pp-v276 #dealAlertEditor .pp-dae-money input{font:800 16px Manrope,system-ui,sans-serif!important}
+body.pp-v276 #dealAlertEditor .pp-dae-now{border-radius:12px!important;background:#F3FAF6!important;border:1px solid #D6EBDF!important}
+body.pp-v276 #dealAlertEditor .pp-dae-now span{font:700 13px/1.3 Manrope,system-ui,sans-serif!important;color:#4C615A!important}
+body.pp-v276 #dealAlertEditor .pp-dae-now strong{font:800 18px/1.3 Manrope,system-ui,sans-serif!important;color:#0E6B47!important}
+body.pp-v276 #dealAlertEditor .pp-dae-now small{font:800 12.5px/1.2 Manrope,system-ui,sans-serif!important;color:#0E6B47!important}
+body.pp-v276 #dealAlertEditor .pp-dae-note{border-radius:12px!important;font:600 13px/1.45 Manrope,system-ui,sans-serif!important;color:#4C615A!important}
+body.pp-v276 #dealAlertEditor .pp-dae-actions button{height:46px!important;min-width:120px;border-radius:999px!important;font:800 14.5px Manrope,system-ui,sans-serif!important}
+body.pp-v276 #dealAlertEditor .pp-dae-actions .is-primary{background:linear-gradient(180deg,#0E8A5E,#06704F)!important;color:#fff!important;border:0!important;box-shadow:0 12px 22px -14px rgba(6,112,79,.8)!important}
+@media (max-width:640px){
+  body.pp-v276 #dealAlertEditor .pp-dae-product{padding:16px 18px 2px!important}
+  body.pp-v276 #dealAlertEditor form{padding:12px 18px 20px!important}
+  body.pp-v276 #dealAlertEditor .pp-dae-brand{padding:14px 58px 14px 18px!important}
+  body.pp-v276 #dealAlertEditor .pp-dae-product h2{font-size:18px!important}
+  body.pp-v276 #dealAlertEditor .pp-dae-actions button{flex:1}
+}
+/* V286 review fixes: paused alert neutral, pending best price not shown like a price */
+body.pp-v276 #ppxAlertHost .pp-da-prog.is-muted i{background:#B9C6C0!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span.is-paused{background:#EEF2F0!important;color:#4C615A!important}
+body.pp-v276 #ppxAlertHost .pp-da-state span.is-paused i{background:#8A9A93!important}
+body.pp-v276 #ppxWishHost .pp-wish-best-price strong.is-pending{font:800 17px/1.3 Manrope,system-ui,sans-serif!important;color:#4C615A!important}
+
+/* ===== V287: trend graph (full width), New Deal Alert picker, premium green buttons, phone/tablet toolbars ===== */
+body.pp-v276 #ppxAlertHost .pp-trend,body.pp-v276 #ppxWishHost .pp-trend{display:grid;gap:4px;margin-top:10px;width:100%;max-width:440px;min-width:0}
+body.pp-v276 #ppxAlertHost .pp-trend-plot,body.pp-v276 #ppxWishHost .pp-trend-plot{position:relative;height:44px;padding:0 5px;width:100%;box-sizing:border-box}
+body.pp-v276 #ppxAlertHost .pp-trend svg,body.pp-v276 #ppxWishHost .pp-trend svg{display:block;width:100%;height:100%;overflow:visible}
+body.pp-v276 #ppxAlertHost .pp-trend .a,body.pp-v276 #ppxWishHost .pp-trend .a{stroke:none}
+body.pp-v276 #ppxAlertHost .pp-trend .l,body.pp-v276 #ppxWishHost .pp-trend .l{fill:none;stroke:#0E8A5E;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+body.pp-v276 #ppxAlertHost .pp-trend-dot,body.pp-v276 #ppxWishHost .pp-trend-dot{position:absolute;right:5px;width:10px;height:10px;box-sizing:border-box;border-radius:50%;background:#E8B954;border:2px solid #fff;box-shadow:0 0 0 1px rgba(14,138,94,.25);transform:translate(50%,-50%)}
+body.pp-v276 #ppxAlertHost .pp-trend-lab,body.pp-v276 #ppxWishHost .pp-trend-lab{display:flex;justify-content:space-between;gap:8px;font:700 11.5px/1.2 Manrope,system-ui,sans-serif;color:#5B6E66}
+body.pp-v276 #ppxAlertHost .pp-trend.is-steady,body.pp-v276 #ppxWishHost .pp-trend.is-steady{display:block;margin-top:10px}
+body.pp-v276 #ppxAlertHost .pp-trend.is-steady span,body.pp-v276 #ppxWishHost .pp-trend.is-steady span{display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:6px 11px;border-radius:999px;background:#F3F8F5;border:1px solid #DCE8E2;font:700 12px/1.2 Manrope,system-ui,sans-serif;color:#4A5F56}
+body.pp-v276 #ppxAlertHost .pp-trend.is-steady span::before,body.pp-v276 #ppxWishHost .pp-trend.is-steady span::before{content:"";width:14px;height:2px;border-radius:2px;background:#0E8A5E}
+/* premium deep-green buttons (same as Check for Updates) */
+body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions .is-primary:not(.is-limit),
+body.pp-v276 #ppxAlertHost .pp-da-foot button,
+body.pp-v276 #ppxAlertHost .pp-da-empty button,
+body.pp-v276 #ppxAlertHost .pp-da-actions .is-view,
+body.pp-v276 #ppxWishHost .pp-wish-browse,
+body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{background:linear-gradient(115deg,#0a835e,#006a4a)!important;border:0!important;color:#fff!important;font-weight:800!important;box-shadow:0 8px 16px -10px rgba(0,80,56,.6)!important}
+body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions .is-primary:not(.is-limit):hover,
+body.pp-v276 #ppxAlertHost .pp-da-empty button:hover,
+body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh:hover{filter:brightness(1.06)}
+body.pp-v276 #ppxAlertHost .pp-da-ref-ic,body.pp-v276 #ppxWishHost .pp-wish-ref-ic{font-style:normal;line-height:1}
+body.pp-v276 #ppxWishHost .pp-wish-ref-short{display:none}
+body.pp-v276 #ppxWishHost .pp-wish-ref-long,body.pp-v276 #ppxWishHost .pp-wish-ref-short{font:800 13px/1 Manrope,system-ui,sans-serif!important;color:inherit!important;margin:0!important}
+/* New Deal Alert picker */
+.pp-nap-layer{position:fixed;inset:0;z-index:99990;background:rgba(16,33,27,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.pp-nap-card{position:relative;background:#fff;width:100%;max-width:420px;max-height:min(78vh,620px);display:flex;flex-direction:column;border-radius:20px;padding:20px 18px 16px;color:#10211B;box-shadow:0 24px 70px rgba(0,0,0,.32);font-family:Manrope,system-ui,sans-serif}
+.pp-nap-x{position:absolute;top:10px;right:12px;width:34px;height:34px;border:0;border-radius:50%;background:#F1F5F3;color:#31463E;font-size:20px;line-height:1;cursor:pointer}
+.pp-nap-head{padding-right:34px}
+.pp-nap-kicker{display:block;font:800 11px/1 Manrope,system-ui,sans-serif;letter-spacing:.14em;color:#0E8A5E}
+.pp-nap-head h3{margin:7px 0 4px;font:800 21px/1.2 Manrope,system-ui,sans-serif;color:#10211B}
+.pp-nap-head p{margin:0 0 8px;font:600 13.5px/1.45 Manrope,system-ui,sans-serif;color:#566A61}
+.pp-nap-list{display:grid;gap:8px;overflow-y:auto;overscroll-behavior:contain;padding:2px 2px 4px;margin:0 -2px}
+.pp-nap-row{display:grid;grid-template-columns:48px minmax(0,1fr) 28px;align-items:center;gap:12px;width:100%;padding:8px 10px;border:1px solid #DCE6E0;border-radius:14px;background:#fff;text-align:left;cursor:pointer;font-family:inherit;color:#10211B}
+.pp-nap-row:hover,.pp-nap-row:focus-visible{border-color:#9ED8BE;background:#F4FBF7;outline:0}
+.pp-nap-img{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:#F4F7F5;overflow:hidden;font-style:normal}
+.pp-nap-img img{width:100%;height:100%;object-fit:contain}
+.pp-nap-copy{display:grid;gap:2px;min-width:0}
+.pp-nap-copy strong{font:800 13.5px/1.3 Manrope,system-ui,sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pp-nap-copy small{font:700 11.5px/1.2 Manrope,system-ui,sans-serif;color:#6A7D74;text-transform:uppercase;letter-spacing:.04em}
+.pp-nap-row b{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#E9F7F0;color:#0E6B47;font-size:16px}
+.pp-nap-foot{display:grid}
+.pp-nap-main,.pp-nap-ghost{height:44px;border-radius:12px;font:800 14px/1 Manrope,system-ui,sans-serif;cursor:pointer}
+.pp-nap-main{border:0;background:linear-gradient(115deg,#0a835e,#006a4a);color:#fff}
+.pp-nap-ghost{border:1px solid #DCE6E0;background:#fff;color:#31463E}
+@media (min-width:901px) and (max-width:1100px){
+  /* V289: pills + Check for Updates on the first row, Last Checked under it */
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary{gap:8px 8px}
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{order:5;margin-left:auto}
+  body.pp-v276 #ppxWishHost .pp-wish-last{order:6;flex:0 0 100%;margin-left:0!important;justify-content:flex-start!important}
+}
+@media (max-width:900px){
+  /* Deal alerts: 5 tiles in one row (number/icon on top, name below), same as Wishlist */
+  body.pp-v276 #ppxAlertHost .pp-da-toolbar{display:flex!important;flex-wrap:nowrap!important;align-items:stretch;gap:5px;padding:10px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-tabs,body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions{display:contents!important}
+  body.pp-v276 #ppxAlertHost .pp-da-tabs button,body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions button{flex:1 1 auto!important;flex-direction:column!important;display:flex!important;align-items:center;justify-content:center;gap:5px;height:54px!important;min-height:54px!important;min-width:max-content!important;width:auto!important;padding:0 8px!important;margin:0!important;border-radius:14px!important;line-height:1;white-space:nowrap}
+  body.pp-v276 #ppxAlertHost .pp-da-tabs button span{order:-1;font-size:14px!important;font-weight:800;line-height:1}
+  body.pp-v276 #ppxAlertHost .pp-da-tab-t,body.pp-v276 #ppxAlertHost .pp-da-ref-tx,body.pp-v276 #ppxAlertHost .pp-da-new-tx{font:700 11px/1 Manrope,system-ui,sans-serif!important;font-style:normal}
+  body.pp-v276 #ppxAlertHost .pp-da-ref-ic{font-size:16px}
+  body.pp-v276 #ppxAlertHost .pp-da-new-ic{font-size:16px;font-weight:800}
+  body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions .is-primary{font:800 11px/1.1 Manrope,system-ui,sans-serif!important}
+  /* Wishlist: 5 tiles in one row (icon + count on top, name below), Last checked line under */
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;align-items:stretch;gap:8px 4px;padding:10px 10px 9px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat{flex:1 1 auto!important;flex-direction:column!important;justify-content:center;gap:5px;height:54px!important;padding:0 8px!important;border-radius:14px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat b{font-size:13px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat>span{font-size:11px!important;line-height:1;white-space:nowrap}
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{order:5;flex:0 0 auto!important;flex-direction:column;gap:5px;height:54px!important;min-height:54px!important;padding:0 8px!important;border-radius:14px!important;background:#fff!important;border:1px solid #DCE6E0!important;color:#31463E!important;box-shadow:none!important}
+  body.pp-v276 #ppxWishHost .pp-wish-ref-long{display:none}
+  body.pp-v276 #ppxWishHost .pp-wish-ref-short{display:inline!important;font:700 11px/1 Manrope,system-ui,sans-serif!important}
+  body.pp-v276 #ppxWishHost .pp-wish-ref-ic{font-size:15px}
+  body.pp-v276 #ppxWishHost .pp-wish-last{order:9;flex:0 0 100%!important;justify-content:center!important;width:100%!important;white-space:nowrap;margin:0!important;padding:0!important;font-size:12px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-last,body.pp-v276 #ppxWishHost .pp-wish-last span,body.pp-v276 #ppxWishHost .pp-wish-last strong{font-size:12px!important}
+}
+@media (max-width:900px){
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat,body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{min-width:max-content!important}
+}
+@media (max-width:380px){
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary{padding:10px 8px 9px!important;gap:8px 3px}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat,body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{padding:0 5px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat>span,body.pp-v276 #ppxWishHost .pp-wish-ref-short{font-size:10.5px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-toolbar{gap:3px;padding:10px 8px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-tabs button,body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions button{padding:0 5px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-tab-t,body.pp-v276 #ppxAlertHost .pp-da-ref-tx,body.pp-v276 #ppxAlertHost .pp-da-new-tx{font-size:10.5px!important}
+}
+@media (max-width:370px){
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat{padding:0 4px!important}
+}
+@media (max-width:345px){
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary{gap:8px 2px;padding:10px 6px 9px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat{padding:0 3px!important}
+  body.pp-v276 #ppxWishHost .pp-wish-summary-stat>span{font-size:10px!important}
+  body.pp-v276 #ppxWishHost .pp-wishlist-summary .pp-wish-refresh{padding:0 9px!important}
+}
+@media (min-width:641px){
+  body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions .is-primary{display:inline-flex;align-items:center;gap:6px}
+  body.pp-v276 #ppxAlertHost .pp-da-tab-t,body.pp-v276 #ppxAlertHost .pp-da-new-ic,body.pp-v276 #ppxAlertHost .pp-da-new-tx{font-style:normal}
+}
+@media (max-width:345px){
+  body.pp-v276 #ppxAlertHost .pp-da-toolbar{padding:10px 6px!important;gap:2px}
+  body.pp-v276 #ppxAlertHost .pp-da-tabs button,body.pp-v276 #ppxAlertHost .pp-da-toolbar-actions button{padding:0 3px!important}
+  body.pp-v276 #ppxAlertHost .pp-da-tab-t,body.pp-v276 #ppxAlertHost .pp-da-ref-tx,body.pp-v276 #ppxAlertHost .pp-da-new-tx{font-size:10px!important}
+}
+/* V288/V289: 641-900 now uses the same 5-tile toolbars as phones */
+/* Last Checked clock icon + readable zero-count filters */
+body.pp-v276 #ppxWishHost .pp-wish-last b{display:inline-flex;align-items:center;justify-content:center;width:auto;line-height:1;color:#5B6E66!important}
+body.pp-v276 #ppxWishHost .pp-wish-last b svg{display:block}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat:disabled{opacity:.85}
+body.pp-v276 #ppxWishHost .pp-wish-summary-stat:disabled>span{color:#5B6E66!important}
+
+
+/* V289: attractive Last Checked clock */
+body.pp-v276 #ppxWishHost .pp-wish-last{align-items:center;gap:8px}
+body.pp-v276 #ppxWishHost .pp-wish-last b{width:auto!important;height:auto;border-radius:0;background:none!important;border:0!important;box-shadow:none!important;color:#2563EB!important;flex:0 0 auto}
+body.pp-v276 #ppxWishHost .pp-wish-last b svg{width:17px;height:17px;stroke:currentColor}
+body.pp-v276 #ppxWishHost .pp-wish-last strong{color:#0E6B47!important}
+/* V290: Wishlist card - single "Set Deal Alert" (button only), actions column top-aligned on tablet */
+body.pp-v276 #ppxWishHost .pp-wish-alert-box.is-empty .pp-wish-alert-head{display:none!important}
+@media (min-width:641px) and (max-width:1100px){
+  body.pp-v276 #ppxWishHost .pp-wish-card-actions{align-self:start!important;align-content:start!important;grid-auto-rows:min-content!important;margin-top:4px}
+}
+
+/* V291: popup wishlist tag */
+.pp-nap-tag{display:inline-flex;align-items:center;gap:5px;margin:0 0 12px;padding:4px 10px;border-radius:999px;background:#E9F7F0;color:#0E6B47;font:800 11px/1 Manrope,system-ui,sans-serif}
+
+/* V293: 701-790px - keep the normal horizontal menu (all items incl. Gift cards) but tighter so Live deals fits */
+@media (min-width:701px) and (max-width:790px){
+  body .category-nav{padding-left:6px!important;padding-right:6px!important}
+  body .category-nav a.pp-mnav,body .category-nav .pp-home-nav,body .category-nav #allCategoriesBtn{padding:8px 4px!important;font-size:12px!important;gap:4px!important}
+  body .category-nav .pp-mnav-space{display:none!important}
+  body .category-nav .pp-soon{display:inline-flex!important;font-size:8.5px!important;padding:1px 4px!important;margin-left:1px!important}
+  body .category-nav .deals-nav.ppx-deals-pill{padding:8px 11px!important;font-size:12.5px!important;margin-left:4px!important}
+  body .category-nav .deals-nav .ppx-deals-new{display:none!important}
+}
+/* V292: bottom nav - inactive labels/icons brighter + slightly bigger so they read clearly */
+@media (max-width:1100px){
+  body .ppx-bottom-nav button:not(.is-active){color:#D3E6DD!important;font-size:11.5px!important;font-weight:800!important}
+  body .ppx-bottom-nav button:not(.is-active) svg{opacity:1!important}
+}

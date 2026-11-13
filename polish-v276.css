@@ -444,7 +444,7 @@ body.has-cmp-tray .deals-section,body.has-cmp-tray #ppPageView{padding-bottom:96
 .ppx-dl-storechip span{font-size:16px;line-height:1}
 /* V277: pulling the page down past the top (Mac / phone bounce) showed a white strip above the header -> the area behind
    the page is now the header colour, and the bounce is switched off where the browser allows it */
-html{background:var(--pp-dark);overscroll-behavior-y:none}
+html{background:var(--pp-dark)}
 body{min-height:100vh}
 .pp-v276 .site-header{background:var(--pp-dark)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 /* V277: product page brand logo -> brand-logo-normalizer.js 'product' box (112x40, thin grey border) */

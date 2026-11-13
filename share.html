@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex"/>
+<title>Opening Price Check | PricePulse</title>
+<link href="favicon-v18.png" rel="icon" type="image/png"/>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0F1F1A;color:#fff;text-align:center;padding:24px;box-sizing:border-box}img{width:64px;height:64px}p{color:#C7D6D0;font-size:16px}.sp{width:26px;height:26px;border:3px solid rgba(255,255,255,.25);border-top-color:#3DDC97;border-radius:50%;animation:s 1s linear infinite;margin:16px auto 0}@keyframes s{to{transform:rotate(1turn)}}a{color:#3DDC97}</style>
+</head><body><main>
+<img src="logo-icon.png" alt="PricePulse"/>
+<p id="m">Opening Price Check…</p><div class="sp" aria-hidden="true"></div>
+</main>
+<script>
+/* AI-1: PricePulse in the phone's Share menu (PWA share target, see site.webmanifest).
+   A store app shares {title, text, url}; we take the first link, open short links (dl.flipkart.com/s/…, amzn.in/d/…)
+   to their real address with our server, then go to the Price Check page. */
+(function(){
+  var SB='https://akdrydxbvdtadmcphhxj.supabase.co/functions/v1/ai-link-compare';
+  var KEY='sb_publishable_RZAK4TwpJO6fi3Y306EGaA_PpZdiqHG';
+  var q=new URLSearchParams(location.search);
+  var all=[q.get('url'),q.get('text'),q.get('title'),q.get('link')].filter(Boolean).join(' ');
+  var m=all.match(/https?:\/\/[^\s"'<>]+/i);
+  function go(u){location.replace('/#/find'+(u?'/'+encodeURIComponent(u):''));}
+  if(!m){document.getElementById('m').innerHTML='No product link found in what you shared. <a href="/#/find">Open Price Check</a>';return;}
+  var link=m[0].replace(/[).,!?]+$/,'');
+  var short=/^https?:\/\/(www\.)?(amzn\.in|amzn\.to|a\.co|dl\.flipkart\.com\/s\/|fkrt\.it|fkrt\.cc|fktr\.in|myntr\.it|ajio\.me|ajiio\.in|nyk\.aa|bit\.ly|tinyurl\.com|wsli\.nk|ekaro\.in)/i.test(link);
+  if(!short){go(link);return;}
+  var done=false,t=setTimeout(function(){if(!done){done=true;go(link);}},8000);
+  fetch(SB,{method:'POST',headers:{'content-type':'application/json','apikey':KEY,'authorization':'Bearer '+KEY},body:JSON.stringify({url:link,mode:'expand'})})
+    .then(function(r){return r.json();}).then(function(d){if(done)return;done=true;clearTimeout(t);go(d&&d.ok&&d.url?d.url:link);})
+    .catch(function(){if(done)return;done=true;clearTimeout(t);go(link);});
+})();
+</script>
+</body></html>

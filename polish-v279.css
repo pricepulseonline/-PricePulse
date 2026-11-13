@@ -1,0 +1,243 @@
+/* PricePulse V279 (31 Oct 2026) - site polish batch 4. Loaded last. Desktop layout is kept unless a point says otherwise. */
+
+/* ===== Store icons: one round icon per store (logos/store-icons), name next to it where needed ===== */
+img.pp79-sic{border-radius:50%!important;object-fit:cover!important;aspect-ratio:1/1;width:auto!important;max-width:none!important;flex:none;
+  background:#fff;box-shadow:0 0 0 1px rgba(16,35,28,.10);filter:none!important;mix-blend-mode:normal!important;padding:0!important}
+.pp79-sname{font:800 14px/1.15 Manrope,system-ui,sans-serif;color:#10231C;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pp79-named{display:inline-flex!important;align-items:center;gap:8px;min-width:0;max-width:100%}
+/* product page + hero card store rows */
+.pp79-sname[hidden]{display:none!important}
+.pp-v787-logo-wrap.pp79-has-sic{display:inline-flex!important;align-items:center;gap:9px;width:auto!important;max-width:100%;height:auto!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+.pp-v787-logo-wrap img.pp79-sic{height:30px!important}
+.ppx-store .pp-v787-logo-wrap img.pp79-sic,.ppx-product .pp-v787-logo-wrap img.pp79-sic{height:34px!important}
+.ppx-store .pp79-sname,.ppx-product .pp79-sname{font-size:15px}
+.ppx-hero-card .pp-v787-logo-wrap img.pp79-sic{height:26px!important}
+.ppx-hero-card .pp79-sname{font-size:13.5px}
+/* coupon tickets: icon + store name */
+.ppf-tk-logo.pp79-has-sic{display:inline-flex!important;align-items:center;gap:8px;height:auto!important;max-width:100%}
+.ppf-tk-logo img.pp79-sic{height:28px!important}
+.ppf-tk-logo .pp79-sname{font-size:14.5px}
+/* store chips (Coupons) and the "Works with" coins */
+.ppf-lchip-i img.pp79-sic{height:22px!important;width:22px!important;box-shadow:none}
+.ppf-lchip-i:has(img.pp79-sic){width:22px!important;height:22px!important;padding:0!important;border-radius:50%!important;overflow:hidden;background:#fff!important}
+.pp-ob-ic img.pp79-sic{width:100%!important;height:100%!important;box-shadow:none}
+/* search box placeholder: "Search or paste any [icon] Amazon link" */
+.ppf-rot .ppf-rot-it{position:absolute;left:0;top:50%;display:inline-flex;align-items:center;gap:.3em;white-space:nowrap;opacity:0;transform:translateY(60%)}
+.ppf-rot .ppf-rot-it.is-on{position:relative;top:.125em;opacity:1;transform:none;animation:ppRotIn .5s cubic-bezier(.45,0,.2,1)}
+.ppf-rot .ppf-rot-it.is-out{opacity:0;transform:translateY(-170%);animation:ppRotOut .5s cubic-bezier(.45,0,.2,1)}
+.ppf-rot .ppf-rot-it img.pp79-sic{position:static!important;height:1.15em!important;width:1.15em!important;opacity:1!important;transform:none!important;animation:none!important;display:block}
+.ppf-rot .ppf-rot-it b{font-weight:800;color:#10231C}
+.ppf-ph .ppf-rot{height:1.5em}
+.ppf-ph.is-short .ppf-rot .ppf-rot-it b{font-size:.92em;max-width:6.4em;overflow:hidden;text-overflow:ellipsis}
+.ppf-ph.is-short .ppf-rot .ppf-rot-it{gap:.25em}
+/* Shop by Store tiles: icon in the bubble */
+.store-logo-panel.pp79-has-sic img.pp79-sic{height:46px!important;width:46px!important}
+/* text store names (no logo before) get a small icon */
+.pp79-texticon{display:inline-flex!important;align-items:center;gap:6px}
+img.pp79-sic-inline{height:18px!important;width:18px!important}
+.pp-retailer-chip img.pp79-sic{height:18px!important;width:18px!important}
+
+.pp79-short{display:none}
+/* ===== L2 + L14: menu row - one look for every item (old buttons + V276 links) ===== */
+body .category-nav a.pp-mnav,body .category-nav .pp-home-nav,body .category-nav #allCategoriesBtn{position:relative;transition:color .18s ease,background .18s ease,transform .18s ease!important}
+body .category-nav a.pp-mnav::after,body .category-nav .pp-home-nav::after,body .category-nav #allCategoriesBtn::after{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2.5px;border-radius:2px;
+  background:linear-gradient(90deg,#1F9D74,#5EF0C0);transform:scaleX(0);transform-origin:center;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+body .category-nav a.pp-mnav:hover,body .category-nav .pp-home-nav:hover,body .category-nav #allCategoriesBtn:hover{color:#13805A!important;background:rgba(31,157,116,.07)!important;transform:translateY(-1px)}
+body .category-nav a.pp-mnav:hover::after,body .category-nav .pp-home-nav:hover::after,body .category-nav #allCategoriesBtn:hover::after{transform:scaleX(.6)}
+body .category-nav a.pp-mnav:hover .pp-mnav-ic{color:#1F9D74}
+body .category-nav a.pp-mnav.is-on,body .category-nav .pp-home-nav.is-on,body .category-nav #allCategoriesBtn[aria-expanded="true"]{color:#13805A!important;background:#E6F4EE!important;border-radius:12px}
+body .category-nav a.pp-mnav.is-on::after,body .category-nav .pp-home-nav.is-on::after,body .category-nav #allCategoriesBtn[aria-expanded="true"]::after{transform:scaleX(1)}
+body .category-nav .deals-nav::after{display:none!important}
+
+/* ===== L2: buttons - one hover / press feel everywhere (lift 1px, soft shadow), cards keep their own lift ===== */
+.ppx-btn,.pp-ob-btn,.pp-hb-btn,.ppx-plus-chip,.header-link,.ppx-pc-buy,.ppx-pc-cmp,.ppx-pc-ib,.ppf-tk-code,.ppf-tk-go,.ppf-os-all,.ppf-lchip,.pp78-btn,.ppx-store-cta,
+.ppx-dl-chip,.deal-tab,.ppf-crt,.pp-pill-link,.ppx-dx-spot .ppx-dx-cta,.ppx-mini-go,.ppx-mini-cmp,.ppx-back,.pp-wish-browse,.ppf-go,.ppx-link,.pp-sale-chip,.ppf-cp-chip,
+.ppx-row-head a,.ppx-row-more a,.ppx-hero-plus,.footer-app-button,.ppf-btn{transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease,color .18s ease,filter .18s ease}
+.ppx-btn:hover,.pp-ob-btn:hover,.pp-hb-btn:hover,.ppx-plus-chip:hover,.ppx-pc-buy:hover,.ppx-pc-cmp:hover,.ppx-pc-ib:hover,.ppf-tk-code:hover,.ppf-tk-go:hover,.ppf-os-all:hover,
+.ppf-lchip:hover,.pp78-btn:hover,.ppx-store-cta:hover,.ppx-dl-chip:hover,.deal-tab:hover,.pp-pill-link:hover,.ppx-back:hover,.pp-wish-browse:hover,.ppx-hero-plus:hover,.pp-sale-chip:hover,.ppf-cp-chip:hover,.ppf-btn:hover{transform:translateY(-1px)}
+.ppx-btn:hover,.pp-ob-btn:hover,.ppx-pc-buy:hover,.ppf-tk-go:hover,.ppf-os-all:hover,.ppx-store-cta:hover,.pp-wish-browse:hover,.ppf-btn:hover{box-shadow:0 8px 18px -10px rgba(15,31,26,.55)}
+.ppx-btn:active,.pp-ob-btn:active,.pp-hb-btn:active,.ppx-plus-chip:active,.ppx-pc-buy:active,.ppx-pc-cmp:active,.ppx-pc-ib:active,.ppf-tk-code:active,.ppf-tk-go:active,.ppf-os-all:active,
+.ppf-lchip:active,.pp78-btn:active,.ppx-store-cta:active,.ppx-dl-chip:active,.deal-tab:active,.pp-pill-link:active,.ppx-back:active,.pp-wish-browse:active,.ppf-btn:active,.header-link:active{transform:translateY(0) scale(.98)}
+.header-link:hover{transform:translateY(-1px)}
+.ppx-mini-go{transition:transform .18s ease}.ppx-mini:hover .ppx-mini-go{transform:translateX(2px)}
+@media (prefers-reduced-motion:reduce){.ppx-btn:hover,.pp-ob-btn:hover,.pp-hb-btn:hover,.ppx-pc-buy:hover,.ppf-tk-go:hover,.ppf-lchip:hover,.header-link:hover,body .category-nav a.pp-mnav:hover{transform:none}}
+
+/* ===== L3: tinted sections get inner breathing space ===== */
+.ppx-recent>.container{padding-left:22px!important;padding-right:22px!important;padding-top:22px!important;padding-bottom:24px!important}
+.ppx-recent .ppx-home-head{margin-bottom:14px}
+.ppx-similar{padding:22px!important}
+#ppxRows .ppx-row:not(.pp-lens-feature){padding:20px 22px 22px!important}
+@media (max-width:760px){
+  .ppx-recent>.container{padding:16px 14px 18px!important;margin-left:12px;margin-right:12px;width:auto}
+  #ppxRows .ppx-row:not(.pp-lens-feature){padding:14px 14px 16px!important}
+  .ppx-similar{padding:16px 14px!important}
+}
+
+/* ===== L4: Deal Radar "Biggest total saving" photo box hugs the photo (white, no empty sides) ===== */
+.pp-lf-top .ph{width:auto!important;max-width:100%;height:168px!important;align-self:center;padding:10px 14px;box-sizing:border-box}
+.pp-lf-top .ph img{width:auto!important;height:100%!important;max-width:100%!important;object-fit:contain!important;transform:none!important}
+@media(max-width:900px){.pp-lf-top .ph{width:96px!important;height:96px!important;padding:6px}.pp-lf-top .ph img{width:100%!important}}
+
+/* ===== L6: Top brands spotlight = same idea as "Biggest total saving": photo on top, details below (all screens) ===== */
+.ppx-dx-row{height:auto!important;min-height:250px}
+.ppx-dx-spot{position:relative;flex-direction:column!important;gap:10px!important;padding:12px!important;height:auto!important;min-height:0}
+.ppx-dx-spot-img{display:flex!important;align-items:center;justify-content:center;flex:none!important;width:100%!important;height:104px!important;padding:8px;box-sizing:border-box;border-radius:14px!important;background:#fff!important;overflow:hidden}
+.ppx-dx-spot-img img{width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important;margin:0!important;object-fit:contain}
+.ppx-dx-spot .ppx-dx-low{z-index:2}
+.ppx-dx-spot .ppx-dx-tag{position:absolute;top:20px;right:20px;z-index:2;margin:0!important;background:#12211C!important;border-color:rgba(232,185,84,.6)!important}
+.ppx-dx-spot-info{display:flex!important;flex-direction:row!important;flex-wrap:wrap;align-items:baseline;column-gap:10px;row-gap:3px;justify-content:flex-start!important;flex:1 1 auto!important;min-width:0}
+.ppx-dx-spot-info>.ppx-dx-spot-logo,.ppx-dx-spot-info>.ppx-dx-pn,.ppx-dx-spot-info>.ppx-dx-btn{flex:1 1 100%;min-width:0}
+.ppx-dx-spot .ppx-dx-spot-logo{margin:0!important}
+.ppx-dx-spot-info>.ppx-dx-spot-logo{flex:0 0 auto!important;width:max-content!important;max-width:100%}
+.ppx-dx-spot-info>.ppx-dx-spot-logo+.ppx-dx-pn{margin-top:2px}
+.ppx-dx-spot .ppx-dx-pn{font-size:15px!important;line-height:1.25!important;display:-webkit-box!important;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;white-space:normal!important}
+.ppx-dx-spot .ppx-dx-pr{display:flex!important;margin:0!important}
+.ppx-dx-spot .ppx-dx-pr b{font-size:24px!important;display:inline!important}
+.ppx-dx-spot .ppx-dx-pr s{display:inline!important;margin:0!important}
+.ppx-dx-spot .ppx-dx-save{margin:0!important}
+.ppx-dx-spot .ppx-dx-btn{margin-top:6px!important;text-align:center}
+@media (max-width:1100px){.ppx-dx-spot .ppx-dx-pn{-webkit-line-clamp:2}}
+@media (max-width:760px){
+  .ppx-dx-spot{height:auto!important}
+  .ppx-dx-spot-img{height:clamp(92px,40cqw,132px)!important}
+  .ppx-dx-spot .ppx-dx-tag{top:17px;right:17px;font-size:9px!important}
+  .ppx-dx-spot .ppx-dx-pn{font-size:clamp(13px,8cqw,15px)!important}
+  .ppx-dx-spot .ppx-dx-pr b{font-size:clamp(19px,12cqw,24px)!important}
+}
+
+/* ===== L7: small card footer - status, % chip and arrow never overlap ===== */
+.ppx-mini .ft{flex-wrap:wrap!important;row-gap:5px;padding-right:44px!important;white-space:normal!important;min-height:30px;align-content:center}
+.ppx-mini .ft em{margin-left:0!important;max-width:100%;flex:0 1 auto!important}
+.ppx-mini-go{z-index:2}
+
+/* ===== deal card: cashback tag sits on its own line under the price, normal size ===== */
+.ppx-pc-price .pp-cb-tag:not(.is-on){display:none!important}
+.ppx-pc-price .pp-cb-tag.is-on{display:flex!important;margin:6px 0 0!important;width:max-content;max-width:100%}
+.ppx-pc-price .pp-cb-tag b,.pp-cb b{font:800 11.5px/1.2 Manrope,system-ui,sans-serif!important;letter-spacing:0!important;color:inherit!important}
+.pp-cb-row b,.pp-cb-stack b{font-size:12.5px!important}
+
+/* ===== L8: page head - dark bar and the panel under it are one unit (no gap), like Live Deals.
+   The bar and the panel are separate items of the page column, so the column gap sat between them. ===== */
+body.pp-v276 .ppx-list-page{--pp79-g:14px}
+body.pp-v276 .pp-head-unit>.pp-onebar+*,body.pp-v276 .ppx-list-page>.pp-onebar+.ppx-adopt-host,body.pp-v276 .ppx-cmpx-hero.pp-onebar+.pp-panel{margin-top:calc(-1 * var(--pp79-g))!important}
+body.pp-v276 .ppx-list-page>.pp-onebar:has(+.ppx-adopt-host){border-radius:18px 18px 0 0!important}
+body.pp-v276 #ppxAlertHost .pp-da-toolbar{margin-top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important}
+body.pp-v276 #ppxWishHost .pp-wishlist-summary,body.pp-v276 #ppxWishHost .pp-wishlist-flyout>div:first-child>:first-child{border-top-left-radius:0!important;border-top-right-radius:0!important;margin-top:0!important}
+@media (max-width:760px){body.pp-v276 .ppx-list-page{--pp79-g:18px}}
+
+/* ===== L10: card chart tooltip ===== */
+.ppx-pc-chart[data-pp-pts]{position:relative;cursor:crosshair;touch-action:pan-y}
+.ppx-pc-chart .pp79-ln,.ppx-pc-chart .pp79-dot,.ppx-pc-chart .pp79-tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .12s ease;text-decoration:none}
+.ppx-pc-chart.pp79-on .pp79-ln,.ppx-pc-chart.pp79-on .pp79-dot,.ppx-pc-chart.pp79-on .pp79-tip{opacity:1}
+.ppx-pc-chart .pp79-ln{width:0;border-left:1px dashed rgba(255,255,255,.45);transform:translateX(-.5px)}
+.ppx-pc-chart .pp79-dot{width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(61,220,151,.45)}
+.ppx-pc-chart .pp79-tip{z-index:3;padding:3px 8px;border-radius:8px;background:#fff;color:#10231C;font:800 11.5px/1.3 Manrope,system-ui,sans-serif;white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+
+/* ===== L12: card reward tiles - full card name on two lines (no "Myntra Kotak Cre...") ===== */
+.ppf-crt-n b,.ppf-cr-n b{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.25!important}
+.pp-v276 section.ppf-os .ppf-crt{flex-basis:262px!important;min-height:70px}
+
+/* ===== L21: text case - buttons and small values in sentence case (eyebrow labels stay in capitals) ===== */
+.ppf-tk-code span,.ppf-cp-pct small{text-transform:none!important;letter-spacing:.01em!important}
+
+/* ======================================================================================================
+   L19 Phone + tablet. Desktop is not touched by anything below.
+   ====================================================================================================== */
+/* hero card store rows: on small screens the icon alone (names were cut: "Ama...") */
+@media (max-width:560px){.ppx-hero-card .pp79-sname{display:none!important}.ppx-hero-card .pp-v787-logo-wrap img.pp79-sic{height:28px!important}}
+
+/* L16 phone menu: Home is already in the bottom bar -> icon on top + small label, Live Deals always visible */
+@media (max-width:700px){
+  body .category-nav{gap:0!important;justify-content:space-between;padding-left:6px!important;padding-right:6px!important;-webkit-mask-image:none!important;mask-image:none!important}
+  body .category-nav .pp-home-nav{display:none!important}
+  body .category-nav a.pp-mnav,body .category-nav #allCategoriesBtn{flex-direction:column!important;gap:2px!important;padding:6px 4px 7px!important;min-width:0;font-size:10.5px!important;font-weight:700!important;line-height:1.1;border-radius:10px}
+  body .category-nav a.pp-mnav::after,body .category-nav #allCategoriesBtn::after{left:10px;right:10px;bottom:1px;height:2px}
+  body .category-nav a.pp-mnav .pp-mnav-ic svg,body .category-nav #allCategoriesBtn .ppx-nicon svg{width:19px;height:19px}
+  body .category-nav #allCategoriesBtn .nav-label{display:none!important}
+  body .category-nav #allCategoriesBtn .pp79-short{display:block!important}
+  body .category-nav #allCategoriesBtn>svg:not(.ppx-nicon svg),body .category-nav #allCategoriesBtn .nav-caret{display:none!important}
+  body .category-nav .pp-soon,body .category-nav a.pp-mnav[data-pp-mnav="gift-cards"]{display:none!important}
+  body .category-nav .pp-mnav-space{display:none}
+  body .category-nav .deals-nav{padding:8px 11px!important;font-size:12.5px!important;gap:6px!important;margin-left:4px!important}
+  body .category-nav .deals-nav .ppx-deals-new{display:none!important}
+}
+
+/* L15 phone hero: slide dots never sit on the benefit boxes */
+@media (max-width:760px){
+  .ppx-hc-dots{bottom:-22px!important}
+  .ppf-hero-after{margin-top:26px!important}
+}
+
+/* L17 phone: 2 compact cards per row - REPLACED in V281 (L7) by the desktop card in ONE side-swipe row; block switched off */
+@media (max-width:0px){
+  body #deals.ppx-pc-section .deal-grid,body #deals.ppx-pc-section .deal-grid[data-pp-swipe]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;overflow:visible;margin:0;padding:0 0 6px}
+  body #deals.ppx-pc-section .deal-grid>.deal-card{flex:none!important;max-width:none!important;width:auto!important;min-width:0}
+  body #deals .ppx-swipe-dots,body #ppxSwipeDots{display:none!important}
+  .ppx-deals-page .ppx-dl-grid,.ppx-deals-page .ppx-dl-grid.is-big{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .ppx-pc .ppx-pc-in{padding:10px!important;border-radius:18px}
+  .ppx-pc .ppx-pc-top{gap:4px}
+  .ppx-pc .ppx-pc-verdict{padding:4px 7px!important;font-size:8.5px!important;gap:4px;letter-spacing:.02em;max-width:100%}
+  .ppx-pc .ppx-pc-icons{position:absolute;top:44px;right:12px;z-index:3;flex-direction:column;gap:5px}
+  .ppx-pc .ppx-pc-ib{width:26px!important;height:26px!important;border-radius:9px;background:rgba(15,31,26,.78)!important;border-color:rgba(255,255,255,.18)!important;color:#fff}
+  .ppx-pc .ppx-pc-ib svg{width:13px;height:13px}
+  .ppx-pc .ppx-pc-prod{flex-direction:column;align-items:stretch;gap:6px;margin-top:8px}
+  .ppx-pc .ppx-pc-prod .ph{width:100%!important;height:96px!important;border-radius:13px;background:#fff!important}
+  .ppx-pc .ppx-pc-prod .ph img{max-width:80%!important;max-height:84px!important}
+  .ppx-pc .ppx-pc-prod .nm small,.ppx-pc .ppx-pc-prod .nm em,.ppx-pc .ppx-pc-score{display:none!important}
+  .ppx-pc .ppx-pc-prod .nm b{font-size:13px!important;line-height:1.25!important;margin:0!important;min-height:2.5em}
+  .ppx-pc .ppx-pc-price{margin-top:4px;display:block}
+  .ppx-pc .ppx-pc-price>div:first-child>b{font-size:18px!important}
+  .ppx-pc .ppx-pc-price>div:first-child>s{font-size:10.5px!important}
+  .ppx-pc .ppx-pc-price .chg{display:none!important}
+  .ppx-pc .ppx-pc-price .pp-cb-tag.is-on{font-size:10px!important;padding:2px 7px 2px 3px}
+  .ppx-pc .ppx-pc-price .pp-cb-tag b{font-size:10px!important}
+  .ppx-pc .ppx-pc-chart{margin-top:6px!important;height:auto}
+  .ppx-pc .ppx-pc-chart svg{height:34px!important}
+  .ppx-pc .ppx-pc-chart>span,.ppx-pc .ppx-pc-chart>em{display:none!important}
+  .ppx-pc .ppx-pc-ladder{margin-top:6px}
+  .ppx-pc .ppx-pc-ladder .ppx-pc-lr:not(:first-child),.ppx-pc .ppx-pc-ladder .bar{display:none!important}
+  .ppx-pc .ppx-pc-ladder .ppx-pc-lr{display:flex!important;justify-content:space-between;gap:6px;font-size:11.5px}
+  .ppx-pc .ppx-pc-ladder .s{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ppx-pc .ppf-obdg{display:none!important}
+  .ppx-pc .ppx-pc-btns{grid-template-columns:1fr!important;padding-top:8px}
+  .ppx-pc .ppx-pc-cmp{display:none!important}
+  .ppx-pc .ppx-pc-buy{min-height:36px!important;height:36px;padding:0 8px!important;font-size:12px!important;border-radius:11px}
+  .ppx-pc .ppx-pc-buy span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ppx-pc .ppx-pc-meta{margin-top:6px;font-size:10px}
+  .ppx-pc .ppx-pc-meta>:not(:first-child){display:none!important}
+}
+
+@media (max-width:600px){
+  .ppx-deals-page .ppx-dl-grid>.ppx-dl-pluscard{grid-column:1/-1}
+  .ppx-store .pp79-sname{display:none!important}
+  .ppx-store .pp-v787-logo-wrap img.pp79-sic{height:36px!important}
+}
+/* L16 tablet: the whole menu row (incl. Live Deals) fits without side-scroll */
+@media (min-width:701px) and (max-width:1100px){
+  body .category-nav{gap:0!important;-webkit-mask-image:none!important;mask-image:none!important}
+  body .category-nav a.pp-mnav,body .category-nav .pp-home-nav,body .category-nav #allCategoriesBtn{padding:8px 8px!important;font-size:13px!important;gap:5px!important}
+  body .category-nav .pp-soon{display:none!important}
+  body .category-nav .pp-mnav-space{min-width:4px}
+  body .category-nav .deals-nav{padding:8px 12px!important;font-size:13px!important}
+}
+@media (max-width:374px){
+  body .category-nav a.pp-mnav,body .category-nav #allCategoriesBtn{padding:6px 2px 7px!important;font-size:10px!important}
+  body .category-nav .deals-nav{padding:7px 9px!important;font-size:11.5px!important;margin-left:2px!important}
+}
+/* Price Check store rows: icon + full name, same size for every store (old and new) */
+.ppf-row a{grid-template-columns:196px 1fr auto 96px!important}
+.ppf-row.is-noprice a{grid-template-columns:196px 1fr 96px!important}
+.ppf-row .ppf-logo{width:190px!important}
+.ppf-row .ppf-logo{width:190px!important;overflow:hidden;justify-content:flex-start!important;gap:8px;padding:4px 10px 4px 6px!important}
+.ppf-row .ppf-logo img.pp79-sic,.ppf-row .ppf-logo img.pp79-sic-inline{width:28px!important;height:28px!important;max-width:none!important;max-height:none!important;transform:none!important}
+.ppf-row .ppf-logo .pp79-sname,.ppf-row .ppf-logo .ppf-st-name{font:800 13px/1.2 Manrope,system-ui,sans-serif!important;color:#10231C;text-align:left!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ppf-row .ppf-logo .ppf-st-name.pp79-texticon{display:flex!important;align-items:center;gap:8px;max-width:100%}
+@media (max-width:760px){
+  .ppf-row a,.ppf-row.is-noprice a{grid-template-columns:minmax(0,1fr) auto auto!important}
+  .ppf-row .ppf-logo{width:auto!important;max-width:100%;justify-self:start;height:34px}
+  .ppf-row a:has(.ppf-logo) .ppf-meta:not(:has(b,strong,.ppf-seen,em)){display:none}
+  .ppf-row .ppf-logo img.pp79-sic,.ppf-row .ppf-logo img.pp79-sic-inline{width:24px!important;height:24px!important}
+  .ppf-row .ppf-logo .pp79-sname,.ppf-row .ppf-logo .ppf-st-name{font-size:12px!important}
+}
+/* very small phones: shorter search button so the placeholder "Paste [icon] Store link" fits */
+@media (max-width:374px){.pp-onebox .pp-ob-btn{font-size:0!important;padding:0 13px!important}.pp-onebox .pp-ob-btn::after{content:"Compare";font-size:13.5px}}

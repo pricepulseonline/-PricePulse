@@ -37,9 +37,13 @@
       `<p id="ppXsMsg" class="muted" role="status"></p><div id="ppXsList" class="pp-deals-list"></div>`);
     const dt=card('ppExtDetails','Extension: product details','Details the extension read from store pages (brand, model, RAM, colour, all spec rows). <b>Needs check</b>: a later visit saw a different value, or two places on a page disagreed. Nothing is overwritten automatically. A value you <b>Approve</b> always wins on the site; <b>Remove</b> deletes a wrong one.','Details',
       `<div class="pp-growth-tabs" id="ppXdTabs"></div><div class="pp-dl-tools"><input id="ppXdSearch" type="search" placeholder="Search product or store…"><button type="button" id="ppXdReload" class="ppx-btn">Reload</button></div><p id="ppXdMsg" class="muted" role="status"></p><div id="ppXdList" class="pp-deals-list"></div>`);
+    // V2.0.1 (Hissa 7): what shoppers do with the extension (counts from pp_ext_events)
+    const ev=card('ppExtEvents','Extension: usage','How shoppers use the extension: <b>Buy clicks</b> (store links in Compare), <b>Alerts set</b> and <b>Sign-ins</b>. Counts come from the extension itself, so treat them as a guide.','📊 USAGE',
+      `<div class="pp-dl-tools"><button type="button" id="ppXeReload" class="subtle">Refresh</button><span id="ppXeTime" class="muted"></span></div><p id="ppXeMsg" class="muted" role="status"></p><div id="ppXeList"></div>`);
     const anchor=$('ppFullUrlAdmin');
-    if(anchor&&anchor.parentNode===host){anchor.after(a);a.after(q);q.after(s);s.after(dt);}else{host.prepend(dt);host.prepend(s);host.prepend(q);host.prepend(a);}
+    if(anchor&&anchor.parentNode===host){anchor.after(ev);ev.after(a);a.after(q);q.after(s);s.after(dt);}else{host.prepend(dt);host.prepend(s);host.prepend(q);host.prepend(a);host.prepend(ev);}
     if(!$('ppXStyle')){const st=document.createElement('style');st.id='ppXStyle';st.textContent=`.pp-x-row{flex-wrap:wrap;gap:10px}.pp-x-row h3{font-size:15px}.pp-x-sub{font-size:12.5px;color:#64756e}.pp-x-chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;margin-left:6px;background:#e3f5ec;color:#13805A}.pp-x-chip.warn{background:#fff3d6;color:#7a5a12}.pp-x-chip.off{background:#fde8e8;color:#9b1c1c}.pp-x-key{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all;background:#fff;border:1px dashed #d7c38a;border-radius:8px;padding:8px;margin:6px 0;display:block}.pp-xd-fs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.pp-xd-f{font-size:12.5px;border:1px solid #dce9e4;border-radius:999px;padding:3px 8px;background:#fff}.pp-xd-f i{font-style:normal;font-size:10.5px;color:#64756e;margin-left:6px}.pp-xd-f button,.pp-xd-c button{border:0;background:none;cursor:pointer;font-weight:800;margin-left:4px}.pp-xd-c{font-size:13px;margin:4px 0}.pp-xd-c button{border:1px solid #dce9e4;border-radius:8px;padding:2px 8px;background:#fff}.pp-x-chk{flex-direction:row!important;align-items:center;gap:6px!important}.pp-x-grid{flex:1 1 100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}.pp-x-grid label{font-size:11.5px;color:#64756e;display:flex;flex-direction:column;gap:3px}.pp-x-grid input{height:34px;padding:0 9px;border:1px solid #dce9e4;border-radius:9px;font-size:12.5px}.pp-x-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pp-x-act a{font-weight:700;color:#13805A;text-decoration:none}`;document.head.appendChild(st);}
+    $('ppXeReload').addEventListener('click',loadEvents);
     $('ppXkNew').addEventListener('click',createKey);
     $('ppXkList').addEventListener('click',onKeyClick);
     $('ppXqTabs').addEventListener('click',e=>{const b=e.target.closest('[data-xq]');if(b){qTab=b.dataset.xq;renderQueue();}});
@@ -56,9 +60,20 @@
   }
 
   let loading=false;
-  async function loadAll(){if(!ready()||loading)return;loading=true;try{await Promise.all([loadKeys(),loadQueue(),loadRules(),loadDetails()]);}finally{loading=false;}}
+  async function loadAll(){if(!ready()||loading)return;loading=true;try{await Promise.all([loadKeys(),loadQueue(),loadRules(),loadDetails(),loadEvents()]);}finally{loading=false;}}
 
   /* ---- 1) admin keys ---- */
+  async function loadEvents(){
+    const box=$('ppXeList');if(!box)return;
+    const {data,error}=await api.rpc('pp_ext_events_summary');
+    if(error){setMsg('ppXeMsg',sqlMissing(error)?'Run supabase-ext-events-v2.sql in Supabase first.':'Could not load: '+(error.message||'error'));box.innerHTML='';return;}
+    if(!data||!data.ok){setMsg('ppXeMsg','Admin only.');box.innerHTML='';return;}
+    setMsg('ppXeMsg','');
+    const L={buy_click:'Buy clicks',alert_set:'Alerts set',login:'Sign-ins'},by={};(data.rows||[]).forEach(r=>{by[r.event]=r;});
+    const n=v=>Number(v||0).toLocaleString('en-IN'),th='padding:8px 10px;text-align:right;font-size:12px;color:#64756e;font-weight:700',td='padding:9px 10px;text-align:right;font-weight:800;font-variant-numeric:tabular-nums';
+    box.innerHTML=`<table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #e3ebe7;border-radius:12px;overflow:hidden"><thead><tr style="background:#f6faf8"><th style="${th};text-align:left">Event</th><th style="${th}">Today</th><th style="${th}">Last 7 days</th><th style="${th}">Last 30 days</th><th style="${th}">All time</th></tr></thead><tbody>${Object.keys(L).map(k=>{const r=by[k]||{};return `<tr style="border-top:1px solid #eef3f0"><td style="${td};text-align:left;font-weight:700">${L[k]}</td><td style="${td}">${n(r.today)}</td><td style="${td}">${n(r.last7)}</td><td style="${td}">${n(r.last30)}</td><td style="${td}">${n(r.total)}</td></tr>`;}).join('')}</tbody></table>`;
+    const t=$('ppXeTime');if(t)t.textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  }
   async function loadKeys(){
     const {data,error}=await api.rpc('pp_ext_admin_keys');
     if(error){setMsg('ppXkMsg',sqlMissing(error)?NEED_SQL:error.message,true);return;}
@@ -242,11 +257,27 @@
     const pb=document.createElement('div');pb.id='ppXpBox';pb.hidden=true;box.appendChild(pb);
     pb.addEventListener('click',onPendingBoxClick);pb.addEventListener('change',()=>paintCheck());
     f.addEventListener('submit',onFormSubmit,true);
+    // v268: remember when the admin picks Brand / Category by hand, so Fill never blanks a choice the admin made
+    ['brand_slug','category'].forEach(n=>{const s=f.elements[n];if(s)s.addEventListener('change',e=>{if(e.isTrusted)s.dataset.ppUser='1';});});
+    $('productDialog')?.addEventListener('close',()=>{['brand_slug','category'].forEach(n=>{const s=f.elements[n];if(s)delete s.dataset.ppUser;});});
     // a fresh dialog starts with an empty box
     $('productDialog')?.addEventListener('close',()=>{$('ppXfUrl').value='';setMsg('ppXfMsg','');pend=null;lastCheck=null;const pb=$('ppXpBox');if(pb){pb.hidden=true;pb.innerHTML='';}f.querySelectorAll('.pp-xf-filled').forEach(x=>x.classList.remove('pp-xf-filled'));});
     if(!$('ppXfStyle')){const st=document.createElement('style');st.id='ppXfStyle';st.textContent='.pp-xf{padding:12px;border:1px dashed #d7c38a;border-radius:12px;background:#fffaf0}.pp-xf-row{display:flex;gap:8px}.pp-xf-row input{flex:1}.pp-xf-filled{outline:2px solid #3DDC97;outline-offset:1px;background:#effcf5!important}';document.head.appendChild(st);}
     return true;
   }
+  // v268: Brand / Category the page did not give: leave the dropdown EMPTY (it used to show the first item of the list, a wrong one)
+  function blankSel(sel){try{if(![...sel.options].some(x=>x.value===''))sel.insertBefore(new Option('Select…',''),sel.firstChild);sel.value='';sel.dispatchEvent(new Event('change',{bubbles:true}));}catch(_){}}
+  // v268: photos of the SAME product on other stores, through the extension bridge (same engine as the Find page: it borrows them when this store has none, e.g. Amazon)
+  function bridgePhotos(url,ms){return new Promise(res=>{
+    const id='xf'+Date.now()+Math.random().toString(36).slice(2,6);let best=[],from='',done=false,t=null,ex=0,sim=0,fin_=false,got=false;
+    const fin=(r)=>{if(done)return;done=true;clearTimeout(t);window.removeEventListener('message',on);res({images:best,from,ex,sim,got,timeout:r==='t'});};
+    const on=e=>{const d=e.data;if(e.source!==window||!d||d.pp!=='ext'||d.id!==id)return;got=true;
+      if(Array.isArray(d.rows)){ex=d.rows.filter(r=>r&&r.match==='exact'&&!r.source).length;sim=d.rows.filter(r=>r&&r.match!=='exact'&&!r.source).length;}
+      if(d.product&&Array.isArray(d.product.images)&&d.product.images.length){best=d.product.images.filter(u=>typeof u==='string');from=d.product.enrichedFrom||'';if(best.length>=3)fin();}
+      if(d.type==='pp-find-result')fin();};
+    t=setTimeout(()=>fin('t'),ms);window.addEventListener('message',on);
+    try{window.postMessage({pp:'site',type:'pp-find',id,url},'*');}catch(_){fin();}
+  });}
   async function fillFromLink(){
     const f=$('productForm'),url=($('ppXfUrl').value||'').trim();
     if(!/^https:\/\//i.test(url)){setMsg('ppXfMsg','Paste the full product address (starts with https://).',true);return;}
@@ -255,9 +286,12 @@
     const {data,error}=await api.rpc('pp_ext_details_for_url',{p_url:url});
     if(error){setMsg('ppXfMsg',sqlMissing(error)?NEED_SQL:error.message,true);return;}
     if(!data||data.ok===false){setMsg('ppXfMsg',data&&data.error==='not saved'?'No saved details for this page yet. Open it once in Chrome with the PricePulse extension on, then try again.':'Not found: '+(data&&data.error||'unknown'),true);return;}
-    const fd=data.fields||{},isNew=!f.elements.editing_id.value,done=[],skipped=[];
+    // v271 (Fix 3): the pending row's own (fresh) title wins; old saved fields/specs of another product are ignored
+    const ptl=(pend&&pend.title&&pend.product_key&&url.includes(pend.product_key))?String(pend.title):'';
+    const stale=!!ptl&&!agree(data.title,ptl),ttl=ptl||data.title;
+    const fd=stale?{}:(data.fields||{}),isNew=!f.elements.editing_id.value,done=[],skipped=[];
     const put=(name,val,label)=>{const el=f.elements[name];if(!el||val==null||String(val).trim()==='')return;if(String(el.value||'').trim()){if(String(el.value).trim()!==String(val).trim())skipped.push(label);return;}el.value=String(val).trim();el.classList.add('pp-xf-filled');el.dispatchEvent(new Event('input',{bubbles:true}));done.push(label);};
-    const short=shortName(data.title,fd.brand);
+    const short=shortName(ttl,fd.brand);
     put('name',short,'Name');
     const model=fd.mpn||fd.model||'';
     put('model_code',model,'Model / SKU');
@@ -265,9 +299,9 @@
     const img0=(Array.isArray(data.images)?data.images:[]).find(u=>/^https:\/\//.test(u));
     if(img0)put('image_url',img0,'Photo');
     // v265: storage / RAM / colour also from the page title, e.g. "(Frost, 512 GB)" or "12GB RAM | 256GB"
-    const tv=variantFromTitle(data.title);
+    const tv=variantFromTitle(ttl);
     // v266: RAM / storage also from the store's spec rows (Flipkart shows "RAM 12 GB" there, not in the title)
-    const sp=data.specs||{},spv=(re,no)=>{const k=Object.keys(sp).find(x=>re.test(x)&&!no.test(x)&&/\d/.test(String(sp[x])));return k?String(sp[k]):'';};
+    const sp=stale?{}:(data.specs||{}),spv=(re,no)=>{const k=Object.keys(sp).find(x=>re.test(x)&&!no.test(x)&&/\d/.test(String(sp[x])));return k?String(sp[k]):'';};
     const spRam=gb((spv(/(^|[^a-z])ram($|[^a-z])/i,/type|speed|frequency|slots|expandable/i).match(/(\d{1,3})\s?GB/i)||[])[0]||''),spSto=gb((spv(/internal storage|internal memory|^storage|storage capacity|(^|[^a-z])rom($|[^a-z])/i,/type|expandable|slot|card/i).match(/(\d{1,4})\s?(GB|TB)/i)||[])[0]||'');
     tv.ram=tv.ram||spRam;tv.storage=tv.storage||spSto;lastSpec={ram:spRam,storage:spSto};
     const variant=[[fd.ram||tv.ram,fd.storage||tv.storage].filter(Boolean).join('/'),fd.qty,fd.size,fd.color||tv.color].filter(Boolean).join(', ');
@@ -284,20 +318,36 @@
         skipped.push(`Brand "${fd.brand}" is not in your brand list: add it in Brands first, then Fill again (Brand is left empty on purpose)`);
       }
     }
-    if(isNew&&Array.isArray(data.category)&&data.category.length){
-      const sel=f.elements.category,c=pickCategory(sel,data.category);
+    else if(isNew){const sel=f.elements.brand_slug;if(sel&&!sel.dataset.ppUser&&!sel.classList.contains('pp-xf-filled')){blankSel(sel);skipped.push('Brand was not found on the page: choose it yourself (left empty on purpose)');}}
+    if(isNew){
+      const sel=f.elements.category,c=Array.isArray(data.category)&&data.category.length?pickCategory(sel,data.category):null;
       if(c&&sel.value===c&&sel.classList.contains('pp-xf-filled')){}
       else if(c){sel.value=c;sel.classList.add('pp-xf-filled');sel.dispatchEvent(new Event('change',{bubbles:true}));done.push('Category');}
+      else if(sel&&!sel.dataset.ppUser&&!sel.classList.contains('pp-xf-filled')){blankSel(sel);skipped.push('Category was not found on the page: choose it yourself (left empty on purpose)');}
     }
     try{if(typeof productFormPreview==='function')productFormPreview();}catch(_){}
-    const specs=Object.keys(data.specs||{}).length;
-    const base=(done.length?`Filled: ${done.join(', ')} (green). `:'Nothing new to fill. ')+(skipped.length?`Kept your values: ${skipped.join(', ')}. `:'')+`From ${data.store}${specs?` · ${specs} spec rows saved (shown on the product page after you add this store link)`:''}.`;
-    const pics=(Array.isArray(data.images)?data.images:[]).filter(u=>/^https:\/\//.test(u));
-    if(!pics.length){setMsg('ppXfMsg',base+' Check before saving.');return;}
+    const specs=stale?0:Object.keys(data.specs||{}).length;
+    const base=(done.length?`Filled: ${done.join(', ')} (green). `:'Nothing new to fill. ')+(skipped.length?`Kept your values: ${skipped.join(', ')}. `:'')+(stale?'Old saved details belong to another product, so Name / Variant come from the new page title. ':'')+`From ${data.store}${specs?` · ${specs} spec rows saved (shown on the product page after you add this store link)`:''}.`;
+    const PROMO=/\/(?:promos?|fk-p-flap|internalised)\//i,PROMO2=/\/www\/\d+\/\d+\//;   // v269: store promo graphics (EMI / offer tiles), also those saved before 1.5.11
+    const SMALLPIC=u=>{const m=String(u).match(/\/image\/(\d+)\/(\d+)\//);return !!m&&Number(m[1])<250;};   // v270: 40/80/160 px = thumbnails or "similar products" of the store page
+    let pics=(Array.isArray(data.images)?data.images:[]).filter(u=>/^https:\/\//.test(u)&&!PROMO.test(u)&&!PROMO2.test(u)&&!SMALLPIC(u)),from='',bnote='';
+    if(pics.length<3){
+      if(document.documentElement.getAttribute('data-pp-ext')){
+        setMsg('ppXfMsg',base+' Looking for more photos of this product on other stores…');
+        // Amazon links often have no product name in them (".../dp/B0DSF14WQZ"): then the bridge cannot search other stores. Give it the saved name inside the link.
+        let bUrl=url;
+        try{if(/amazon\./i.test(new URL(url).hostname)&&data.product_key&&data.title){const slug=String(data.title).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,120);if(slug)bUrl=`https://${new URL(url).hostname}/${slug}/dp/${data.product_key}`;}}catch(_){}
+        const b=await bridgePhotos(bUrl,45000);
+        const more=b.images.filter(u=>/^https:\/\//.test(u)&&!PROMO.test(u)&&!PROMO2.test(u)&&!SMALLPIC(u));
+        if(more.length){pics=pics.concat(more);from=b.from;}
+        else bnote=b.got?` (Looked on other stores${b.timeout?' for 45 s':''}: ${b.ex} exact and ${b.sim} similar matches, none gave a usable photo.)`:' (The extension did not answer on this page: reload the extension and this page.)';
+      }else bnote=' (The PricePulse extension is not active on this page, so photos from other stores could not be looked up.)';
+    }
+    if(!pics.length){setMsg('ppXfMsg',base+' No photo found for this product.'+bnote+' Check before saving.');return;}
     setMsg('ppXfMsg',base+' Checking store photos…');
     let ph;try{ph=await fillPhotos(f,pics);}catch(e){ph={used:[],skip:[e.message||'photo check failed'],full:false};}
     const pt=ph.used.length?` Photos: ${ph.used.length} auto-fitted into ${ph.used.map(x=>x.label).join(', ')} (website mode set to Curated; they upload when you save).`:(ph.full?' Photos: your Image 1-3 are already set, nothing changed.':' Photos: none passed the check, nothing changed.');
-    const ps=ph.skip.length?` Skipped: ${ph.skip.join('; ')}.`:'';
+    const ps=(from&&ph.used.length?` Some photos came from ${from} (same product).`:'')+(ph.skip.length?` Skipped: ${ph.skip.join('; ')}.`:'');
     setMsg('ppXfMsg',base+pt+ps+(pics.length>ph.used.length?' All store photos still show in the product page gallery.':'')+(ph.gaps&&ph.gaps.length?` [v267 difference: ${ph.gaps.join(', ')}]`:' [v264]')+' Check before saving.');
   }
   /* Store photos -> Premium site images 1-3. Each photo is auto-fitted (white background, centred, equal border).
@@ -440,13 +490,33 @@
     if(!data||data.status!=='pending'){pend=null;pb.hidden=true;return;}
     await loadPending();pend=pendList.find(x=>x.id===data.id)||null;renderBox();
   }
+  // v272 (Fix 5b): other stores the extension compared for this product (pend.live, needs v8 SQL for url).
+  // Exact match + same RAM/storage = ticked. Similar / other variant = shown, not ticked. Their price is NOT verified.
+  function othersList(){
+    if(!pend)return [];
+    const f=$('productForm'),vS=[...new Set(sizesIn(f&&f.elements.variant?f.elements.variant.value:''))],best=new Map();
+    (pend.live||[]).forEach(x=>{
+      if(!x||!x.store||x.store===pend.store||!/^https:\/\//.test(x.url||''))return;
+      const o=best.get(x.store);
+      if(!o||(x.match==='exact'&&o.match!=='exact')||(x.match===o.match&&Number(x.price)<Number(o.price)))best.set(x.store,x);
+    });
+    return [...best.values()].map(x=>{
+      const s=sizesIn(`${x.variant||''} ${x.title||''}`),off=!!s.length&&!!vS.length&&!vS.every(y=>s.includes(y));
+      return {...x,off,tick:x.match==='exact'&&!off};
+    });
+  }
+  function othersBox(){
+    const L=othersList(),nm=sl=>((typeof stores!=='undefined'&&Array.isArray(stores)?stores:[]).find(s=>s&&s.slug===sl)||{}).name||sl;
+    if(!L.length)return '<div class="pp-xp-oth" style="margin:10px 0"><p class="fine"><b>Other stores found:</b> none yet. Open this store page with the extension ON, wait until "Checking other stores" is finished, then press Refresh. You can confirm without them.</p></div>';
+    return '<div class="pp-xp-oth" style="margin:10px 0"><p class="fine"><b>Other stores found</b> (ticked = same product and variant). Ticked links are added on Confirm; their price is NOT verified.</p>'+L.map((x,i)=>`<label class="pp-x-chk fine" style="display:block"><input type="checkbox" data-xo="${i}" data-xo-store="${h(x.store)}" data-xo-url="${h(x.url)}" data-xo-title="${h(String(x.title||'').slice(0,300))}"${x.tick?' checked':''}> <b>${h(nm(x.store))}</b> ${inr(x.price)} · ${h(String(x.title||'').slice(0,70))}${x.match==='exact'?'':' · <i>similar, not exact</i>'}${x.off?' · <i>different variant</i>':''} · <a href="${h(x.url)}" target="_blank" rel="noopener noreferrer">Open ↗</a></label>`).join('')+'</div>';
+  }
   function renderBox(){
     const pb=$('ppXpBox');if(!pb)return;if(!pend){pb.hidden=true;return;}
     pb.hidden=false;lastCheck=null;
     pb.innerHTML=`<div class="pp-xp-box"><h4>Store link waiting for Confirm: ${h(pend.store_name||pend.store)} · ${pend.price?inr(pend.price):'no price'} · seen ${h(agoTxt(pend.price_seen_at))}</h4>
       <p class="fine">Code <b>${h(pend.product_key)}</b> · <a href="${h(pend.url)}" target="_blank" rel="noopener noreferrer">Open store page ↗</a>. Fix the fields above, then press <b>Check</b>.</p>
       <div class="pp-xp-act"><button type="button" data-xp="check">Check</button><span class="fine" id="ppXpState"></span></div>
-      <ul class="pp-xp-rep" id="ppXpRep"></ul>
+      <ul class="pp-xp-rep" id="ppXpRep"></ul>${othersBox()}
       <label class="pp-x-chk fine"><input type="checkbox" id="ppXpAck"> I compared <b>Variant</b> and <b>Model</b> with the store page (RAM / storage / colour).</label>
       <div class="pp-xp-act"><input type="url" id="ppXpAff" placeholder="Affiliate link for this page (optional, e.g. EarnKaro / fktr.in)"><button type="button" data-xp="confirm" id="ppXpGo" disabled>Save &amp; Confirm</button></div></div>`;
   }
@@ -538,7 +608,7 @@
     if(b.dataset.xp==='confirm'){
       paintCheck();if(b.disabled||!pend)return;
       const f=$('productForm');
-      confirmIntent={id:pend.id,aff:($('ppXpAff').value||'').trim(),name:f.elements.name.value.trim(),store:pend.store_name||pend.store};
+      confirmIntent={id:pend.id,aff:($('ppXpAff').value||'').trim(),name:f.elements.name.value.trim(),store:pend.store_name||pend.store,others:[...document.querySelectorAll('#ppXpBox [data-xo]:checked')].map(c=>({store:c.dataset.xoStore,url:c.dataset.xoUrl,title:c.dataset.xoTitle||null}))};
       ourClick=true;f.requestSubmit($('saveProduct'));
     }
   }
@@ -554,7 +624,17 @@
       const pid=selectedId;
       const {data,error}=await api.rpc('pp_ext_pending_confirm',{p_id:it.id,p_product_id:pid,p_affiliate_url:it.aff||null});
       if(error||!data||!data.ok){msg('saveMsg',`Product saved, but the ${it.store} link was NOT confirmed: ${error?error.message:(data&&data.error)||'unknown'}. It is still in "Extension: new products".`,true);loadPending();return;}
-      msg('saveMsg',`${it.name} saved and the ${it.store} link confirmed.${data.price_saved?` Verified price ${inr(data.price)} is live.`:' No fresh price: open the store page once with Admin mode on.'}${data.replaced_url?' The old store link was replaced.':''}`);
+      let note=`${it.name} saved and the ${it.store} link confirmed.${data.price_saved?` Verified price ${inr(data.price)} is live.`:' No fresh price: open the store page once with Admin mode on.'}${data.replaced_url?' The old store link was replaced.':''}`,noteBad=false;
+      if(it.others&&it.others.length){
+        const r2=await api.rpc('pp_ext_pending_confirm_others',{p_id:it.id,p_product_id:pid,p_rows:it.others}),d2=r2.data;
+        if(r2.error||!d2||!d2.ok){noteBad=true;note+=` Other stores were NOT added: ${r2.error?(sqlMissing(r2.error)?'run the v9 SQL in Supabase first':r2.error.message):(d2&&d2.error)||'unknown'}.`;}
+        else{
+          const ad=d2.added||[],sk=d2.skipped||[];
+          if(ad.length)note+=` Other store links added (price not verified): ${ad.join(', ')}.`;
+          if(sk.length){noteBad=true;note+=` Not added: ${sk.map(s=>`${s.store} (${s.reason})`).join(', ')}.`;}
+        }
+      }
+      msg('saveMsg',note,noteBad);
       try{if(typeof refreshAll==='function')await refreshAll();}catch(_){}
       loadPending();
     },400);

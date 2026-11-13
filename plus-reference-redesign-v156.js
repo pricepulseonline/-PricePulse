@@ -12,7 +12,7 @@ function ppClosePremiumPlusPage(){
 function ppPlusPageRows(){return [
   ['Price comparison, Wallet & normal rewards','Included','Included','yes'],
   ['Referral ₹100 + ₹100','Included','Included','yes'],
-  ['Active Deal Alerts','1','Up to 3','plus'],
+  ['Active Deal Alerts','3','Up to 12','plus'],
   ['Minimum Wallet redemption','₹100','₹25','plus'],
   ['₹100 Welcome Reward','—','Eligible first purchase','plus'],
   ['Extra Plus Reward Boost','—','Eligible campaigns','plus'],
@@ -115,7 +115,7 @@ function ppPlusPageHTML(){
             <div class="pp-rd-card-bottom"><span>MORE DEALS · MORE REWARDS</span><span class="pp-rd-card-glyph">✦</span></div>
             <div class="pp-rd-card-sheen"></div>
           </div>
-          <div class="pp-rd-card-caption"><span>${ppRdIcon('bell')} 3 deal alerts</span><span>${ppRdIcon('gift')} Extra rewards</span><span>${ppRdIcon('star')} Member offers</span></div>
+          <div class="pp-rd-card-caption"><span>${ppRdIcon('bell')} 12 deal alerts</span><span>${ppRdIcon('gift')} Extra rewards</span><span>${ppRdIcon('star')} Member offers</span></div>
         </div>
       </div>
     </div>
@@ -132,7 +132,7 @@ function ppPlusPageHTML(){
         <div class="pp-rd-section-head"><div><span class="pp-rd-overline">WHAT YOU UNLOCK</span><h2>Four ways Plus gives you more</h2></div><p>Smarter shopping benefits, beyond basic price comparison.</p></div>
         <div class="pp-rd-benefits">
           <article class="pp-rd-benefit"><span class="pp-rd-feature-stat"><strong>₹100</strong><small>WELCOME REWARD</small></span><span class="pp-rd-icon">${ppRdIcon('gift')}</span><h3>₹100 Welcome Reward</h3><p>Earn ₹100 in your PricePulse Wallet after your first eligible confirmed purchase clears the return window.</p><span class="pp-rd-benefit-foot">One eligible purchase can cover ₹99</span></article>
-          <article class="pp-rd-benefit"><span class="pp-rd-feature-stat"><strong>3</strong><small>ACTIVE DEAL ALERTS</small></span><span class="pp-rd-icon">${ppRdIcon('bell')}</span><h3>Deal Alerts+</h3><p>Track up to 3 products at once. Free gets 1 active alert; Plus unlocks a richer alert experience.</p><span class="pp-rd-benefit-foot">1 Free alert → Up to 3 Plus alerts</span></article>
+          <article class="pp-rd-benefit"><span class="pp-rd-feature-stat"><strong>12</strong><small>ACTIVE DEAL ALERTS</small></span><span class="pp-rd-icon">${ppRdIcon('bell')}</span><h3>Deal Alerts+</h3><p>Track up to 12 products at once. Free gets 3 active alerts; Pro gives unlimited alerts.</p><span class="pp-rd-benefit-foot">3 Free alerts → Up to 12 Plus alerts</span></article>
           <article class="pp-rd-benefit"><span class="pp-rd-feature-stat"><strong>₹25</strong><small>WALLET REDEMPTION FROM</small></span><span class="pp-rd-icon">${ppRdIcon('wallet')}</span><h3>Plus Reward Boost</h3><p>Extra rewards on eligible campaigns, special vouchers and earlier wallet redemption from ₹25.</p><span class="pp-rd-benefit-foot">More ways to use your Wallet</span></article>
           <article class="pp-rd-benefit"><span class="pp-rd-feature-stat"><strong>PLUS</strong><small>MEMBER ACCESS</small></span><span class="pp-rd-icon">${ppRdIcon('star')}</span><h3>Member-only Savings</h3><p>Get access to genuine Plus-only deals, selected coupons, eligible bank offers and early-access campaigns.</p><span class="pp-rd-benefit-foot">Exclusive when available</span></article>
         </div>
@@ -140,7 +140,7 @@ function ppPlusPageHTML(){
       <section class="pp-rd-compare-section" id="ppPlusCompareInline">
         <div class="pp-rd-section-head is-center"><div><span class="pp-rd-overline">CHOOSE YOUR PLAN</span><h2>Free is good. <span>Plus is better.</span></h2></div><p>Everything Free offers stays free. Plus adds more ways to save.</p></div>
         <div class="pp-rd-plan-grid">
-          <article class="pp-rd-plan is-free"><span class="pp-rd-plan-name">PricePulse Free</span><div class="pp-rd-plan-price">₹0 <small>forever</small></div><p>All the essentials for comparing prices and shopping smarter.</p><ul><li>${ppRdIcon('check')} Price comparisons across stores</li><li>${ppRdIcon('check')} Free Wallet & normal rewards</li><li>${ppRdIcon('check')} Referral rewards where eligible</li><li>${ppRdIcon('check')} 1 active Deal Alert</li><li>${ppRdIcon('check')} Wallet redemption from ₹100</li></ul><button type="button" class="pp-rd-free-btn" data-pp-pg-action="back">Continue with Free →</button></article>
+          <article class="pp-rd-plan is-free"><span class="pp-rd-plan-name">PricePulse Free</span><div class="pp-rd-plan-price">₹0 <small>forever</small></div><p>All the essentials for comparing prices and shopping smarter.</p><ul><li>${ppRdIcon('check')} Price comparisons across stores</li><li>${ppRdIcon('check')} Free Wallet & normal rewards</li><li>${ppRdIcon('check')} Referral rewards where eligible</li><li>${ppRdIcon('check')} 3 active Deal Alerts</li><li>${ppRdIcon('check')} Wallet redemption from ₹100</li></ul><button type="button" class="pp-rd-free-btn" data-pp-pg-action="back">Continue with Free →</button></article>
           <article class="pp-rd-plan is-plus"><span class="pp-rd-best">BEST VALUE</span><span class="pp-rd-plan-name">PricePulse <em>Plus</em></span><div class="pp-rd-plan-price">₹99 <small>/ year</small></div><p>Everything in Free, plus benefits built to deliver extra value.</p><ul><li>${ppRdIcon('check')} <b>₹100 Welcome Reward</b> on eligible first purchase</li><li>${ppRdIcon('check')} <b>Up to 3</b> active Deal Alerts</li><li>${ppRdIcon('check')} Wallet redemption from <b>₹25</b></li><li>${ppRdIcon('check')} Extra rewards & selected special vouchers</li><li>${ppRdIcon('check')} Member-only offers & Savings Tracker</li></ul>${compareJoin}</article>
         </div>
         <details class="pp-rd-full-compare"><summary>See full Free vs Plus feature comparison <span>⌄</span></summary><div class="pp-rd-compare-matrix">${ppPlusPageTable()}</div></details>
@@ -155,7 +155,7 @@ function ppPlusPageHTML(){
       <section class="pp-rd-faq" id="ppPlusFaq"><div class="pp-rd-section-head is-center"><div><span class="pp-rd-overline">GOOD TO KNOW</span><h2>Questions, answered.</h2></div></div><div class="pp-rd-faq-list">
         <details><summary>When will I receive my ₹100 Welcome Reward?</summary><p>After your first eligible confirmed purchase clears the applicable returns/cancellations window. It is a conditional wallet reward, not an instant checkout discount.</p></details>
         <details><summary>Does the Free Wallet stay free?</summary><p>Yes. PricePulse Wallet, normal rewards and price comparisons remain available to Free users. Plus adds eligible rewards and lower redemption thresholds.</p></details>
-        <details><summary>How many Deal Alerts can I set?</summary><p>Free allows 1 active Deal Alert. Plus allows up to 3 active Deal Alerts, subject to the current alert rules.</p></details>
+        <details><summary>How many Deal Alerts can I set?</summary><p>Free allows 3 active Deal Alerts. Plus allows up to 12 active Deal Alerts. Pro gives unlimited Deal Alerts.</p></details>
         <details><summary>Do I automatically get every bank offer or coupon?</summary><p>No. Member-only offers are subject to each retailer, bank or campaign's eligibility and availability. Final retailer checkout terms apply.</p></details>
         <details><summary>Can I pay ₹99 on this build?</summary><p>Not yet. Secure online payment checkout is still being connected. The existing checkout screen is a development preview and does not charge you.</p></details>
       </div></section>

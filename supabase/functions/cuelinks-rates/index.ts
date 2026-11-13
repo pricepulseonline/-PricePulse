@@ -1,4 +1,4 @@
-// PricePulse V278: Cuelinks cashback RATES sync -> pp_cashback_rates (source = 'cuelinks').
+// PricePulse V278.1: Cuelinks cashback RATES sync -> pp_cashback_rates (source = 'cuelinks').
 // Reads the Cuelinks Monetization API v3 (read:campaigns) once a day for every active store in pp_catalog_stores
 // (Amazon is always skipped) and turns each campaign's "payout_categories" into rate rows:
 //   model rows (e.g. "All variants of iphone 15, iphone 16 and iphone 17")  > brand rows ("APPLE, REALME, REDMI")
@@ -59,10 +59,26 @@ const DICT: [RegExp, Def][] = [
   [/^accessories$/, { cat: "*", name: ACCESS, pri: 14 }],
   [/^small (home|kitchen) appliances?$/, { cat: "*", name: ["mixer", "grinder", "juicer", "blender", "iron", "kettle", "toaster", "air fryer", "airfryer", "induction", "cooktop", "vacuum", "fan", "purifier", "heater", "geyser", "sandwich maker", "chopper", "rice cooker"], pri: 12 }],
   [/^misc|^others?$|^all other/, { cat: "*", pri: 0, skip: true }],
+  // V278.1: category words used by Croma / Shopsy style lists ("Home/ Kitchen Appliances", "Laptops/desktop, Tablets/e-readers ...")
+  [/^(home( and)? )?kitchen( appliances)?$|^home appliances$|^home$|^home and kitchen$|^home furnishing$|^home decor$/, { cat: "home", pri: 10 }],
+  [/^large appliances$|^appliances$/, { cat: "appliances", pri: 10 }],
+  [/^e ?readers?$|^kindle$/, { cat: "*", name: ["kindle", "e reader", "ereader"], pri: 15 }],
+  [/^accessories (computer|mobile|laptop)s?$|^(computer|mobile|laptop) accessories$/, { cat: "*", name: ACCESS.concat(["mouse", "keyboard", "pendrive", "pen drive", "memory card", "hard disk", "ssd"]), pri: 14 }],
+  [/^personal care$|^grooming$|^personal grooming$/, { cat: "*", name: ["trimmer", "shaver", "hair dryer", "straightener", "epilator", "grooming kit"], pri: 14 }],
+  [/^wearables?$|^smart ?watches$|^fitness bands?$/, { cat: "*", name: ["smartwatch", "smart watch", "fitness band", "smart band"], pri: 15 }],
+  [/^lifestyle$|^fashion$|^apparel$|^clothing$/, { cat: "fashion", pri: 10 }],
+  [/^beauty$|^cosmetics$|^makeup$/, { cat: "beauty", pri: 10 }],
 ];
+/* V278.1: lines that pay ONE rate on every product of the store (Cuelinks gives no category split):
+   "Existing User" / "Repeat User" / "Payout" / "All products". We keep the EXISTING-user rate (never the new-user one).
+   Stored as an "all products" rule (name_rx ".") with the LOWEST priority, so category rules and 0% lines win. */
+const USER_NEW = /^(new|first time|first) (users?|customers?|buyers?)$/;
+const USER_OLD = /^(existing|repeat|old|returning|regular) (users?|customers?|buyers?)$/;
+const STORE_ALL = /^(payout|default payout|default|all products?|all categories|all other products?|rest of the products|other products)$/;
+const ALL_RX = ".";
 const dictOf = (labN: string) => DICT.find(([re]) => re.test(labN))?.[1] ?? null;
 const clean = (s: any) => String(s ?? "").replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/\n{2,}/g, "\n").trim();
-const items = (s: string) => s.split(/\s*(?:,|\n|;|\band\b)\s*/i).map((x) => x.trim()).filter(Boolean);
+const items = (s: string) => s.split(/\s*(?:,|\n|;|&|\band\b)\s*/i).map((x) => x.trim()).filter(Boolean);
 const codeOf = (it: string) => (norm(it).split(" ").find((t) => t.length >= 5 && /[a-z]/.test(t) && /\d/.test(t)) ?? "");
 
 export type Rate = { category: string; brand_rx: string; name_rx: string; commission_pct: number; flat_amount: number | null; cap_amount: number | null; priority: number; raw_name: string; keys: string[] };
@@ -100,6 +116,26 @@ export function parsePayouts(cats: any[]): { rates: Rate[]; lines: Line[] } {
       const d = dictOf(na[1]);
       add({ cat: d?.cat ?? "*", name: d?.name ?? [na[1]], brand: items(na[2]).map(norm), pri: (d?.pri ?? 15) + 2 }, [norm(na[1])]);
       return;
+    }
+    // 3b) one rate for the whole store: "Existing User 2.1%", "Payout 4.5%" (new-user rates are never used)
+    if (USER_NEW.test(labN)) { ln.result = "skipped"; ln.detail = "new-user rate - not used (we show the existing-user rate)"; return; }
+    if (USER_OLD.test(labN) || STORE_ALL.test(labN)) {
+      if (payout > 0) { add({ cat: "*", nameRx: ALL_RX, pri: 5 }, [labN, "all"]); ln.detail = `all products of the store · ${pctType ? payout + "%" : "₹" + payout + " flat"} (lowest priority: category rules and 0% lines win)`; }
+      else { ln.result = "skipped"; ln.detail = "0 for all products - nothing to show"; }
+      return;
+    }
+    // 3c) a list of categories in one line: "Home/ Kitchen Appliances", "Laptops/desktop, Tablets/e-readers, Audio, Accessories (Mobile)",
+    //     "Payout on Home, LifeStyle, BGM" - every part we know becomes its own rule with the same payout
+    if (ctx.group !== "mobile" && !/[{=]/.test(raw) && /[\/,&]/.test(raw) && !dictOf(labN)) {
+      const base = label.replace(/^payout on\s+/i, "");
+      const parts = base.split(/\s*(?:\/|,|&|\band\b)\s*/i).map((x) => norm(x)).filter(Boolean);
+      const known = parts.map((x) => [x, dictOf(x)] as [string, Def | null]).filter(([, d]) => d && !d.skip && !d.group) as [string, Def][];
+      if (known.length && known.length >= Math.ceil(parts.length / 2)) {
+        known.forEach(([x, d]) => add(d, [labN, x]));
+        ln.detail = `${known.map(([x]) => x).join(", ")} · ${payout > 0 ? (pctType ? payout + "%" : "₹" + payout + " flat") : "no commission"}${known.length < parts.length ? ` · not used: ${parts.filter((x) => !known.some(([k]) => k === x)).join(", ")}` : ""}`;
+        ctx = {};
+        return;
+      }
     }
     // 4) a known category line
     const d = dictOf(labN);
@@ -164,7 +200,10 @@ export function rulesOf(c: any) {
   const has = (l: string[], re: RegExp) => l.some((x) => re.test(x));
   const status = String(c?.access_status ?? "");
   const cashback = c?.cashback_publishers_allowed === true && has(allowed, /cashback/i) && !has(dis, /cashback/i) && !/paus|reject|clos|suspend|block/i.test(status);
-  return { cashback, coupons: !has(dis, /^coupons?$/i), deals: !has(dis, /^deals?$/i), allowed, dis, status };
+  // V2.1: may we send shoppers through Cuelinks links for this store? Yes when the campaign exists and is not paused / rejected / closed.
+  // (Wrongly saying "yes" only costs commission; wrongly saying "no" would lose it, so only known bad words switch it off.)
+  const link = !!c && !/paus|reject|clos|suspend|block|pend|expire|inactive|disabl|declin|cancel|terminat|not[ _-]?appl/i.test(status);
+  return { cashback, link, coupons: !has(dis, /^coupons?$/i), deals: !has(dis, /^deals?$/i), allowed, dis, status };
 }
 
 /* ---------- Cuelinks API ---------- */
@@ -186,7 +225,9 @@ async function findCampaign(store: { name: string; domain: string }, key: string
 }
 
 /* ---------- handler ---------- */
-if (typeof (globalThis as any).Deno !== "undefined") (globalThis as any).Deno.serve(async (req: Request) => {
+/* V2.1: Admin calls this from the browser ("Sync with Cuelinks now"): answer the CORS preflight and add the headers to every answer */
+const CORS: Record<string, string> = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info", "Access-Control-Allow-Methods": "GET, POST, OPTIONS" };
+const handle = async (req: Request): Promise<Response> => {
   const Deno = (globalThis as any).Deno;
   const q = new URL(req.url).searchParams, dry = q.get("dry") === "1", only = q.get("store");
   const key = Deno.env.get("CUELINKS_V3_KEY") || Deno.env.get("CUELINKS_API_KEY");
@@ -218,10 +259,13 @@ if (typeof (globalThis as any).Deno !== "undefined") (globalThis as any).Deno.se
     await sql.begin(async (tx: any) => {
       for (const o of out) {
         const r = o.res;
-        await tx`insert into public.pp_cashback_campaigns (store, campaign_id, campaign_name, status, cashback_allowed, coupons_allowed, deals_allowed, media_allowed, media_disallowed, validation_time, payment_time, error, synced_at)
+        await tx`insert into public.pp_cashback_campaigns (store, campaign_id, campaign_name, status, cashback_allowed, coupons_allowed, deals_allowed, media_allowed, media_disallowed, validation_time, payment_time, error, synced_at, access_status, link_allowed)
           values (${o.s.name}, ${r.campaign_id ?? null}, ${r.campaign_name ?? null}, ${r.status}, ${o.ru?.cashback ?? false}, ${o.ru?.coupons ?? null}, ${o.ru?.deals ?? null},
-            ${o.ru?.allowed ?? []}, ${o.ru?.dis ?? []}, ${o.c?.validation_time ?? null}, ${o.c?.payment_time ?? null}, ${r.error ?? null}, now())
-          on conflict (store) do update set campaign_id = excluded.campaign_id, campaign_name = excluded.campaign_name, status = excluded.status, cashback_allowed = excluded.cashback_allowed,
+            ${o.ru?.allowed ?? []}, ${o.ru?.dis ?? []}, ${o.c?.validation_time ?? null}, ${o.c?.payment_time ?? null}, ${r.error ?? null}, now(), ${o.ru?.status ?? null}, ${o.ru?.link ?? false})
+          on conflict (store) do update set
+            access_status = case when excluded.error is not null then public.pp_cashback_campaigns.access_status else excluded.access_status end,
+            link_allowed = case when excluded.error is not null then public.pp_cashback_campaigns.link_allowed else excluded.link_allowed end,
+            campaign_id = excluded.campaign_id, campaign_name = excluded.campaign_name, status = excluded.status, cashback_allowed = excluded.cashback_allowed,
             coupons_allowed = excluded.coupons_allowed, deals_allowed = excluded.deals_allowed, media_allowed = excluded.media_allowed, media_disallowed = excluded.media_disallowed,
             validation_time = excluded.validation_time, payment_time = excluded.payment_time, error = excluded.error, synced_at = now()`;
         if (r.status === "error") continue; // a bad API answer never wipes yesterday's rates
@@ -244,4 +288,10 @@ if (typeof (globalThis as any).Deno !== "undefined") (globalThis as any).Deno.se
   } finally {
     await sql.end({ timeout: 2 });
   }
+};
+if (typeof (globalThis as any).Deno !== "undefined") (globalThis as any).Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  const r = await handle(req);
+  const h = new Headers(r.headers); for (const k of Object.keys(CORS)) h.set(k, CORS[k]);
+  return new Response(r.body, { status: r.status, headers: h });
 });

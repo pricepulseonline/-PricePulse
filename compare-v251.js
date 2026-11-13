@@ -23,9 +23,12 @@ const {H,M}=K;
    Paste the real link here after the extension is published. */
 const EXT_STORE_URL=window.PP_EXT_STORE_URL||'';
 const SITE='https://price-pulse.in/';
-const CONTACT='pricepulseonline@gmail.com';
+const CONTACT='support@price-pulse.in';
 
 /* ---------- logos ---------- */
+/* V280 (L47): line icons instead of emoji */
+const EI_P={tag:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12.5V4h8.5L21 13.5 13.5 21z"/><circle cx="7.5" cy="8.5" r="1.3"/></svg>',bank:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg>',gift:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8h14v-8M12 8c-2.5 0-4-1-4-2.5S9.5 3 11 4.2 12 8 12 8zm0 0c2.5 0 4-1 4-2.5S14.5 3 13 4.2 12 8 12 8z"/></svg>',card:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg>',fire:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3.2 2-4 .2 1.3.8 2 1.6 2.4C10.2 8.6 10.6 5.5 12 3z"/></svg>',bell:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>',chart:'<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 3 8-9M15 6h5v5"/></svg>'};
+const ei=k=>`<i class="ppf-ei">${EI_P[k]||''}</i>`;
 const ROTATE=[
   ['Amazon','logos/amazon-wordmark.svg'],['Flipkart','logos/flipkart-wordmark.svg'],['Croma','logos/croma-wordmark.svg'],
   ['Myntra','logos/myntra-logo.png'],['Vijay Sales','logos/stores/vijay-sales.svg'],['Nykaa','logos/stores/nykaa.svg'],
@@ -45,15 +48,17 @@ const PH_LOGOS=[
   ['Amazon','logos/amazon-logo.png'],['Flipkart','logos/flipkart-logo.png'],['Myntra','logos/myntra-logo.png'],['Croma','logos/stores/croma-round.svg'],
   ['AJIO','logos/ajio-logo.png'],['Nykaa','logos/stores/nykaa.svg'],['Reliance Digital','logos/reliance-digital-logo.png'],['Tata CLiQ','logos/tatacliq-logo.png'],
   ['Meesho','logos/stores/meesho.png'],['Vijay Sales','logos/stores/vijay-sales.svg'],['JioMart','logos/jiomart-logo.png'],['Nykaa Fashion','logos/stores/nykaa-fashion.svg']];
-function rotator(){return `<span class="ppf-rot" aria-hidden="true">${PH_LOGOS.map(([n,src],i)=>`<img src="${src}" alt=""${i?'':' class="is-on"'}>`).join('')}</span>`;}
+/* V279: round store icon + store NAME (the old wordmark logos showed the name; the round icons do not) */
+const PH_ICON={'Amazon':'amazon','Flipkart':'flipkart','Myntra':'myntra','Croma':'croma','AJIO':'ajio','Nykaa':'nykaa','Reliance Digital':'reliance-digital','Tata CLiQ':'tata-cliq','Meesho':'meesho','Vijay Sales':'vijay-sales','JioMart':'jiomart','Nykaa Fashion':'nykaa-fashion'};
+function rotator(){return `<span class="ppf-rot" aria-hidden="true">${PH_LOGOS.map(([n,src],i)=>`<span class="ppf-rot-it${i?'':' is-on'}"><img src="${PH_ICON[n]?'logos/store-icons/'+PH_ICON[n]+'.png':src}" alt="" data-pp79="1" class="pp79-sic"><b>${n}</b></span>`).join('')}</span>`;}
 let rotI=0;
 const ROT_STILL=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function rotFit(r){const on=r.querySelector('img.is-on');if(on&&on.offsetWidth)r.style.width=on.offsetWidth+'px';}
+function rotFit(r){const on=r.querySelector('.ppf-rot-it.is-on');if(on&&on.offsetWidth)r.style.width=on.offsetWidth+'px';}
 setInterval(()=>{
   if(document.hidden)return;
   const prev=rotI;rotI=(rotI+1)%PH_LOGOS.length;
   document.querySelectorAll('.ppf-rot').forEach(r=>{
-    const ims=r.querySelectorAll('img');
+    const ims=r.querySelectorAll('.ppf-rot-it');
     ims.forEach((im,i)=>{im.classList.toggle('is-on',i===rotI);im.classList.toggle('is-out',i===prev&&!ROT_STILL);});
     rotFit(r);
     setTimeout(()=>ims[prev]?.classList.remove('is-out'),550);
@@ -64,14 +69,15 @@ window.addEventListener('load',()=>document.querySelectorAll('.ppf-rot').forEach
 /* V257: "Works with" logos in the box: 3 round slots, all 12 stores in turns.
    Every 3 s each slot flips like a coin (one after another); the logo changes when the coin is edge-on. */
 {const slots=[...document.querySelectorAll('.pp-ob-works .pp-ob-ic')];let g=0;
- const n=slots.length?slots[0].children.length:0;
+ /* L2 (V281): slots can hold ALL stores (filled by polish-v280.js); each slot shows a different store, all of them in turns */
+ const nOf=()=>slots.length?slots[0].children.length:0;
  const still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- const show=sl=>[...sl.children].forEach((im,k)=>im.classList.toggle('is-on',k===g));
- if(n>1)setInterval(()=>{
-   if(document.hidden)return;g=(g+1)%n;
+ const show=(sl,i)=>{const n=nOf(),st=Math.max(1,Math.floor(n/Math.max(1,slots.length)));[...sl.children].forEach((im,k)=>im.classList.toggle('is-on',k===(g+i*st)%n));};
+ setInterval(()=>{
+   if(document.hidden||nOf()<2)return;g=(g+1)%nOf();
    slots.forEach((sl,i)=>{
-     if(still){show(sl);return;}
-     setTimeout(()=>{sl.classList.remove('is-flip');void sl.offsetWidth;sl.classList.add('is-flip');setTimeout(()=>show(sl),300);},i*150);
+     if(still){show(sl,i);return;}
+     setTimeout(()=>{sl.classList.remove('is-flip');void sl.offsetWidth;sl.classList.add('is-flip');setTimeout(()=>show(sl,i),300);},i*150);
    });
  },3000);}
 
@@ -83,7 +89,7 @@ function addRotatingPlaceholder(input){
   if(getComputedStyle(form).position==='static')form.style.position='relative';
   const ph=document.createElement('span');
   ph.className='ppf-ph';
-  ph.innerHTML=`<span class="ppf-ph-l">Search or paste any</span><span class="ppf-ph-s">Paste any</span>${rotator()}<span>link</span>`;
+  ph.innerHTML=`<span class="ppf-ph-l">Search or paste any</span><span class="ppf-ph-s">Paste</span>${rotator()}<span>link</span>`;
   form.appendChild(ph);
   input.setAttribute('placeholder','');
   input.setAttribute('aria-label','Search a product or paste a product link');
@@ -460,8 +466,16 @@ function loadCardRewards(){
 const MYC='ppMyCards';
 function myCards(){try{const a=JSON.parse(localStorage.getItem(MYC)||'[]');return Array.isArray(a)?a:[];}catch(_){return [];}}
 function setMyCards(a){try{localStorage.setItem(MYC,JSON.stringify(a));}catch(_){}}
-const BANK_C={hdfc:'#2E614E',sbi:'#2B6CB0',axis:'#97144D',icici:'#B02A30',kotak:'#ED1C24',indusind:'#8B1D41',yes:'#36735D',idfc:'#9C1D26',au:'#6B2C91',rbl:'#21409A',hsbc:'#DB0011',amex:'#2671B9',bob:'#F15A29',onecard:'#111'};
-function bankBadge(b){const k=String(b||'').toLowerCase().replace(/[^a-z]/g,'').replace(/bank$/,'');const c=Object.keys(BANK_C).find(x=>k.startsWith(x));const t=String(b||'₹').replace(/bank/i,'').trim().slice(0,c==='indusind'?3:4).toUpperCase()||'₹';return `<i class="ppf-bk" style="--bk:${c?BANK_C[c]:'#616D66'}" aria-hidden="true">${H(t)}</i>`;}
+/* V280 (L46): bank = round badge in the bank's colour (same look/size as the store icons). If logos/bank-icons/<slug>.png exists it covers the badge. */
+const BANK_C={hdfc:'#004C8F',sbi:'#1C6FB7',axis:'#97144D',icici:'#C2410C',kotak:'#D91A2A',indusind:'#8B1D41',yes:'#1F5FA8',idfc:'#9C1D26',au:'#6B2C91',rbl:'#21409A',hsbc:'#DB0011',amex:'#2671B9',bob:'#E5530F',onecard:'#111827',tata:'#5B2A86',federal:'#1E4E8C',pnb:'#A6192E',standard:'#0473EA',scb:'#0473EA',deutsche:'#0018A8',citi:'#056DAE',idbi:'#00836C',canara:'#0E7BBF',union:'#C8102E',slice:'#5C4BFF',jupiter:'#F26B21',bandhan:'#C8102E',dbs:'#E21836',bank:'#616D66'};
+const BANK_T={kotak:'KMB',indusind:'IIB',standard:'SC',scb:'SC',deutsche:'DB',federal:'FED',bob:'BOB',onecard:'ONE',tata:'NEU',canara:'CAN',union:'UBI',bandhan:'BND',jupiter:'JUP',slice:'SLC'};
+function bankBadge(b){
+  const raw=String(b||'').replace(/bank/ig,'').trim();const k=raw.toLowerCase().replace(/[^a-z]/g,'');
+  const c=Object.keys(BANK_C).find(x=>x!=='bank'&&k.startsWith(x))||'';
+  const slug=c==='scb'?'standard-chartered':c==='bob'?'bank-of-baroda':c==='idfc'?'idfc-first':c==='tata'?'tata-neu':c||(k||'bank');
+  const t=(BANK_T[c]||(raw.slice(0,4)||'₹')).toUpperCase();
+  return `<i class="ppf-bk ppf-bkc${t.length>3?' is-l':''}" style="--bk:${c?BANK_C[c]:'#616D66'}" aria-hidden="true"><em>${H(t)}</em><img src="logos/bank-icons/${H(slug)}.png" alt="" loading="lazy" onerror="this.remove()" onload="this.parentNode.classList.add('has-img')"></i>`;
+}
 /* every card's best reward on this store (store row beats the "*" any-online row); sorted by ₹ back */
 function cardsFor(store,pay,skipBank){
   if(!Array.isArray(cardRewards)||!Number.isFinite(pay)||pay<=0)return [];
@@ -585,11 +599,14 @@ function rowsHTML(rows,link,noLow){
   const priced=rows.filter(r=>Number.isFinite(r.price)&&r.inStock!==false);
   const minP=priced.length?Math.min(...priced.map(r=>r.price)):null;
   const tie=!noLow&&priced.length>1&&priced.filter(r=>r.price===minP).length>1;
+  /* AI-PLAN Q4: a price far below the other stores (under 60% of their middle price) gets a short "check before you buy" note */
+  const pv=priced.map(r=>r.price).sort((x,y)=>x-y),midP=pv.length>=3?pv[Math.floor(pv.length/2)]:null;
   return `<ol class="ppf-rows">${rows.map(r=>{
+    const risk=midP&&Number.isFinite(r.price)&&r.inStock!==false&&r.price<midP*0.6?`<small class="ppf-risk" style="display:block;color:#b45309;font-weight:700">Much cheaper than other stores - check the seller, exact variant and return policy</small>`:'';
     const isLow=!!lo&&lo.unique&&lo.count>1&&r===lo.row;
     const isTie=tie&&Number.isFinite(r.price)&&r.inStock!==false&&r.price===minP;
     const yours=link&&sameStore(r.store,link.store);
-    const tag=r.kind==='verified'?`Verified ${ago(r.checkedAt)||''}`.trim():r.kind==='live'?`Seen ${ago(r.seenAt)||'just now'}${r.match==='similar'?' · similar product':''}`:r.kind==='search'?'Search results':'Product page';
+    const tag=r.kind==='verified'?`Verified ${ago(r.checkedAt)||''}`.trim():r.kind==='live'?`Seen ${ago(r.seenAt)||'just now'}${r.match==='similar'?' · similar product':''}`:r.kind==='web'?(Number.isFinite(r.price)?`From the web · ${ago(r.seenAt)||'just now'}`:r.quick?'Price depends on your area':'Check price on store'):r.kind==='search'?'Search results':'Product page';
     const extra=[r.delivery?`Delivery ${H(r.delivery)}`:'',r.deliveryCharge?H(r.deliveryCharge):''].filter(Boolean).join(' · ');
     const more=!noLow&&priced.length>1&&minP!=null&&Number.isFinite(r.price)&&r.inStock!==false&&r.price>minP?`<small class="ppf-more">${M(r.price-minP)} more</small>`:'';
     const net=r.net?`<small class="ppf-netline">Net ${M(r.price-r.net.save)} with offer</small>`:'';
@@ -597,9 +614,9 @@ function rowsHTML(rows,link,noLow){
     const cbx=Number.isFinite(r.price)&&r.inStock!==false&&window.ppCashback?window.ppCashback.span(r.store,r.price,stackCats[0]||'','tag'):'';
     const price=r.inStock===false?'<span class="ppf-oos">Out of stock</span>':Number.isFinite(r.price)?`<b class="ppf-price">${M(r.price)}</b>${more}${net}${cbx}`:'';
     const btn=isLow?'Buy':r.kind==='search'?'Search':'Open';
-    return `<li class="ppf-row${isLow?' is-low':''}${isTie?' is-tie':''}${Number.isFinite(r.price)?'':' is-noprice'}"><a href="${H(r.url)}" target="_blank" rel="noopener" data-ppf-store="${H(r.store)}">
+    return `<li class="ppf-row${isLow?' is-low':''}${isTie?' is-tie':''}${Number.isFinite(r.price)?'':' is-noprice'}"><a href="${H(aiLinkUrl(r.url))}" target="_blank" rel="noopener" data-ppf-store="${H(r.store)}">
       <span class="ppf-logo">${logo(r.store)}</span>
-      <span class="ppf-meta">${isLow?'<em class="ppf-badge">LOWEST</em>':''}${isTie?'<em class="ppf-badge is-same">SAME PRICE</em>':''}${yours?'<em class="ppf-badge is-you">YOUR LINK</em>':''}<small>${H(tag)}${extra?' · '+extra:''}</small></span>
+      <span class="ppf-meta">${isLow?'<em class="ppf-badge">LOWEST</em>':''}${isTie?'<em class="ppf-badge is-same">SAME PRICE</em>':''}${yours?'<em class="ppf-badge is-you">YOUR LINK</em>':''}<small>${H(tag)}${extra?' · '+extra:''}</small>${risk}</span>
       <span class="ppf-pr">${price}</span>
       <span class="ppf-go${isLow?' is-primary':''}">${btn} ↗</span></a>${moreS}${r.offHTML||''}</li>`;}).join('')}</ol>`;
 }
@@ -610,7 +627,8 @@ window.ppOpenFind=url=>{
   const target='#/find/'+encodeURIComponent(url);
   if(location.hash===target)routeFind(url);else location.hash=target;
 };
-function storesStrip(){return `<div class="ppf-stores" aria-label="Stores we compare">${ROTATE.map(([n,src])=>`<span><img src="${src}" alt="${H(n)}"></span>`).join('')}</div>`;}
+/* V280 (L38): the store list is filled by polish-v280.js (it needs the 40 store icons) */
+function storesStrip(){return '<div class="ppf-stores" aria-label="Stores we compare" data-pp80-stores></div>';}
 function pastePill(){return `<button type="button" class="ppf-pill" data-ppf-focus><b aria-hidden="true">↑</b>Paste any product link in the search bar<small>Amazon, Flipkart, Croma &amp; more</small></button>`;}
 /* V276 (P8): one Price Check page. The head (title, the box, store logos) stays the same before and after a link is pasted;
    with a link the head gets compact and the result shows under it. Steps and deals show only while the box is empty. */
@@ -667,9 +685,16 @@ function routeFind(param){
 }
 function noteHTML(title,text){return `<div class="ppf-card ppf-note"><p class="ppf-title">${title}</p><p class="ppf-muted">${text}</p></div>`;}
 
+const SHORT_RX=/^https?:\/\/(www\.)?(amzn\.in|amzn\.to|a\.co|dl\.flipkart\.com\/s\/|fkrt\.it|fkrt\.cc|fktr\.in|myntr\.it|ajio\.me|ajiio\.in|nyk\.aa|bit\.ly|tinyurl\.com|wsli\.nk|ekaro\.in)/i;
 async function runFind(link,out){
   const token=++renderToken;
   out.innerHTML=`<div class="ppf-card ppf-loading"><span class="ppf-spin" aria-hidden="true"></span>Finding this product on other stores…</div>`;
+  /* AI-1: a short share link (dl.flipkart.com/s/…, amzn.in/d/…) is opened to its real product address by our server first */
+  if(SHORT_RX.test(link.url||'')&&typeof supabaseClient!=='undefined'&&supabaseClient){
+    let u='';try{const r=await Promise.race([supabaseClient.functions.invoke('ai-link-compare',{body:{url:link.url,mode:'expand'}}),new Promise(res=>setTimeout(()=>res(null),8000))]);u=r&&r.data&&r.data.ok?String(r.data.url||''):'';}catch(_){}
+    if(token!==renderToken)return;
+    if(u&&u!==link.url&&/^https?:\/\//i.test(u)){window.ppOpenFind(u);return;}
+  }
   let m=null;try{m=await K.matchStoreLink(link);}catch(_){}
   if(token!==renderToken)return;
   if(m&&m.exact){renderMatched(out,m.p,link);return;}
@@ -715,9 +740,9 @@ function renderMatched(out,p,link){
         ${chips.length?`<div class="ppf-chips">${chips.map(c=>`<span>${H(c)}</span>`).join('')}</div>`:''}
         ${Number.isFinite(best)?`<p class="ppf-best">Best price <b>${M(best)}</b>${lo&&lo.unique?` at ${H(lo.row.store)}`:''}${save?` <span class="ppf-save">You save ${M(save)} vs ${H(link.store)}</span>`:''}</p>`:'<p class="ppf-muted">Verified prices are being checked. Open a store below to see its price now.</p>'}
         <div class="ppf-acts">
-          ${buy?`<a class="ppx-btn ppx-btn-primary ppf-buy" href="${H(buy.url)}" target="_blank" rel="noopener">Buy at ${H(buy.store)} ↗</a>`:yourRow&&lo&&yourRow===lo.row&&lo.count>1?`<span class="ppf-onbest">✓ Your link already has the best price</span>`:''}
+          ${buy?`<a class="ppx-btn ppx-btn-primary ppf-buy" href="${H(aiLinkUrl(buy.url))}" target="_blank" rel="noopener">Buy at ${H(buy.store)} ↗</a>`:yourRow&&lo&&yourRow===lo.row&&lo.count>1?`<span class="ppf-onbest">✓ Your link already has the best price</span>`:''}
           ${wishBtn(p)}
-          ${target?`<a class="ppf-act" href="#/product/${encodeURIComponent(p.id)}?alert=${target}"><span aria-hidden="true">🔔</span>Alert me at ${M(target)}</a>`:''}
+          ${target?`<a class="ppf-act" href="#/product/${encodeURIComponent(p.id)}?alert=${target}"><span aria-hidden="true">${ei('bell')}</span>Alert me at ${M(target)}</a>`:''}
           <button type="button" class="ppf-act" data-ppf-share><span aria-hidden="true">↗</span>Share</button>
         </div>
       </div>
@@ -741,7 +766,7 @@ function moreDealsHTML(cat,exclude){
   const list=topDeals(cat,exclude,4);if(!list.length)return '';
   return `<section class="ppf-sec"><div class="ppf-sec-h"><h2>More verified deals in ${H(catName(cat))}</h2><a class="ppf-link" href="#deals" data-ppf-cat="${H(cat)}">See all →</a></div>${dealCardsHTML(list)}</section>`;
 }
-function stickyHTML(row){return `<div class="ppf-sticky" role="region" aria-label="Lowest price"><span>Lowest <b>${M(row.price)}</b> at</span><span class="ppf-sticky-logo">${logo(row.store)}</span><a href="${H(row.url)}" target="_blank" rel="noopener">Buy ↗</a></div>`;}
+function stickyHTML(row){return `<div class="ppf-sticky" role="region" aria-label="Lowest price"><span>Lowest <b>${M(row.price)}</b> at</span><span class="ppf-sticky-logo">${logo(row.store)}</span><a href="${H(aiLinkUrl(row.url))}" target="_blank" rel="noopener">Buy ↗</a></div>`;}
 function placeSticky(){const s=document.querySelector('.ppf-sticky');if(!s)return;const bn=document.querySelector('.ppx-bottom-nav');const h=bn&&getComputedStyle(bn).display!=='none'?bn.getBoundingClientRect().height:0;s.style.bottom=(h+10)+'px';}
 window.addEventListener('resize',placeSticky);
 function bindMatched(out,p,link){
@@ -775,7 +800,8 @@ function unknownInfo(link,catOverride,pr,qOver){
   let q=qOver||(title?cleanQuery(title)||searchQuery(title):(K.canSearchStores(d)?K.detQuery(d):''));
   if(!qOver&&q&&q.split(' ').length<2){const w={mobiles:'smartphone',laptops:'laptop'}[cat];if(w)q+=' '+w;}
   const rows=[{store:link.store,url:link.url,price:null,kind:'link'}];
-  if(q)catStores(cat).filter(s=>!sameStore(s,link.store)).forEach(s=>{const f=K.STORE_SEARCH.find(([n])=>n===s);if(f)rows.push({store:s,url:f[1](q),price:null,kind:'search'});});
+  const BS=window.ppBrandStores||{};
+  if(q)catStores(cat).filter(s=>!sameStore(s,link.store)&&(!BS[s]||BS[s].test(title+' '+text))).forEach(s=>{const f=K.STORE_SEARCH.find(([n])=>n===s);if(f)rows.push({store:s,url:f[1](q),price:null,kind:'search'});});
   return {d,title,q,cat,sure,rows,catOverride:catOverride||''};
 }
 function renderUnknown(out,link,catOverride){
@@ -792,7 +818,7 @@ function renderUnknown(out,link,catOverride){
         <p class="ppf-muted">We don't have verified prices for this product yet. Track it and we will add it.</p>
         <div class="ppf-acts ppf-track">
           <button type="button" class="ppx-btn ppx-btn-primary" data-ppf-track>Track this product</button>
-          ${signed?`<label class="ppf-target"><span>Alert me below</span><b>₹</b><input name="target" inputmode="numeric" placeholder="e.g. 799" autocomplete="off"></label>`:`<button type="button" class="ppf-act" data-ppf-signin><span aria-hidden="true">🔔</span>Sign in for a price alert</button>`}
+          ${signed?`<label class="ppf-target"><span>Alert me below</span><b>₹</b><input name="target" inputmode="numeric" placeholder="e.g. 799" autocomplete="off"></label>`:`<button type="button" class="ppf-act" data-ppf-signin><span aria-hidden="true">${ei('bell')}</span>Sign in for a price alert</button>`}
           <button type="button" class="ppf-act" data-ppf-share><span aria-hidden="true">↗</span>Share</button>
         </div>
         <p class="ppf-done" data-ppf-done hidden></p>
@@ -1025,26 +1051,60 @@ async function plainOffers(out,link,p,info){
   };
   lastApply=run;run();
 }
+/* ---------- AI-1 (Plan A): link compare on the server (works on phones, no extension needed) ----------
+   Edge Function ai-link-compare: AI finds the same product on other stores (only links seen in real search results),
+   the server reads each store page for the price (the AI's own price is never used). Rows come back like extension rows
+   with src:'web' and show "From the web · Xm ago" (never "Verified"). Kill switch: window.PP_AI_LINK=false */
+const AI_WAIT=`<div class="ppf-live-wait"><span class="ppf-spin" aria-hidden="true"></span>Finding this product on other stores… this can take up to 30 seconds</div>`;
+const aiCache=new Map();
+function aiWanted(link,p){
+  if(window.PP_AI_LINK===false||!link||link.isText||!/^https?:\/\//i.test(link.url||''))return false;
+  if(p&&catalogRows(p).filter(r=>Number.isFinite(r.price)).length>=3)return false;
+  return typeof supabaseClient!=='undefined'&&!!supabaseClient;
+}
+function aiLinkUrl(u){try{const a=window.ppAffiliateUrl?window.ppAffiliateUrl(u):null;return (a&&a.url)||u;}catch(_){return u;}}
+function aiPricedCount(d){return ((d&&d.rows)||[]).filter(r=>r&&r.match!=='similar'&&r.match!=='no'&&Number(r.price)>0).length;}
+function aiMerge(e,a){
+  if(!a||!a.ok)return e||{};
+  e=e||{};
+  const rows=[...(e.rows||[])];
+  (a.rows||[]).forEach(r=>{if(!rows.some(x=>x&&sameStore(x.store,r.store)&&x.match!=='similar'&&x.match!=='no'))rows.push(r);});
+  const ep=e.product&&(e.product.title||e.product.name)?e.product:null;
+  return {...e,product:ep||a.product,rows,error:rows.length?undefined:e.error};
+}
+function aiFind(link,info,p){
+  const key=link.url;
+  if(aiCache.has(key))return aiCache.get(key);
+  const cat=String((p&&p.category)||(info&&info.cat)||'').toLowerCase();
+  const pr=Promise.race([
+    supabaseClient.functions.invoke('ai-link-compare',{body:{url:link.url,cat}}).then(r=>r.error?{ok:false,error:String(r.error.message||r.error)}:(r.data||{ok:false})),
+    new Promise(res=>setTimeout(()=>res({ok:false,error:'timeout'}),70000))
+  ]).catch(()=>({ok:false,error:'failed'}));
+  aiCache.set(key,pr);
+  pr.then(r=>{if(!r||!r.ok)aiCache.delete(key);});
+  return pr;
+}
 async function liveBlock(out,link,p,info){
   const box=out.querySelector('[data-ppf-live]');if(!box)return;
   const ok=await waitExtension();
   if(!box.isConnected)return;
-  if(!ok){
+  const useAi=aiWanted(link,p);
+  if(!ok&&!useAi){
     plainOffers(out,link,p,info);
     if(canOfferInstall())box.innerHTML=`<div class="ppf-ext-note"><b>Live prices from every store</b><span>Add the free PricePulse extension and this page also checks other stores live for this exact product.</span><a class="ppx-btn ppx-btn-ghost" href="${H(EXT_STORE_URL)}" target="_blank" rel="noopener">Add to Chrome</a></div>`;
     return;
   }
-  const waitHTML=`<div class="ppf-live-wait"><span class="ppf-spin" aria-hidden="true"></span>Checking other stores live…</div>`;
+  const waitHTML=ok?`<div class="ppf-live-wait"><span class="ppf-spin" aria-hidden="true"></span>Checking other stores live…</div>`:AI_WAIT;
   box.innerHTML=waitHTML;
   /* called for every progress message (final=false) and once for the result (final=true) */
   const apply=(d,final)=>{
     if(!d||!box.isConnected)return;
     const srcP=Number(d.product&&d.product.price)||0;/* V273: an "exact" price far from the pasted product's price is most likely another size / variant */
-    const live=(d.rows||[]).filter(r=>r&&r.store&&r.url&&r.match!=='no').map(r=>({store:r.store,url:r.url,price:Number(r.price)||null,inStock:r.inStock!==false,seenAt:r.seenAt||new Date().toISOString(),match:r.match==='similar'||(srcP&&Number(r.price)&&(r.price<srcP*0.6||r.price>srcP*1.6))?'similar':'exact',kind:'live',delivery:r.delivery||'',deliveryCharge:r.deliveryCharge||''}));
+    const live=(d.rows||[]).filter(r=>r&&r.store&&r.url&&r.match!=='no').map(r=>({store:r.store,url:aiLinkUrl(r.url),price:Number(r.price)||null,inStock:r.inStock!==false,seenAt:r.seenAt||new Date().toISOString(),match:r.match==='similar'||(srcP&&Number(r.price)&&(r.price<srcP*0.6||r.price>srcP*1.6))?'similar':'exact',kind:r.src==='web'?'web':'live',quick:!!r.quick,delivery:r.delivery||'',deliveryCharge:r.deliveryCharge||''}));
     const rowsBox=out.querySelector('[data-ppf-rows]');
     if(!p&&d.product&&!Number(d.product.price)){const o=ownSeen.get(d.product.store+'|'+d.product.key);if(o&&o.price){d.product.price=o.price;d.product.seenAt=o.seenAt;}}
     const inf=p?null:unknownInfo(link,(info&&info.catOverride)||'',d.product,out.dataset.ppfQ||'');
-    const base=p?catalogRows(p):inf.rows.map(r=>r.kind==='link'&&Number(d.product?.price)?{...r,price:Number(d.product.price),kind:'live',seenAt:d.product.seenAt||new Date().toISOString()}:r);
+    const base=p?catalogRows(p):inf.rows.map(r=>r.kind==='link'&&Number(d.product?.price)?{...r,price:Number(d.product.price),kind:d.product.src==='web'?'web':'live',seenAt:d.product.seenAt||new Date().toISOString()}:r);
     let merged=[...base];
     live.filter(r=>r.match==='exact').forEach(r=>{const i=merged.findIndex(x=>sameStore(x.store,r.store));if(i<0)merged.push(r);else if(!Number.isFinite(merged[i].price))merged[i]=r;});
     /* a store that already has a priced row does not also need its "Search results" row */
@@ -1067,7 +1127,15 @@ async function liveBlock(out,link,p,info){
     if(final&&!live.length&&!offers.length){box.innerHTML=d.error?'':`<p class="ppf-muted ppf-live-none">No other store has this exact product right now.</p>`;return;}
     box.innerHTML=`${offers.length&&!srcHasPanel?offersPanelHTML(offers,NaN,null,'',true,'_page',true):''}${similar.length?`<div class="ppf-list-h"><h2>Similar products</h2><span class="ppf-muted">Not the exact same product. Check before you buy.</span></div>${rowsHTML(sortRows(similar),null,true)}`:''}${final?'':waitHTML}`;
   };
-  const d=await askExtension(link.url,pd=>apply(pd,false));
+  let d;
+  if(ok){
+    d=await askExtension(link.url,pd=>apply(pd,false));
+    /* AI-1: the extension found fewer than 2 priced stores -> the AI search adds more (web rows never replace extension rows) */
+    if(useAi&&aiPricedCount(d)<2){apply(d,false);const box2=box.querySelector('.ppf-live-wait');if(box2)box2.outerHTML=AI_WAIT;d=aiMerge(d,await aiFind(link,info,p));}
+  }else{
+    d=await aiFind(link,info,p);
+    if(!d||!d.ok){if(box.isConnected){box.innerHTML='';plainOffers(out,link,p,info);}return;}
+  }
   apply(d,true);
 }
 
@@ -1077,10 +1145,10 @@ function renderWelcome(){
   const on=hasExtension();
   const test=[['Amazon','https://www.amazon.in/'],['Flipkart','https://www.flipkart.com/'],['Croma','https://www.croma.com/'],['Vijay Sales','https://www.vijaysales.com/'],['Reliance Digital','https://www.reliancedigital.in/']];
   const feats=[
-    ['📈','Price history on every product page','See the real price over time and a clear Deal Score: buy now or wait.'],
+    [ei('chart'),'Price history on every product page','See the real price over time and a clear Deal Score: buy now or wait.'],
     ['✅','Verified prices at other stores','The same product on other stores, checked by PricePulse. The lowest one is marked.'],
     ['🔗','Paste any link','Paste a product link in the search box to compare every store.'],
-    ['🔔','Price alerts','Set your target price and we tell you when it drops.']];
+    [ei('bell'),'Price alerts','Set your target price and we tell you when it drops.']];
   window.ppShowPage('welcome',`<div class="ppx-product ppx-list-page container ppf-page ppf-welcome">${K.crumbs('Welcome')}
     <section class="ppf-hero">
       ${on?'<span class="ppf-installed">✓ PricePulse extension is installed</span>':''}
@@ -1130,7 +1198,7 @@ window.ppRegisterRoute('welcome',renderWelcome);
     if(el.previousElementSibling!==top)top.after(el);
     el.dataset.for=id;el.innerHTML=b.html;
     const r=b.r,best=el.querySelector('.ppf-stk-best');
-    if(best&&r.url)best.insertAdjacentHTML('beforeend',`<a class="ppf-stk-go" href="${H(r.url)}" target="_blank" rel="noopener sponsored">Open ${H(storeLabel(r.store))} <i aria-hidden="true">↗</i></a>`);
+    if(best&&r.url)best.insertAdjacentHTML('beforeend',`<a class="ppf-stk-go" href="${H(aiLinkUrl(r.url))}" target="_blank" rel="noopener sponsored">Open ${H(storeLabel(r.store))} <i aria-hidden="true">↗</i></a>`);
     const offs=r.all.filter(o=>o.kind!=='giftcard');
     if(best&&offs.length)best.insertAdjacentHTML('afterend',`<div class="ppf-stk-s ppf-stk-offs"><h3>Coupons and bank offers <i>${offs.length}</i></h3>${scroller(offs.map(o=>offerCardHTML(o,r.price)).join(''))}</div>`);
     /* card rewards: top 6 in a grid, the rest behind "View all cards" */
@@ -1162,7 +1230,7 @@ window.ppRegisterRoute('welcome',renderWelcome);
     const tags=[fl==='new'?'<em class="t-new">New users</em>':'',fl==='nocap'?'<em class="t-nocap">Max saving not stated</em>':'',o.till?`<em class="t-time${hot?' is-hot':''}">${H(ends(o.till))}</em>`:'',window.ppCashback?window.ppCashback.span(o.store,NaN,o.category||'','chip'):''].join('');
     const go=o.url?`<a class="ppf-tk-go" href="${H(o.url)}" target="_blank" rel="sponsored noopener" data-ppf-tkgo="${H(o.store)}">${o.code||o.kind==='coupon'?'Shop now':'View offer'} <i aria-hidden="true">↗</i></a>`:'';
     return `<article class="ppf-tk is-${H(o.kind)}">
-      <div class="ppf-tk-top"><span class="ppf-tk-logo">${logo(o.store)}</span><span class="ppf-tk-k">${o.kind==='bank'?'🏦 '+H((o.bank||'Bank')+' card'):o.kind==='giftcard'?'🎁 Gift card':'🏷 '+H(NAME[o.kind]||'Offer')}</span></div>
+      <div class="ppf-tk-top"><span class="ppf-tk-logo">${logo(o.store)}</span><span class="ppf-tk-k">${o.kind==='bank'?ei('bank')+H((o.bank||'Bank')+' card'):o.kind==='giftcard'?ei('gift')+' Gift card':ei('tag')+H(NAME[o.kind]||'Offer')}</span></div>
       <div class="ppf-tk-v">${big(o)}</div>${line(o)?`<div class="ppf-tk-l">${H(line(o))}</div>`:''}
       <p class="ppf-tk-x" title="${H(o.text||'')}">${H(o.text||'')}</p>${tags?`<div class="ppf-tk-tags">${tags}</div>`:''}
       <div class="ppf-tk-cut" aria-hidden="true"></div>
@@ -1195,7 +1263,7 @@ window.ppRegisterRoute('welcome',renderWelcome);
       const p=idx.find(x=>String(x.id)===String(id));if(!p)return;
       const b=bestWithOffers(p);if(!b)return;
       const el=document.createElement('a');el.className='ppf-obdg';el.href=`#/product/${encodeURIComponent(p.id)}`;
-      el.innerHTML=`<span aria-hidden="true">🏷</span><span>With offers <b>${M(b.final)}</b> at ${H(storeLabel(b.store))}</span><em>save ${M(b.save)}</em>`;
+      el.innerHTML=`<span aria-hidden="true">${ei('tag')}</span><span>With offers <b>${M(b.final)}</b> at ${H(storeLabel(b.store))}</span><em>save ${M(b.save)}</em>`;
       /* V276 (P9): one short line under the store bars, not a separate box */
       el.classList.add('is-line');
       const lad=c.querySelector('.ppx-pc-ladder'),pr=c.querySelector('.ppx-pc-price,.ppx-pc-pending');
@@ -1224,8 +1292,8 @@ window.ppRegisterRoute('welcome',renderWelcome);
         <p class="ppf-os-sub"><b>${all.length}</b> live offers · <b>${stores.length}</b> stores · copy a code, shop, paste at checkout</p></div>
         <a class="ppf-os-all" href="#/offers">See all offers <i aria-hidden="true">→</i></a></div>
       <div class="ppf-os-tabs">${logoChip('strip','',stripStore,'All')}${stores.map(x=>logoChip('strip',x,stripStore)).join('')}</div>
-      ${cps.length?`<p class="ppf-os-row">🏷 Coupons</p>${scroller(cps.map(ticket).join(''))}`:''}
-      ${crs.length?`<p class="ppf-os-row">💳 Card rewards <span class="ppf-os-rs">cashback or points from your card, after you pay</span></p>${scroller(crs.map(crTile).join('')+crMore)}`:''}
+      ${cps.length?`<p class="ppf-os-row">${ei('tag')} Coupons</p>${scroller(cps.map(ticket).join(''))}`:''}
+      ${crs.length?`<p class="ppf-os-row">${ei('card')} Card rewards <span class="ppf-os-rs">cashback or points from your card, after you pay</span></p>${scroller(crs.map(crTile).join('')+crMore)}`:''}
       ${!cps.length&&!crs.length?'<p class="ppf-os-sub">No offers for this store right now.</p>':''}
     </div></div>`;
   }
@@ -1259,18 +1327,18 @@ window.ppRegisterRoute('welcome',renderWelcome);
       <div class="pp-head-unit">
       <section class="ppf-cp-hero pp-onebar"><h1>Coupons &amp; offers <span class="ppx-gold-text">that actually work</span></h1>
         <div class="pp-ob-stats"><span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${all.length}</b> live offers</span><span><b>${stores.length}</b> stores</span><span><b>${nCards}</b> credit cards</span><span>Updated every morning</span></div>
-        <div class="pp-ob-acts"><a class="pp-ob-btn" href="#/find">Price Check <i aria-hidden="true">→</i></a></div>
+        <div class="pp-ob-acts"><a class="pp-hb-btn" href="#/find">Price Check <i aria-hidden="true">→</i></a></div>
       </section>
       <div class="ppf-cp-bar"><div class="ppf-cp-row">${logoChip('store','',st.store,'All stores')}${stores.map(x=>logoChip('store',x,st.store)).join('')}</div>
-        <div class="ppf-cp-row">${[['','All'],['coupon','🏷 Coupons'],['bank','🏦 Bank offers'],['giftcard','🎁 Gift cards']].map(([v,t])=>`<button type="button" class="ppf-tchip${st.kind===v?' is-on':''}" data-ppf-of="kind:${v}">${t}</button>`).join('')}</div></div>
+        <div class="ppf-cp-row">${[['','All'],['coupon',ei('tag')+' Coupons'],['bank',ei('bank')+' Bank offers'],['giftcard',ei('gift')+' Gift cards']].map(([v,t])=>`<button type="button" class="ppf-tchip${st.kind===v?' is-on':''}" data-ppf-of="kind:${v}">${t}</button>`).join('')}</div></div>
       </div>
-      ${sec('cp-top','🔥','Top coupons today','Biggest savings first. "New users" codes work only on your first order.',coupons)}
-      ${sec('cp-bank','🏦','Bank &amp; card offers','Instant discounts when you pay with these cards.',banks)}
-      ${sec('cp-gift','🎁','Gift card offers','Buy a store gift card at a discount, then pay with it.',gifts)}
+      ${sec('cp-top',ei('fire'),'Top coupons today','Biggest savings first. "New users" codes work only on your first order.',coupons)}
+      ${sec('cp-bank',ei('bank'),'Bank &amp; card offers','Instant discounts when you pay with these cards.',banks)}
+      ${sec('cp-gift',ei('gift'),'Gift card offers','Buy a store gift card at a discount, then pay with it.',gifts)}
       ${empty?'<div class="ppf-cp-empty"><b>No offers for this filter right now.</b><span>New coupons arrive every morning.</span></div>':''}
-      ${(!st.kind||st.kind==='bank')&&cards.length?`<section class="${cls('cp-cards')}" id="cp-cards">${head('cp-cards','💳','Card rewards','Cashback or points from your credit card, after you pay. Add your cards and we show yours first.',cards.length,`<button type="button" class="ppf-addc" data-ppf-cards>${mine.length?`My cards (${mine.length})`:'+ Add your cards'}</button>`)}
+      ${(!st.kind||st.kind==='bank')&&cards.length?`<section class="${cls('cp-cards')}" id="cp-cards">${head('cp-cards',ei('card'),'Card rewards','Cashback or points from your credit card, after you pay. Add your cards and we show yours first.',cards.length,`<button type="button" class="ppf-addc" data-ppf-cards>${mine.length?`My cards (${mine.length})`:'+ Add your cards'}</button>`)}
         <div class="ppf-cp-cards">${cards.map(c=>`<div class="ppf-cp-card${mine.includes(c.card)?' is-mine':''}">${bankBadge(c.bank)}<span class="ppf-cr-n"><b>${H(c.card)}</b><small>${c.store==='*'?'Any online store':'On '+H(storeLabel(c.store))} · ${H(c.note||'')}</small></span><span class="ppf-cp-pct">${Number(c.pct)}%<small>${c.reward==='points'?'points':'back'}</small></span></div>`).join('')}</div></section>`:''}
-      ${!gifts.length&&(!st.kind||st.kind==='giftcard')?`<section class="ppf-cp-soon"><span aria-hidden="true">🎁</span><div><b>Discounted gift cards are coming</b><p>Buy Amazon, Flipkart, Myntra and more gift cards for less, then shop with them. Extra savings on top of coupons.</p></div><a class="ppx-btn ppx-btn-gold" href="#/gift-cards">Get notified</a></section>`:''}
+      ${!gifts.length&&(!st.kind||st.kind==='giftcard')?`<section class="ppf-cp-soon"><span aria-hidden="true">${ei('gift')}</span><div><b>Discounted gift cards are coming</b><p>Buy Amazon, Flipkart, Myntra and more gift cards for less, then shop with them. Extra savings on top of coupons.</p></div><a class="ppx-btn ppx-btn-gold" href="#/gift-cards">Get notified</a></section>`:''}
       <p class="ppf-off-note">Offers come from the stores and our partners and can change or end early. Links to stores may earn us a commission at no cost to you.</p>
     </div>`;
   }
@@ -1281,7 +1349,7 @@ window.ppRegisterRoute('welcome',renderWelcome);
       const items=[...g.children],btn=sec.querySelector('[data-ppf-cpall]');
       if(!sec.classList.contains('is-clip')){items.forEach(i=>i.hidden=false);return;}
       const cols=Math.max(1,getComputedStyle(g).gridTemplateColumns.split(' ').filter(Boolean).length);
-      const lim=Math.max(cols*2,4);
+      const lim=Math.max(cols*(g.classList.contains('ppf-cp-cards')?4:2),4); /* V279 (L11): card rewards show 4 rows */
       items.forEach((i,k)=>i.hidden=k>=lim);
       if(btn)btn.hidden=items.length<=lim;
     });
@@ -1305,7 +1373,7 @@ window.ppRegisterRoute('welcome',renderWelcome);
   window.addEventListener('pp-cashback',()=>{try{window.ppHomeLayout&&window.ppHomeLayout();}catch(_){}});
 
   /* top menu (desktop header) + bottom nav (phones) */
-  const TOP=[['deals','🔥','Deals','#/deals'],['offers','🏷','Coupons','#/offers'],['find','📈','Price History','#/find']]; /* price alerts = the bell in the header */
+  const TOP=[['deals',ei('fire'),'Deals','#/deals'],['offers',ei('tag'),'Coupons','#/offers'],['find',ei('chart'),'Price History','#/find']]; /* price alerts = the bell in the header */
   /* V276 (P1, P2): the old Deals / Coupons / Price History pills in the header are gone; the menu row (polish-v276.js) has them.
      topNavActive() still marks the menu item of the open page. */
   function topNav(){}

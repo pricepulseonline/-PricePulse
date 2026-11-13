@@ -4863,12 +4863,12 @@ body.pp-wishlist-open{overflow:hidden}
 .pp-wish-alert-popover{position:fixed;z-index:1305;border:1px solid rgba(5,168,121,.22);border-radius:16px;background:#fff;box-shadow:0 22px 54px rgba(10,21,17,.24),0 6px 18px rgba(10,21,17,.12);padding:13px;color:#132720;animation:ppWapIn .16s ease-out}
 .pp-wish-alert-popover[hidden]{display:none!important}
 @keyframes ppWapIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:none}}
-.pp-wap-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid #eef2f0}
-.pp-wap-brand{display:flex;align-items:center;gap:9px;min-width:0}.pp-wap-brand img{width:34px;height:34px;border-radius:9px;object-fit:cover;box-shadow:0 5px 12px rgba(17,35,28,.16)}.pp-wap-brand>div{display:grid;gap:1px}.pp-wap-brand strong{font-size:12px;color:#1B362C}.pp-wap-brand span{font-size:8px;color:#078f68;font-weight:800}.pp-wap-head>button{width:28px;height:28px;border:0;border-radius:50%;background:#f1f4f3;color:#364B43;font-size:18px;display:grid;place-items:center;cursor:pointer}
-.pp-wap-product{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:11px 0}.pp-wap-product>img{width:48px;height:48px;object-fit:contain;border-radius:10px;background:#f5f8f7;padding:5px}.pp-wap-product>div{min-width:0}.pp-wap-product strong{display:block;font-size:11px;color:#183329;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pp-wap-product span{display:block;margin-top:3px;font-size:8.5px;color:#738078}
-#wishlistDealAlertForm{display:grid;gap:9px}#wishlistDealAlertForm label>span{display:block;margin-bottom:5px;color:#58695F;font-size:8.5px;font-weight:800}.pp-wap-money{display:flex;align-items:center;border:1px solid #dfe8e4;border-radius:10px;background:#fff;overflow:hidden}.pp-wap-money b{padding-left:10px;color:#078f68;font-size:13px}.pp-wap-money input{width:100%;border:0;outline:0;background:transparent;padding:9px;font:inherit;font-size:11px;font-weight:800;color:#1B362C}#wishlistDealAlertForm select{width:100%;min-height:38px;border:1px solid #dfe8e4;border-radius:10px;background:#fff;padding:0 10px;color:#2F463E;font-size:10px;font-weight:700;outline:none}
-.pp-wap-current{display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:center;padding:8px 9px;border-radius:10px;background:#f2faf6;border:1px solid #e2f0e9}.pp-wap-current span{font-size:8px;color:#6d7e76}.pp-wap-current strong{font-size:12px;color:#08754f}.pp-wap-current small{grid-column:1/-1;font-size:8px;color:#788880}
-.pp-wap-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px}.pp-wap-actions button{min-height:36px;border:1px solid #dfe7e4;border-radius:9px;background:#fff;color:#455B53;font-size:9.5px;font-weight:850;cursor:pointer}.pp-wap-actions .is-primary{border:0;background:linear-gradient(135deg,#07845f,#14bb85);color:#fff;box-shadow:0 6px 14px rgba(7,143,104,.15)}#wishlistDealAlertStatus{min-height:12px;margin:0;text-align:right;color:#078f68;font-size:8.5px}#wishlistDealAlertStatus.is-error{color:#c93b4d}
+.pp-wap-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-13px -13px 0;padding:12px 14px;background:#1F2B28;border-radius:16px 16px 0 0}
+.pp-wap-brand{display:flex;align-items:center;gap:9px;min-width:0}.pp-wap-brand img{width:34px;height:34px;border-radius:9px;object-fit:cover;box-shadow:0 5px 12px rgba(17,35,28,.16)}.pp-wap-brand>div{display:grid;gap:1px}.pp-wap-brand strong{font-size:14.5px;color:#fff}.pp-wap-brand span{font-size:12.5px;color:#078f68;font-weight:800}.pp-wap-head>button{width:28px;height:28px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:18px;display:grid;place-items:center;cursor:pointer}
+.pp-wap-product{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:11px 0}.pp-wap-product>img{width:48px;height:48px;object-fit:contain;border-radius:10px;background:#f5f8f7;padding:5px}.pp-wap-product>div{min-width:0}.pp-wap-product strong{display:block;font-size:13px;color:#183329;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pp-wap-product span{display:block;margin-top:3px;font-size:12.5px;color:#738078}
+#wishlistDealAlertForm{display:grid;gap:9px}#wishlistDealAlertForm label>span{display:block;margin-bottom:5px;color:#58695F;font-size:12.5px;font-weight:800}.pp-wap-money{display:flex;align-items:center;border:1px solid #dfe8e4;border-radius:10px;background:#fff;overflow:hidden}.pp-wap-money b{padding-left:10px;color:#078f68;font-size:13px}.pp-wap-money input{width:100%;border:0;outline:0;background:transparent;padding:9px;font:inherit;font-size:13px;font-weight:800;color:#1B362C}#wishlistDealAlertForm select{width:100%;min-height:38px;border:1px solid #dfe8e4;border-radius:10px;background:#fff;padding:0 10px;color:#2F463E;font-size:13px;font-weight:700;outline:none}
+.pp-wap-current{display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:center;padding:8px 9px;border-radius:10px;background:#f2faf6;border:1px solid #e2f0e9}.pp-wap-current span{font-size:12.5px;color:#6d7e76}.pp-wap-current strong{font-size:12px;color:#08754f}.pp-wap-current small{grid-column:1/-1;font-size:12.5px;color:#788880}
+.pp-wap-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px}.pp-wap-actions button{min-height:36px;border:1px solid #dfe7e4;border-radius:9px;background:#fff;color:#455B53;font-size:12.5px;font-weight:850;cursor:pointer}.pp-wap-actions .is-primary{border:0;background:linear-gradient(135deg,#07845f,#14bb85);color:#fff;box-shadow:0 6px 14px rgba(7,143,104,.15)}#wishlistDealAlertStatus{min-height:12px;margin:0;text-align:right;color:#078f68;font-size:12.5px}#wishlistDealAlertStatus.is-error{color:#c93b4d}
 
 /* Account > Deal Alerts management dashboard polish. */
 .pp-da-brand{display:flex;align-items:center;gap:9px;margin:-5px 0 18px;padding-right:50px}.pp-da-brand img{width:36px;height:36px;border-radius:10px;object-fit:cover;box-shadow:0 6px 14px rgba(17,35,28,.16)}.pp-da-brand span{font-size:15px;font-weight:900;color:#1B362C}.pp-da-brand b{margin-left:auto;padding:6px 8px;border-radius:999px;background:#eaf8f2;color:#078f68;font-size:8px;letter-spacing:.1em}
@@ -4918,28 +4918,28 @@ body.pp-wishlist-open{overflow:hidden}
 
 /* Make helper text in the compact Set Deal Alert popover as readable as Wishlist microcopy. */
 .pp-wap-product span{
-  font-size:9px!important;
+  font-size:12.5px!important;
   line-height:1.3!important;
   color:#5F6F66!important;
   font-weight:650!important;
 }
 #wishlistDealAlertForm label>span{
   color:#55655C!important;
-  font-size:9px!important;
+  font-size:12.5px!important;
   font-weight:800!important;
 }
 #wishlistDealAlertForm select{
   color:#1D392F!important;
-  font-size:10.5px!important;
+  font-size:13px!important;
   font-weight:800!important;
 }
 .pp-wap-current span{
-  font-size:9px!important;
+  font-size:12.5px!important;
   color:#58695F!important;
   font-weight:750!important;
 }
 .pp-wap-current small{
-  font-size:8.8px!important;
+  font-size:12.5px!important;
   color:#596c64!important;
   font-weight:700!important;
 }

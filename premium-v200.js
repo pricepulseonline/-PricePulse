@@ -532,19 +532,19 @@ function productPageHTML(productId){
   /* alert + plus */
   const plusActive=typeof ppPlusIsActive==='function'&&ppPlusIsActive();
   const atLimit=typeof ppDealAlertAtLimit==='function'&&typeof currentUser!=='undefined'&&currentUser&&ppDealAlertAtLimit();
-  const usedLine=typeof currentUser!=='undefined'&&currentUser?`${typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0} of ${typeof ppDealAlertLimit==='function'?ppDealAlertLimit():1} alerts in use`:'Free plan includes 1 active alert';
+  const usedLine=typeof currentUser!=='undefined'&&currentUser?`${typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0} of ${typeof ppDealAlertLimitShow==='function'?ppDealAlertLimitShow():3} alerts in use`:'Free plan includes 3 active alerts';
   const suggestTarget=Number.isFinite(lowest)?Math.floor((lowest*0.98)/100)*100:0;
   const alertCard=`<section class="ppx-panel ppx-alert">
       <div class="ppx-alert-head"><span class="ppx-icon-tile">${ICON.bell}</span><h2>Price drop alert</h2></div>
       <p>We'll notify you the moment any store drops below your target price.</p>
       <button type="button" class="ppx-btn ppx-btn-primary ppx-block" data-ppx-action="alert" data-product-id="${H(productId)}">Set alert for this product</button>
       ${suggestTarget?`<p class="ppx-alert-suggest">Suggested target <b>${M(suggestTarget)}</b> <span>(${M(Math.max(0,lowest-suggestTarget))} below today's best)</span></p>`:''}
-      <small class="${atLimit&&!plusActive?'is-limit':''}">${H(usedLine)}${atLimit&&!plusActive?' · Plus gives 3':''}</small>
+      <small class="${atLimit&&!plusActive?'is-limit':''}">${H(usedLine)}${atLimit&&!plusActive?' · Plus gives 12':''}</small>
     </section>`;
   const plusCard=plusActive?'':`<section class="ppx-plus-card">
       <div class="ppx-plus-inner"><i class="ppx-sheen" aria-hidden="true"></i>
-        <div class="ppx-plus-title">Track this + 2 more with <span class="ppx-gold">Plus</span></div>
-        <p>3 deal alerts, wallet redemption from ₹25, and a ₹100 Welcome Reward on your first eligible purchase.</p>
+        <div class="ppx-plus-title">Track up to 12 products with <span class="ppx-gold">Plus</span></div>
+        <p>12 deal alerts, wallet redemption from ₹25, and a ₹100 Welcome Reward on your first eligible purchase.</p>
         <button type="button" class="ppx-btn ppx-btn-gold ppx-block" data-ppx-action="plus">Get Plus · ₹99/year</button>
       </div>
     </section>`;
@@ -790,7 +790,7 @@ if(typeof accountPopoverHTML==='function'){
     }
     if(!plusActive&&typeof ppDealAlertAtLimit==='function'&&ppDealAlertAtLimit()){
       const small=doc.querySelector('[data-account-action="alerts"] small');
-      if(small)small.innerHTML=`${typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():1} of 1 used · <b class="ppx-gold-text">Plus gives 3</b>`;
+      if(small)small.innerHTML=`${typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():1} of 3 used · <b class="ppx-gold-text">Plus gives 12</b>`;
     }
     return doc.innerHTML;
   };
@@ -874,14 +874,24 @@ buildBottomNav();
    similar products, recently viewed, sticky buy bar, home Plus band
    ===================================================================== */
 function authed(){return typeof currentUser!=='undefined'&&currentUser&&(typeof profileComplete!=='function'||profileComplete(currentProfile));}
+/* refresh on a login-only page: wait for login check, never flash Home / popup */
+function authPending(name){
+  if(window.__ppAuthResolved||typeof supabaseClient==='undefined'||!supabaseClient)return false;
+  showPage(name,'<div class="ppx-product container" style="min-height:70vh"></div>');
+  return true;
+}
+document.addEventListener('pp-auth-resolved',()=>{const r=parseRoute();if(r&&routes[r.name])route();});
 function askSignIn(type){
   const r=parseRoute();
   try{if(r&&['account','preferences','wishlist','alerts'].includes(r.name))sessionStorage.setItem('ppx_after_auth',r.name);}catch(_){}
+  /* page refresh: login/profile is still loading - do not flash a popup, the account header re-opens the page once it is ready */
+  if(!window.__ppAuthResolved&&typeof supabaseClient!=='undefined'&&supabaseClient)return;
   if(typeof setPendingAuthAction==='function')setPendingAuthAction({type});
   if(typeof currentUser!=='undefined'&&currentUser&&typeof renderProfileForm==='function')renderProfileForm(currentUser.email||'',currentProfile);
   else if(typeof renderAuthStart==='function')renderAuthStart();
 }
-function alertStats(){const a=typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0;const l=typeof ppDealAlertLimit==='function'?ppDealAlertLimit():1;return `<span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${a}</b> active</span><span><b>${l}</b> ${l===1?'alert':'alerts'} on your plan</span>`;}
+function alertStats(){const a=typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0;const l=typeof ppDealAlertLimitShow==='function'?ppDealAlertLimitShow():3;return `<span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${a}</b> active</span><span>${l==='Unlimited'?'<b>Unlimited</b> alerts on your plan':'Plan limit <b>'+l+'</b>'}</span>`;}
+window.alertStats=alertStats;
 /* V278 (L6): one-line dark bar like Live Deals - title + small stats inline + buttons on the right.
    No gold label and no 2-line text any more (eyebrow / sub are kept as parameters so old calls still work). */
 function pageHead({eyebrow,title,sub,icon='',aside='',stats=''}){
@@ -893,10 +903,10 @@ function crumbs(label){
 
 /* ---------- Wishlist page ---------- */
 routes.wishlist=()=>{
-  if(!authed()){askSignIn('wishlist-open');window.ppGoHome();return;}
-  const count=typeof saved!=='undefined'?saved.size:0;
+  if(authPending('wishlist'))return;if(typeof currentUser==='undefined'||!currentUser){askSignIn('wishlist-open');window.ppGoHome();return;}
+  const count=(typeof saved!=='undefined'?saved.size:0)+(window.__ppExtN||0);
   showPage('wishlist',`<div class="ppx-product ppx-list-page container">${crumbs('My Wishlist')}
-    ${pageHead({eyebrow:'SAVED PRODUCTS',title:'My Wishlist',stats:`<span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${count}</b> saved</span><span>Re-checked across stores</span>`,aside:`<a class="pp-ob-btn" href="#/alerts">${ICON.bell}Deal Alerts</a>`})}
+    ${pageHead({eyebrow:'SAVED PRODUCTS',title:'My Wishlist',stats:`<span><i class="ppx-dx-dot" aria-hidden="true"></i><b>${count}</b> saved</span><span>Re-checked across stores</span>`,aside:`<a class="pp-hb-btn" href="#/alerts">${ICON.bell}Deal Alerts</a>`})}
     <div class="ppx-adopt-host" id="ppxWishHost"></div></div>`);
   document.title=`My Wishlist (${count}) | PricePulse`;
   internalBuild=true;
@@ -940,9 +950,9 @@ if(typeof ppRenderWishlistPanel==='function'){
 
 /* ---------- Deal Alerts page ---------- */
 routes.alerts=async()=>{
-  if(!authed()){askSignIn('deal-alerts-open');window.ppGoHome();return;}
+  if(authPending('alerts'))return;if(!authed()){askSignIn('deal-alerts-open');window.ppGoHome();return;}
   showPage('alerts',`<div class="ppx-product ppx-list-page container">${crumbs('Deal Alerts')}
-    ${pageHead({eyebrow:'SMART SHOPPING',title:'Deal Alerts',stats:alertStats(),aside:`<a class="pp-ob-btn" href="#/wishlist">${ICON.heart}My Wishlist</a>`})}
+    ${pageHead({eyebrow:'SMART SHOPPING',title:'Deal Alerts',stats:alertStats(),aside:`<a class="pp-hb-btn" href="#/wishlist">${ICON.heart}My Wishlist</a>`})}
     <div class="ppx-adopt-host" id="ppxAlertHost"></div></div>`);
   document.title='Deal Alerts | PricePulse';
   internalBuild=true;
@@ -1230,7 +1240,7 @@ const PAGE_KINDS=[
 ];
 PAGE_KINDS.forEach(kind=>{
   routes[kind.route]=()=>{
-    if(kind.auth&&!authed()){askSignIn('preferences-open');window.ppGoHome();return;}
+    if(kind.auth&&authPending('preferences'))return;if(kind.auth&&!authed()){askSignIn('preferences-open');window.ppGoHome();return;}
     showPage(kind.route,`<div class="ppx-product ppx-list-page ppx-modal-page container" data-kind="${kind.route}">
       <nav class="ppx-crumbs" aria-label="Breadcrumb"><a href="#home" class="ppx-back" data-ppx-action="back">${ICON.back}Back</a><span>/</span><span class="is-current">${H(kind.title)}</span></nav>
       ${pageHead({eyebrow:kind.eyebrow,title:H(kind.title),sub:kind.sub,icon:kind.icon})}
@@ -1297,14 +1307,14 @@ function accountHTML(){
   const initials=String(name).trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'P';
   const plus=typeof ppPlusIsActive==='function'&&ppPlusIsActive();
   const alerts=typeof ppActiveDealAlertCount==='function'?ppActiveDealAlertCount():0;
-  const limit=typeof ppDealAlertLimit==='function'?ppDealAlertLimit():1;
+  const limit=typeof ppDealAlertLimitShow==='function'?ppDealAlertLimitShow():3;
   const wish=typeof saved!=='undefined'?saved.size:0;
   const loc=[p.city,p.state,p.country].filter(Boolean).join(', ');
   const tile=(href,icon,title,sub,extra='')=>`<a class="ppx-acc-tile" href="${href}" ${extra}><span class="ppx-icon-tile">${icon}</span><span><b>${title}</b><small>${sub}</small></span><i aria-hidden="true">›</i></a>`;
   return `<div class="ppx-product ppx-list-page container">${crumbs('My Account')}
     <section class="ppx-acc-hero pp-onebar">
       <span class="ppx-acc-avatar" aria-hidden="true">${H(initials)}</span>
-      <h1>${H(name)}</h1><div class="pp-ob-stats"><span class="pp-ob-tag${plus?' is-gold':''}">${plus?'Plus member':'Free member'}</span><span>${H(email)}</span></div>
+      <h1>${H(name)}</h1><div class="pp-ob-stats"><span class="pp-ob-tag${plus?' is-gold':''}">${plus?'Plus member':'Free member'}</span></div>
       <div class="ppx-acc-hero-actions"><button type="button" class="ppx-btn ppx-btn-ghost" data-ppx-acc="edit">Edit profile</button>${plus?'':`<a class="ppx-btn ppx-btn-gold" href="#/plus">${ICON.crown}Get Plus · ₹99</a>`}</div>
     </section>
     <div class="ppx-acc-stats">
@@ -1312,13 +1322,14 @@ function accountHTML(){
       <a href="#/alerts"><b>${alerts}<small>/${limit}</small></b><span>Active deal alerts</span></a>
       <a href="#/plus"><b>${plus?'Active':'Free'}</b><span>Membership</span></a>
     </div>
-    <section class="pp-refer" aria-label="Invite and earn"><span class="pp-refer-ic" aria-hidden="true">🎁</span>
-      <div><span class="ppx-eyebrow">INVITE &amp; EARN</span><h2>You get ₹100. Your friend gets ₹100.</h2>
-        <p>Both rewards unlock step by step from your friend's confirmed shopping. On your own shopping, ${Math.round(CB_SHARE*100)}% of what the store pays us comes back to you as cashback (not on Amazon).</p></div>
+    <section class="pp-refer" aria-label="Invite and earn"><span class="pp-refer-ic" aria-hidden="true"><svg viewBox="0 0 48 48" width="30" height="30" fill="none" aria-hidden="true"><defs><linearGradient id="ppGift" x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#FBE4A0"/><stop offset="1" stop-color="#D9A441"/></linearGradient></defs><rect x="7" y="19" width="34" height="10" rx="3" fill="url(#ppGift)"/><path d="M10 29h28v10a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V29z" fill="url(#ppGift)" opacity=".85"/><path d="M24 19v24" stroke="#0F1F1A" stroke-width="3.2"/><path d="M24 19c-3-1-9-3-9-7.5C15 8 18 6.500 20.500 8c2.500 1.500 3.500 6 3.500 11zM24 19c3-1 9-3 9-7.500C33 8 30 6.500 27.500 8 25 9.500 24 14 24 19z" stroke="url(#ppGift)" stroke-width="3" stroke-linejoin="round"/></svg></span>
+      <div><span class="ppx-eyebrow">INVITE &amp; EARN</span><h2>Invite a friend. You both get ₹100.</h2>
+        <ul class="pp-refer-pts"><li>₹100 for you, ₹100 for your friend</li><li>Earn cashback on your own shopping too</li><li>Rewards land straight in your PricePulse Wallet</li></ul><a class="pp-refer-how" href="wallet.html#invite">Terms apply · How rewards work</a></div>
       <a class="ppx-btn ppx-btn-gold" href="wallet.html#invite">Invite friends →</a></section>
     <div class="ppx-acc-grid">
-      <section class="ppx-panel ppx-acc-details"><div class="ppx-panel-head"><h2>Profile details</h2><button type="button" class="ppx-link" data-ppx-acc="edit">Edit</button></div>
+      <section class="ppx-panel ppx-acc-details"><div class="ppx-panel-head"><h2>Profile details</h2></div>
         <dl>
+          <div class="pp-acc-mailrow"><dt>Email</dt><dd class="pp-acc-mail">${H(email||'—')}</dd></div>
           <div><dt>Mobile</dt><dd>${H(p.mobile||'—')}</dd></div>
           <div><dt>Location</dt><dd>${H(loc||'—')}</dd></div>
           <div><dt>PIN code</dt><dd>${H(p.pin_code||'—')}</dd></div>
@@ -1337,7 +1348,7 @@ function accountHTML(){
     </div></div>`;
 }
 routes.account=()=>{
-  if(!authed()){askSignIn('account-open');window.ppGoHome();return;}
+  if(authPending('account'))return;if(!authed()){askSignIn('account-open');window.ppGoHome();return;}
   showPage('account',accountHTML());
   document.title='My Account | PricePulse';
 };
@@ -1373,8 +1384,9 @@ if(typeof renderAccountPanel==='function'){
     const res=prev.apply(this,arguments);
     const r=parseRoute();
     if(r&&r.name==='account'&&!pageView.hidden){if(authed())pageView.innerHTML=accountHTML();else window.ppGoHome();}
-    if(authed()){let next='';try{next=sessionStorage.getItem('ppx_after_auth')||'';sessionStorage.removeItem('ppx_after_auth');}catch(_){}
-      if(next&&(!r||r.name!==next))setTimeout(()=>window.ppGoPage(next),50);}
+    {let nx='';try{nx=sessionStorage.getItem('ppx_after_auth')||'';}catch(_){}
+    if(authed()||(nx==='wishlist'&&typeof currentUser!=='undefined'&&currentUser)){let next='';try{next=sessionStorage.getItem('ppx_after_auth')||'';sessionStorage.removeItem('ppx_after_auth');}catch(_){}
+      if(next&&(!r||r.name!==next))setTimeout(()=>window.ppGoPage(next),50);}}
     return res;
   };
 }
@@ -1846,7 +1858,7 @@ function dxTileHTML({key,attr,color,logoHTML,count,d,emptyText}){
   </button>`;
 }
 function dxAllHTML(href,labels,more,text){
-  return `<a class="ppx-dx-all" href="${href}"><span class="ppx-dx-stack" aria-hidden="true">${labels.map(l=>`<i>${H(l)}</i>`).join('')}${more>0?`<i>+${more}</i>`:''}</span><b>${text}</b><span class="ppx-dx-ar" aria-hidden="true">→</span></a>`;
+  return `<a class="ppx-dx-all" href="${href}"><span class="ppx-dx-stack" aria-hidden="true">${labels.map(l=>`<i>${/^<img/.test(l)?l:H(l)}</i>`).join('')}${more>0?`<i>+${more}</i>`:''}</span><b>${text}</b><span class="ppx-dx-ar" aria-hidden="true">→</span></a>`;
 }
 function dxBrandList(deals){
   return [...document.querySelectorAll('#brandGrid .brand-card[data-brand]')].map(b=>{
@@ -1917,7 +1929,7 @@ function dxStoresHTML(){
   const hid=rest.slice(shown.length);
   const spotHTML=leadDeal?dxSpotHTML(leadDeal,{tag:'MOST LOWEST PRICES',logoHTML:lead.logo,cta:`Compare on ${lead.label}`,href:`#/product/${encodeURIComponent(leadDeal.p.id)}`}):'';
   const tiles=shown.map(s=>dxTileHTML({key:s.key,attr:'data-ppx-store',color:dxColor(s.key),logoHTML:s.logo,count:s.wins?`Lowest on ${s.wins}`:`${s.n} compared`,d:s.top,emptyText:s.n?`${s.n} ${s.n===1?'product':'products'} listed`:'Coming soon'})).join('');
-  return spotHTML+`<div class="ppx-dx-tiles">${tiles}${dxAllHTML('#/stores',hid.slice(0,2).map(s=>s.label.slice(0,4).toUpperCase()),hid.length-2,'View all<br>stores')}</div>`;
+  return spotHTML+`<div class="ppx-dx-tiles">${tiles}${dxAllHTML('#/stores',hid.slice(0,2).map(s=>{const ic=typeof window.ppStoreIcon==='function'?window.ppStoreIcon(s.label):'';return ic?`<img class="pp79-sic" data-pp79="1" src="${ic}" alt="">`:s.label.slice(0,4).toUpperCase();}),hid.length-2,'View all<br>stores')}</div>`;
 }
 renderDiscover();
 setTimeout(renderDiscover,1500);
@@ -2029,7 +2041,7 @@ function dealInsightHTML(a,{compact=false}={}){
 }
 
 /* ---------- Paste a store link ---------- */
-const STORE_HOSTS=[[/(^|\.)amazon\.(in|com)$|(^|\.)amzn\.(in|to)$|(^|\.)link\.amazon$/,'Amazon'],[/(^|\.)flipkart\.com$|(^|\.)fktr\.in$/,'Flipkart'],[/(^|\.)myntra\.com$/,'Myntra'],[/(^|\.)ajio\.com$/,'AJIO'],[/(^|\.)croma\.com$/,'Croma'],[/(^|\.)meesho\.com$/,'Meesho'],[/(^|\.)nykaa\.com$/,'Nykaa'],[/(^|\.)reliancedigital\.in$/,'Reliance Digital'],[/(^|\.)tatacliq\.com$/,'Tata CLiQ'],[/(^|\.)vijaysales\.com$/,'Vijay Sales'],[/(^|\.)nykaafashion\.com$/,'Nykaa Fashion'],[/(^|\.)jiomart\.com$/,'JioMart']];
+const STORE_HOSTS=[[/(^|\.)amazon\.(in|com)$|(^|\.)amzn\.(in|to)$|(^|\.)link\.amazon$/,'Amazon'],[/(^|\.)flipkart\.com$|(^|\.)fktr\.in$/,'Flipkart'],[/(^|\.)myntra\.com$/,'Myntra'],[/(^|\.)ajio\.com$/,'AJIO'],[/(^|\.)croma\.com$/,'Croma'],[/(^|\.)meesho\.com$/,'Meesho'],[/(^|\.)nykaa\.com$/,'Nykaa'],[/(^|\.)reliancedigital\.in$/,'Reliance Digital'],[/(^|\.)tatacliq\.com$/,'Tata CLiQ'],[/(^|\.)vijaysales\.com$/,'Vijay Sales'],[/(^|\.)nykaafashion\.com$/,'Nykaa Fashion'],[/(^|\.)jiomart\.com$/,'JioMart'],[/(^|\.)purplle\.com$/,'Purplle'],[/(^|\.)shopsy\.in$/,'Shopsy'],[/(^|\.)snapdeal\.com$/,'Snapdeal'],[/(^|\.)adidas\.(co\.in|com)$/,'Adidas'],[/(^|\.)samsung\.com$/,'Samsung'],[/(^|\.)bigbasket\.com$/,'BigBasket'],[/(^|\.)dell(store)?\.com$/,'Dell'],[/(^|\.)nike\.(in|com)$/,'Nike'],[/(^|\.)lenovo\.com$/,'Lenovo'],[/(^|\.)hp\.com$/,'HP'],[/(^|\.)ikea\.com$/,'IKEA']];
 function parseStoreLink(raw){
   let s=String(raw||'').trim();
   if(!/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/|$)/i.test(s)||/\s/.test(s))return null;
@@ -2092,20 +2104,41 @@ let ppAff={...PP_AFF_DEFAULT};
 PPData.settings=async function(){const r=await this.rpc('pp_public_settings');return r.error?null:(r.data||null);};
 PPData.logClick=function(productId,store,source,affiliate){return this.rpc('pp_log_click',{click_product:productId||null,click_store:store||'Unknown',click_source:source||'site',click_affiliate:!!affiliate});};
 const ppSettingsP=PPData.settings().then(s=>{if(s&&s.affiliate&&typeof s.affiliate==='object')ppAff={...PP_AFF_DEFAULT,...s.affiliate};return s;}).catch(()=>null); /* V278: cashback waits for these (share + Cuelinks stores) */
-const AFF_SHORT_HOSTS=/(^|\.)(link\.amazon|amzn\.(to|in|eu)|fktr\.in|ekaro\.in|earnkaro\.com|linksredirect\.com|clnk\.in|bitli\.in|dl\.flipkart\.com)$/;
-function storeOfHost(host){const st=STORE_HOSTS.find(([re])=>re.test(host));return st?st[1]:'';}
+/* V2.1 Affiliate AUTO: per store Auto (Cuelinks says approved) / ON / OFF, set in Admin > Affiliate links.
+   store_mode missing (mode_v < 2) = the old tick list (cuelinks_stores). pp_affiliate_auto() = catalog stores + domain + Cuelinks status. */
+let ppAutoMap=[];
+const ppAutoP=PPData.rpc('pp_affiliate_auto').then(r=>{if(r&&!r.error&&Array.isArray(r.data))ppAutoMap=r.data;return r;}).catch(()=>null);
+const ppAffNm=x=>String(x||'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
+function ppAffOn(store){
+  const a=ppAff||{};if(!a.cuelinks_enabled||!a.cuelinks_cid||!store)return false;
+  const k=ppAffNm(store);
+  if(Number(a.mode_v)>=2){
+    const sm=a.store_mode&&typeof a.store_mode==='object'?a.store_mode:{};
+    for(const n of Object.keys(sm))if(ppAffNm(n)===k){if(sm[n]==='on')return true;if(sm[n]==='off')return false;}
+    const e=ppAutoMap.find(x=>ppAffNm(x.store)===k||ppAffNm(x.slug)===k);
+    return !!(e&&e.link_allowed); /* Auto: Cuelinks approved this store at the last sync */
+  }
+  return !Array.isArray(a.cuelinks_stores)||a.cuelinks_stores.some(x=>ppAffNm(x)===k);
+}
+const AFF_SHORT_HOSTS=/(^|\.)(link\.amazon|amzn\.(to|in|eu)|linksredirect\.com|clnk\.in|bitli\.in|dl\.flipkart\.com)$/;
+function storeOfHost(host){const st=STORE_HOSTS.find(([re])=>re.test(host));if(st)return st[1];
+  const h=String(host||'').toLowerCase().replace(/^www\./,'');
+  const e=ppAutoMap.find(x=>{const d=String(x.domain||'').toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split(/[/?#]/)[0];return d&&(h===d||h.endsWith('.'+d));});
+  return e?e.store:'';}
 function ppAffiliateUrl(raw){
   let u;try{u=new URL(String(raw||''),location.href)}catch(_){return {url:raw,affiliate:false,store:''}}
   if(!/^https?:$/.test(u.protocol))return {url:raw,affiliate:false,store:''};
+  /* V284 FRESH LINK: a Cuelinks link made by someone else is opened up and rebuilt with OUR id (or left plain); all other tracking ids are removed */
+  try{if(/(^|\.)linksredirect\.com$/.test(u.hostname)&&u.searchParams.get('url')){u=new URL(u.searchParams.get('url'));if(!/^https?:$/.test(u.protocol))return {url:raw,affiliate:false,store:''};}}catch(_){}
+  [...u.searchParams.keys()].forEach(k=>{if(/^(utm_.*|affid|affExtParam\d|aff_id|aff_source|affiliate|clickid|subid\d*|cjevent|irclickid|ranMID|ranEAID|ranSiteID|tracking_id|cmpid|admitad_uid|aff_sub\d*|clickref|ranSiteID|gclid|fbclid)$/i.test(k))u.searchParams.delete(k);});
   const host=u.hostname.toLowerCase().replace(/^www\.|^m\./,'');
-  const store=storeOfHost(host)||(/linksredirect|ekaro|earnkaro|clnk|bitli/.test(host)?'Affiliate':'');
-  if(AFF_SHORT_HOSTS.test(host)||u.searchParams.has('affid')||u.searchParams.has('affExtParam1'))return {url:u.href,affiliate:true,store};
+  const store=storeOfHost(host)||(/linksredirect|clnk|bitli/.test(host)?'Affiliate':'');
+  if(AFF_SHORT_HOSTS.test(host))return {url:u.href,affiliate:true,store};
   if(/(^|\.)amazon\.in$/.test(host)){
-    if(u.searchParams.get('tag'))return {url:u.href,affiliate:true,store:'Amazon'};
-    if(ppAff.amazon_tag){u.searchParams.set('tag',ppAff.amazon_tag);return {url:u.href,affiliate:true,store:'Amazon'};}
+    if(ppAff.amazon_tag){['tag','ascsubtag','linkCode','linkId','creative','creativeASIN','camp'].forEach(k=>u.searchParams.delete(k));u.searchParams.set('tag',ppAff.amazon_tag);return {url:u.href,affiliate:true,store:'Amazon'};}
     return {url:u.href,affiliate:false,store:'Amazon'};
   }
-  if(store&&store!=='Amazon'&&ppAff.cuelinks_enabled&&ppAff.cuelinks_cid&&ppAff.cuelinks_format&&(!Array.isArray(ppAff.cuelinks_stores)||ppAff.cuelinks_stores.includes(store))){
+  if(store&&store!=='Amazon'&&ppAff.cuelinks_format&&ppAffOn(store)){
     return {url:ppAff.cuelinks_format.replace('{cid}',encodeURIComponent(ppAff.cuelinks_cid)).replace('{url}',encodeURIComponent(u.href)),affiliate:true,store};
   }
   return {url:u.href,affiliate:false,store};
@@ -2192,7 +2225,7 @@ function linkQuery(link){
 function otherStoresHTML(link){
   const q=linkQuery(link);
   if(q.split(' ').length<2)return '';
-  const chips=STORE_SEARCH.filter(([s])=>s!==link.store).map(([s,fn])=>{const r=ppAffiliateUrl(fn(q));return `<a class="ppx-lp-chip" href="${H(r.url)}" target="_blank" rel="sponsored noopener noreferrer">${storeLogoFor(s)||`<b>${H(s)}</b>`}<span>Search ${H(s)}</span></a>`;}).join('');
+  const chips=STORE_SEARCH.slice(0,13).filter(([s])=>s!==link.store).map(([s,fn])=>{const r=ppAffiliateUrl(fn(q));return `<a class="ppx-lp-chip" href="${H(r.url)}" target="_blank" rel="sponsored noopener noreferrer">${storeLogoFor(s)||`<b>${H(s)}</b>`}<span>Search ${H(s)}</span></a>`;}).join('');
   return `<div class="ppx-lp-other"><p class="ppx-lp-sub">Check it on other stores <small>· prices not verified yet</small></p><p class="ppx-lp-q">Searching for: <b>${H(q)}</b></p><div class="ppx-lp-chips">${chips}</div></div>`;
 }
 function openStoreHTML(link){
@@ -2222,14 +2255,13 @@ const cbNorm=s=>String(s||'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z
 const cbRxC=new Map();
 function cbRx(src){if(!src)return null;if(!cbRxC.has(src)){let r=null;try{r=new RegExp(src);}catch(_){r=/$^/;}cbRxC.set(src,r);}return cbRxC.get(src);}
 function cbLinked(store){ /* our link for this store goes through Cuelinks (else Cuelinks pays nothing) */
-  const a=ppAff||{};if(!a.cuelinks_enabled)return false;
-  return !Array.isArray(a.cuelinks_stores)||a.cuelinks_stores.some(x=>cbKey(x)===cbKey(store));
+  return ppAffOn(store); /* V2.1: same Auto / ON / OFF rule as the links */
 }
 function cbLoad(force){
   if(cbP&&!force)return cbP;
   cbP=(async()=>{try{
     if(typeof supabaseClient==='undefined'||!supabaseClient)return [];
-    const [r,s]=await Promise.all([supabaseClient.rpc('pp_cashback_rates_public'),ppSettingsP.catch(()=>null)]);
+    const [r,s]=await Promise.all([supabaseClient.rpc("pp_cashback_rates_public"),ppSettingsP.catch(()=>null),ppAutoP]);
     const c=s&&s.cashback;if(c){const sh=Number(c.share);if(sh>0&&sh<=0.9)CB_SHARE=sh;const mn=Number(c.min);if(mn>=1)CB_MIN=mn;}
     return r.error||!Array.isArray(r.data)?[]:r.data;
   }catch(_){return [];}})().then(l=>{
@@ -2384,6 +2416,18 @@ const DET_STORES={
   fashion:['Myntra','AJIO','Tata CLiQ','Nykaa Fashion','Amazon','Flipkart','Meesho'],
   beauty:['Nykaa','Purplle','Tata CLiQ','Amazon','Flipkart','Myntra'],
   other:['Amazon','Flipkart','JioMart','Meesho']};
+/* V279: more of the 40 top stores on the Price Check page (search links only, never "Verified") */
+DET_STORES.mobiles.push('Poorvika','Sangeetha Mobiles','Samsung Shop','OnePlus Store','Xiaomi Store');
+DET_STORES.electronics.push('Poorvika','Sangeetha Mobiles','Samsung Shop','OnePlus Store','Xiaomi Store','boAt');
+DET_STORES.appliances.push('Poorvika','Samsung Shop','Xiaomi Store');
+DET_STORES.laptops.push('Poorvika','Lenovo Store','HP Store','Dell Store');
+DET_STORES.home.push('Pepperfry','IKEA','BigBasket');
+DET_STORES.fashion.push('Adidas','Nike','Puma','Bewakoof','Lenskart','Shopsy','Snapdeal');
+DET_STORES.beauty.push('Tira','PharmEasy','Apollo Pharmacy');
+/* a brand's own store shows only for that brand's products (compare-v251.js unknownInfo) */
+window.ppBrandStores={'Samsung Shop':/samsung|galaxy/i,'OnePlus Store':/one\s?plus|\bnord\b/i,'Xiaomi Store':/xiaomi|redmi|\bpoco\b|\bmi\b/i,'Lenovo Store':/lenovo|ideapad|thinkpad|legion/i,
+  'HP Store':/\bhp\b|pavilion|victus|omen/i,'Dell Store':/\bdell\b|inspiron|vostro|latitude|alienware/i,'boAt':/\bboat\b|rockerz|airdopes/i,'Nike':/\bnike\b/i,'Puma':/\bpuma\b/i,'Adidas':/adidas/i,'Lenskart':/glass|spectacle|eyewear|\blens|frame|sunglass|aviator/i};
+DET_STORES.other.push('Shopsy','Snapdeal','BigBasket','Blinkit','Zepto','Swiggy Instamart','FirstCry','Decathlon');
 const CAT_LABELS={electronics:'Electronics',mobiles:'Mobiles',laptops:'Laptops',appliances:'Appliances',home:'Home & Kitchen',fashion:'Fashion',beauty:'Beauty',other:'Other'};
 STORE_SEARCH.push(
   ['Nykaa',q=>`https://www.nykaa.com/search/result/?q=${encodeURIComponent(q)}`],
@@ -2392,7 +2436,36 @@ STORE_SEARCH.push(
   ['Tata CLiQ',q=>`https://www.tatacliq.com/search/?searchCategory=all&text=${encodeURIComponent(q)}`],
   ['JioMart',q=>`https://www.jiomart.com/search/${encodeURIComponent(q)}`],
   ['Vijay Sales',q=>`https://www.vijaysales.com/search-listing?q=${encodeURIComponent(q)}`],
-  ['Nykaa Fashion',q=>`https://www.nykaafashion.com/catalogsearch/result/?q=${encodeURIComponent(q)}`]);
+  ['Nykaa Fashion',q=>`https://www.nykaafashion.com/catalogsearch/result/?q=${encodeURIComponent(q)}`],
+  /* V279: new stores (search pages) */
+  ['Samsung Shop',q=>`https://www.samsung.com/in/search/?searchvalue=${encodeURIComponent(q)}`],
+  ['Lenovo Store',q=>`https://www.lenovo.com/in/en/search?text=${encodeURIComponent(q)}`],
+  ['HP Store',q=>`https://www.hp.com/in-en/shop/catalogsearch/result/?q=${encodeURIComponent(q)}`],
+  ['Dell Store',q=>`https://www.dell.com/en-in/search/${encodeURIComponent(q)}`],
+  ['boAt',q=>`https://www.boat-lifestyle.com/search?q=${encodeURIComponent(q)}`],
+  ['Adidas',q=>`https://www.adidas.co.in/search?q=${encodeURIComponent(q)}`],
+  ['Nike',q=>`https://www.nike.com/in/w?q=${encodeURIComponent(q)}`],
+  ['Puma',q=>`https://in.puma.com/in/en/search?q=${encodeURIComponent(q)}`],
+  ['Shopsy',q=>`https://www.shopsy.in/search?q=${encodeURIComponent(q)}`],
+  ['Snapdeal',q=>`https://www.snapdeal.com/search?keyword=${encodeURIComponent(q)}`],
+  ['Pepperfry',q=>`https://www.pepperfry.com/site_product/search?q=${encodeURIComponent(q)}`],
+  ['IKEA',q=>`https://www.ikea.com/in/en/search/?q=${encodeURIComponent(q)}`],
+  ['BigBasket',q=>`https://www.bigbasket.com/ps/?q=${encodeURIComponent(q)}`],
+  ['Blinkit',q=>`https://blinkit.com/s/?q=${encodeURIComponent(q)}`],
+  ['Zepto',q=>`https://www.zeptonow.com/search?query=${encodeURIComponent(q)}`],
+  ['Swiggy Instamart',q=>`https://www.swiggy.com/instamart/search?query=${encodeURIComponent(q)}`],
+  ['FirstCry',q=>`https://www.firstcry.com/search?q=${encodeURIComponent(q)}`],
+  ['Decathlon',q=>`https://www.decathlon.in/search?query=${encodeURIComponent(q)}`],
+  /* search addresses checked on the live stores (1 Nov 2026) */
+  ['Poorvika',q=>{const k=encodeURIComponent(q).replace(/%20/g,'+');return `https://www.poorvika.com/${k}/s?q=${k}`;}],
+  ['Sangeetha Mobiles',q=>`https://www.sangeetha.com/search-result/${encodeURIComponent(q)}`],
+  ['OnePlus Store',q=>`https://www.oneplus.in/search?keyword=${encodeURIComponent(q)}`],
+  ['Xiaomi Store',q=>`https://www.mi.com/in/search/?keyword=${encodeURIComponent(q)}`],
+  ['Bewakoof',q=>`https://www.bewakoof.com/search?q=${encodeURIComponent(q)}`],
+  ['Tira',q=>`https://www.tirabeauty.com/products?q=${encodeURIComponent(q)}`],
+  ['PharmEasy',q=>`https://pharmeasy.in/search/all?name=${encodeURIComponent(q)}`],
+  ['Apollo Pharmacy',q=>`https://www.apollopharmacy.in/search-medicines/${encodeURIComponent(q)}`],
+  ['Lenskart',q=>`https://www.lenskart.com/search?q=${encodeURIComponent(q)}`]);
 STORE_HOSTS.push([/(^|\.)purplle\.com$/,'Purplle']);
 /* =====================================================================
    V216 — Product dictionary detection
@@ -3688,7 +3761,9 @@ function pcSpark(d){
   const gid='pcg'+d.p.id.replace(/[^a-z0-9]/gi,'');
   const lbl=d.v.k==='wait'?`${d.days||30}-day low ${M(Math.min(...pts))}`:`${d.days||30}-day high ${M(Math.max(...pts))}`;
   const lastY=Y(ser[ser.length-1].price);
-  return `<div class="ppx-pc-chart pp-xc-mini" aria-label="Price trend, ${H(lbl)}, average ${H(M(Math.round(avg)))}"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><defs>
+  /* V279 (L10): points for the hover tooltip (polish-v279.js) */
+  const ptsAttr=H(JSON.stringify({t0,t1,lo,hi,T,B,Hh,p:ser.map(q=>[q.time,q.price])}));
+  return `<div class="ppx-pc-chart pp-xc-mini" data-pp-pts="${ptsAttr}" aria-label="Price trend, ${H(lbl)}, average ${H(M(Math.round(avg)))}"><svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none" aria-hidden="true"><defs>
     <linearGradient id="${gid}l" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${yTop.toFixed(1)}" y2="${yBot.toFixed(1)}"><stop offset="0" stop-color="#F06A6E"/><stop offset="${off}" stop-color="#E8B954"/><stop offset="1" stop-color="#3DDC97"/></linearGradient>
     <linearGradient id="${gid}a" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${yTop.toFixed(1)}" y2="${Hh}"><stop offset="0" stop-color="#F06A6E" stop-opacity=".2"/><stop offset="${off}" stop-color="#E8B954" stop-opacity=".12"/><stop offset="1" stop-color="#3DDC97" stop-opacity=".02"/></linearGradient></defs>
     <path d="${line} V${Hh} H0 Z" fill="url(#${gid}a)"/>
@@ -3899,7 +3974,7 @@ function ccBindCard(card){
   const heart=card.querySelector('.heart');
   heart?.addEventListener('click',()=>{
     const id=heart.dataset.id;if(!id)return;
-    if(typeof currentUser==='undefined'||!currentUser||(typeof profileComplete==='function'&&!profileComplete(currentProfile))){
+    if(typeof ppWishAllowed==='function'?!ppWishAllowed(id):(typeof currentUser==='undefined'||!currentUser||(typeof profileComplete==='function'&&!profileComplete(currentProfile)))){
       if(typeof setPendingAuthAction==='function')setPendingAuthAction({type:'wishlist-toggle',id});
       if(typeof currentUser!=='undefined'&&currentUser&&typeof renderProfileForm==='function')renderProfileForm(currentUser.email||'',currentProfile);
       else if(typeof renderAuthStart==='function')renderAuthStart();
@@ -4036,11 +4111,13 @@ if(typeof filterProducts==='function'){
   const origFilter=filterProducts;
   filterProducts=function(category){hlCat=category||'all';const r=origFilter.apply(this,arguments);try{const g=document.getElementById('dealGrid');if(g)g.scrollLeft=0;}catch(_){}try{hlApplyCap();hlRows();}catch(_){}return r;};
 }
+/* V280 (L36): small round badge of the store with the lowest price, on the photo corner */
+function lowBadge(d){const ic=d&&d.price!=null&&d.store&&typeof window.ppStoreIcon==='function'?window.ppStoreIcon(d.store):'';return ic?`<img class="pp80-lb pp79-sic" data-pp79="1" src="${ic}" alt="" title="Lowest price on ${H(String(d.store))}">`:'';}
 function hlMini(p,d,o={}){
   const k=d?.v?.k||'pending';
   const lbl=k==='buy'?'Buy now':k==='wait'?'Wait':k==='fair'?'Fair price':'Verifying';
   const sub=o.sub||(d?.price!=null?(d.drop>0?`▼ ${M(d.drop)}`:d.sav?.percent?`${d.sav.percent}% off`:`${d.offers.length} stores`):`${d?.stores||0} stores`);
-  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph ${ppxGlobalImg(p.id,d?.photo).surface}">${ppxGlobalImg(p.id,d?.photo).img}</span>${p.brand?`<span class="br">${H(p.brand)}</span>`:''}<span class="nm">${H(p.name)}</span><span class="pr${d?.price!=null?'':' is-soon'}">${d?.price!=null?M(Number.isFinite(o.price)?o.price:d.price):'Price soon'}${o.at?`<small class="at">at ${H(o.at)}</small>`:''}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}<span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
+  return `<a class="ppx-mini" href="#/product/${encodeURIComponent(p.id)}"><span class="ph ${ppxGlobalImg(p.id,d?.photo).surface}">${ppxGlobalImg(p.id,d?.photo).img}${lowBadge(d&&{price:d.price,store:o.at||d.store})}</span>${p.brand?`<span class="br">${H(p.brand)}</span>`:''}<span class="nm">${H(p.name)}</span><span class="pr${d?.price!=null?'':' is-soon'}">${d?.price!=null?M(Number.isFinite(o.price)?o.price:d.price):'Price soon'}${o.at?`<small class="at">at ${H(o.at)}</small>`:''}</span><span class="ft"><i class="is-${k}"></i>${lbl}<em>${H(sub)}</em></span>${d?.price!=null?(()=>{const on=pcCmp.includes(p.id);return `<span class="ppx-mini-cmp${on?' is-on':''}" role="button" tabindex="0" data-pc-cmp="${H(p.id)}" data-cmp-style="mini" aria-pressed="${on}" aria-label="${on?'Remove from':'Add to'} compare" title="${on?'Added to compare':'Add to compare'}">${PC_SVG.cmp}</span>`;})():''}<span class="ppx-mini-go" aria-hidden="true">→</span></a>`;
 }
 function hlRows(){
   const deals=document.getElementById('deals');if(!deals)return;

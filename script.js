@@ -55,7 +55,7 @@ async function ppAttachPendingReferral(){
 
 const $=(s,p=document)=>p.querySelector(s);
 const $$=(s,p=document)=>[...p.querySelectorAll(s)];
-const SUPPORT_EMAIL="pricepulseonline@gmail.com";
+const SUPPORT_EMAIL="support@price-pulse.in";
 
 const toast=$("#toast");
 let tt;
@@ -477,9 +477,18 @@ function syncWishlist(){
     btn.setAttribute("aria-label",on?"Remove from wishlist":"Add to wishlist");
     btn.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.35 10.55 19.03C5.4 14.36 2 11.27 2 7.5 2 4.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.42 22 7.5c0 3.77-3.4 6.86-8.55 11.54L12 20.35Z"/></svg>`;
   });
-  if($("#wishCount")) $("#wishCount").textContent=saved.size;
-  $("#wishlistTop")?.classList.toggle("has-items",saved.size>0);
+  ppRefreshWishCount();
 }
+function ppRefreshWishCount(){
+  const total=saved.size+(window.__ppExtN||0);
+  if($("#wishCount")) $("#wishCount").textContent=total;
+  $("#wishlistTop")?.classList.toggle("has-items",total>0);
+  if(/^#\/wishlist/.test(location.hash)){
+    const b=document.querySelector('.ppx-list-page .pp-onebar .pp-ob-stats b');if(b)b.textContent=total;
+    document.title=`My Wishlist (${total}) | PricePulse`;
+  }
+}
+function ppExtCountSync(){window.__ppExtN=ppExtWish.length;ppRefreshWishCount()}
 
 async function syncWishlistForUser(user){
   if(!user || !supabaseClient){
@@ -579,7 +588,7 @@ async function toggleWishlistItem(btn){
 $$(".heart").forEach(btn=>btn.addEventListener("click",()=>{
   const id=btn?.dataset.id;
   if(!id) return;
-  if(!currentUser || !profileComplete(currentProfile)){
+  if(!ppWishAllowed(id)){
     setPendingAuthAction({type:"wishlist-toggle",id});
     if(currentUser) renderProfileForm(currentUser.email||"",currentProfile);
     else renderAuthStart();
@@ -2277,7 +2286,7 @@ function ppWishlistAlertStateHTML(productId){
   if(state.tone==='triggered'){
     return `<div class="pp-wish-alert-box is-reached"><div class="pp-wish-alert-head"><span class="pp-wish-alert-icon">✓</span><div><strong>Target Reached</strong><small>Deal available now</small></div></div><div class="pp-wish-alert-meta"><span>Target <b>${target}</b></span><span>Current <b>${current}</b></span></div><div class="pp-wish-alert-buttons"><button class="pp-wish-view-deal" data-wishlist-action="view-deal" data-id="${escapeHTML(productId)}">View Deal</button><button class="pp-wish-edit-alert" data-wishlist-action="set-alert" data-id="${escapeHTML(productId)}">Edit Alert</button></div></div>`;
   }
-  return `<div class="pp-wish-alert-box is-active"><div class="pp-wish-alert-head"><span class="pp-wish-alert-icon">♧</span><div><strong>Deal Alert Active</strong><small><i></i> Watching</small></div></div><div class="pp-wish-alert-meta"><span>Target <b>${target} or below</b></span></div><button class="pp-wish-edit-alert" data-wishlist-action="set-alert" data-id="${escapeHTML(productId)}">Edit Alert</button></div>`;
+  return `<div class="pp-wish-alert-box is-active"><div class="pp-wish-alert-head"><span class="pp-wish-alert-icon">♧</span><div><strong>Deal Alert Active</strong><small><i></i> Watching</small></div></div><div class="pp-wish-alert-meta"><span>Target <b>${target} or below</b></span></div>${ppTargetProgressHTML(ppTargetProgress(alert.target_price,Number.isFinite(info.current?.price)?info.current.price:(alert.ext_url&&Number(alert.last_seen_price)>0?Number(alert.last_seen_price):NaN)))}<button class="pp-wish-edit-alert" data-wishlist-action="set-alert" data-id="${escapeHTML(productId)}">Edit Alert</button></div>`;
 }
 function ppWishlistCardHTML(product,status,view='all'){
   const {state}=status;
@@ -2298,12 +2307,12 @@ function ppWishlistCardHTML(product,status,view='all'){
   return `<article class="pp-wish-track-card" data-wishlist-id="${escapeHTML(product.id)}">
     <div class="pp-wish-status is-${escapeHTML(displayStatusTone)}"><strong>${escapeHTML(displayStatusLabel)}</strong>${statusSub}</div>
     <button class="pp-wish-remove" data-wishlist-action="remove" data-id="${escapeHTML(product.id)}" aria-label="Remove ${escapeHTML(product.name)} from wishlist" title="Remove from Wishlist">♥</button>
-    <div class="pp-wish-product-media pp-global-product-surface ${ppGlobalImageBgClass(imageState||{})}"><img class="pp-global-product-image" src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}" ${ppGlobalImageDataAttrs(imageState||{})} style="${escapeHTML(ppGlobalImageStyle(imageState||{}))}"></div>
+    <a class="pp-wish-product-media pp-global-product-surface ${ppGlobalImageBgClass(imageState||{})}" href="#/product/${encodeURIComponent(String(product.id))}" aria-label="Open ${escapeHTML(product.name)}"><img class="pp-global-product-image" src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}" ${ppGlobalImageDataAttrs(imageState||{})} style="${escapeHTML(ppGlobalImageStyle(imageState||{}))}"></a>
     <div class="pp-wish-product-main">
-      ${brand}<h3>${escapeHTML(product.name)}</h3>${facts}
-      ${retailerStrip(product.data,product.id)}
-      <div class="pp-wish-best-price"><span>Best verified price</span><div><strong>${bestPrice}</strong>${priceTag}</div><small>${state.inStockCount?`Across ${state.inStockCount} in-stock ${state.inStockCount===1?'retailer':'retailers'}`:'Verified price availability pending'}</small></div>
+      ${brand}<h3><a href="#/product/${encodeURIComponent(String(product.id))}">${escapeHTML(product.name)}</a></h3>${facts}
     </div>
+    <div class="pp-wish-stores"><small class="pp-da-meta-label">Tracking on</small>${retailerStrip(product.data,product.id)}${Number.isFinite(state.bestPrice)?ppTrendHTML(String(product.id)):''}</div>
+    <div class="pp-wish-best-price"><span>Best verified price</span><div><strong${Number.isFinite(state.bestPrice)?'':' class="is-pending"'}>${bestPrice}</strong>${priceTag}</div><small>${state.inStockCount?`Across ${state.inStockCount} in-stock ${state.inStockCount===1?'retailer':'retailers'}`:'Verified price availability pending'}</small></div>
     <div class="pp-wish-card-actions">${ppWishlistAlertStateHTML(product.id)}<button class="pp-wish-compare" data-wishlist-action="compare" data-id="${escapeHTML(product.id)}">Find Best Price →</button></div>
   </article>`;
 }
@@ -2516,8 +2525,8 @@ function ppWishlistActivityRowHTML(item){
     <time datetime="${escapeHTML(item.checkedAt||'')}">${escapeHTML(ppRelativeTime(item.checkedAt))}</time>
   </div>`;
 }
-function wishlistPanelHTML(){
-  const products=[...saved].map(getWishlistProduct).filter(Boolean);
+function wishlistPanelHTMLBase(){
+  const products=[...saved].map(getWishlistProduct).filter(Boolean).sort((a,b)=>(Date.parse(ppWishlistMetaEntry(b.id)?.savedAt||'')||0)-(Date.parse(ppWishlistMetaEntry(a.id)?.savedAt||'')||0));
   const statuses=products.map(p=>[p,ppWishlistStatus(p.id)]);
   const drops=statuses.filter(([,s])=>s.dropAmount>0).length;
   const dealStatuses=statuses.filter(([p])=>ppWishlistDealAlertInfo(p.id)?.state?.tone==='triggered');
@@ -2526,7 +2535,9 @@ function wishlistPanelHTML(){
   const updates=updateStatuses.length;
   const newest=statuses.map(([,s])=>s.state.checkedAt).filter(Boolean).sort().at(-1)||'';
 
-  if(!products.length){
+  const extItems=ppExtWish.filter(w=>/^https:\/\//.test(w.url||''));
+  const totalCount=products.length+extItems.length;
+  if(!totalCount){
     ppWishlistFilter='all';
     return `<div class="pp-wishlist-fly-head"><div><div class="pp-wishlist-title-row"><h2>My Wishlist</h2><span>0 products</span></div><p>Track saved products for verified price updates.</p></div><button class="pp-wishlist-x" data-wishlist-action="close" aria-label="Close wishlist">×</button></div><div class="pp-wishlist-empty-v72"><div>♡</div><h3>Your wishlist is empty</h3><p>Tap the heart on any product and it will appear here for tracking.</p><button class="pp-wish-browse" data-wishlist-action="browse">Browse Deals →</button></div>`;
   }
@@ -2543,16 +2554,18 @@ function wishlistPanelHTML(){
         ? updateStatuses
         : statuses;
 
-  const mainContent=filteredStatuses.map(([p,s])=>ppWishlistCardHTML(p,s,ppWishlistFilter)).join('');
+  const siteCards=filteredStatuses.map(([p,s])=>({t:Date.parse(ppWishlistMetaEntry(p.id)?.savedAt||'')||0,h:ppWishlistCardHTML(p,s,ppWishlistFilter)}));
+  const extCards=ppWishlistFilter==='all'?extItems.map(w=>({t:Date.parse(w.created_at)||0,h:ppExtWishCardHTML(w)})):[];
+  const mainContent=[...siteCards,...extCards].sort((a,b)=>b.t-a.t).map(x=>x.h).join('');
 
-  return `<div class="pp-wishlist-fly-head"><div><div class="pp-wishlist-title-row"><h2>My Wishlist</h2><span>${products.length} ${products.length===1?'product':'products'}</span></div><p>Track your saved products for the best deals and latest updates.</p></div><button class="pp-wishlist-x" data-wishlist-action="close" aria-label="Close wishlist">×</button></div>
+  return `<div class="pp-wishlist-fly-head"><div><div class="pp-wishlist-title-row"><h2>My Wishlist</h2><span>${totalCount} ${totalCount===1?'product':'products'}</span></div><p>Track your saved products for the best deals and latest updates.</p></div><button class="pp-wishlist-x" data-wishlist-action="close" aria-label="Close wishlist">×</button></div>
     <div class="pp-wishlist-summary">
       <button type="button" class="pp-wish-summary-stat pp-wish-summary-filter ${ppWishlistFilter==='all'?'is-active':''}" data-wishlist-action="filter" data-filter="all" aria-pressed="${ppWishlistFilter==='all'}"><b class="is-all">♥</b><span>All</span></button>
       <button type="button" class="pp-wish-summary-stat pp-wish-summary-filter ${ppWishlistFilter==='drops'?'is-active':''}" data-wishlist-action="filter" data-filter="drops" aria-pressed="${ppWishlistFilter==='drops'}" ${drops?'':'disabled'}><b class="is-drop">↓ ${drops}</b><span>Price Drops</span></button>
       <button type="button" class="pp-wish-summary-stat pp-wish-summary-filter ${ppWishlistFilter==='deals'?'is-active':''}" data-wishlist-action="filter" data-filter="deals" aria-pressed="${ppWishlistFilter==='deals'}" ${deals?'':'disabled'}><b class="is-deal"><svg class="pp-wish-deal-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path><path d="M10 19h4"></path></svg><span>${deals}</span></b><span>Deals</span></button>
       <button type="button" class="pp-wish-summary-stat pp-wish-summary-filter ${ppWishlistFilter==='updates'?'is-active':''}" data-wishlist-action="filter" data-filter="updates" aria-pressed="${ppWishlistFilter==='updates'}" ${updates?'':'disabled'}><b class="is-update">↗ ${updates}</b><span>New Updates</span></button>
-      <div class="pp-wish-last"><b>◷</b><span>Last Checked<strong>${escapeHTML(ppRelativeTime(newest))}</strong></span></div>
-      <button class="pp-wish-refresh" data-wishlist-action="refresh">↻&nbsp; Check for Updates</button>
+      <div class="pp-wish-last"><b aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg></b><span>Last Checked<strong>${escapeHTML(ppRelativeTime(newest))}</strong></span></div>
+      <button class="pp-wish-refresh" data-wishlist-action="refresh" aria-label="Check for updates"><i class="pp-wish-ref-ic" aria-hidden="true">↻</i><span class="pp-wish-ref-long">Check for Updates</span><span class="pp-wish-ref-short">Refresh</span></button>
     </div>
     <div class="pp-wishlist-track-list">${mainContent}</div>
     <div class="pp-wishlist-foot"><button data-wishlist-action="clear">♲&nbsp; Clear All</button><span>Verified prices refresh from PricePulse checks.</span></div>`;
@@ -2595,6 +2608,75 @@ function ppFitWishlistThreeCards(){
   const height=Math.ceil(cards.reduce((sum,card)=>sum+card.getBoundingClientRect().height,0)+gap*Math.max(0,cards.length-1)+4);
   list.style.setProperty('--pp-wishlist-three-height',`${height}px`);
 }
+/* 2.1: products saved with the PricePulse extension that are not on PricePulse (table pp_ext_wishlist) */
+let ppExtWish=[];
+let ppExtWishLoaded=false;
+function ppExtPid(w){const sl=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');return ('ext-'+sl(w.store)+'-'+sl(w.item_key)).slice(0,120).replace(/-+$/,'')}
+async function ppLoadExtWishlist(){
+  if(!currentUser||!supabaseClient){ppExtWish=[];return}
+  try{
+    const {data,error}=await supabaseClient.from('pp_ext_wishlist').select('store,item_key,url,title,image,store_name,price,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    ppExtWish=error?[]:(data||[]);
+  }catch(e){ppExtWish=[]}
+  ppExtWishLoaded=true;
+  ppExtCountSync();
+}
+// V2.0.1: products saved from another store (extension) carry the store's long title: show a short name like site products + one small variant line
+function ppShortTitle(t){
+  const full=String(t||'').replace(/\s+/g,' ').trim();
+  if(!full)return {name:'Product',sub:'',full:''};
+  const parts=full.replace(/\(([^)]*)\)/g,'|$1|').split(/\s*[|,:;]\s*|\s[–—-]\s/).map(x=>x.trim()).filter(Boolean);
+  let name=parts.shift()||full;
+  while(parts.length&&name.split(' ').length<3)name+=' '+parts.shift();
+  if(name.length>48)name=name.slice(0,48).replace(/\s+\S*$/,'')+'…';
+  const VAR=/\b\d+\s?(gb|tb|ml|l|ltr|litre|kg|g|inch|cm|uk|w)\b|\b(black|white|blue|red|green|grey|gray|silver|gold|pink|purple|titanium|navy|beige|brown|orange|yellow|lime|teal|cream|nude)\b/i;
+  const sub=parts.filter(x=>x.length<=28&&VAR.test(x)).slice(0,2).join(' · ');
+  return {name,sub,full};
+}
+function ppExtWishCardHTML(w){
+  const url=escapeHTML(w.url),store=escapeHTML(w.store_name||w.store||'Store');
+  const img=/^https:\/\//.test(w.image||'')?`<img class="pp-global-product-image" src="${escapeHTML(w.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" style="object-fit:contain">`:'';
+  const price=Number(w.price)>0?money(Number(w.price)):'Not saved';
+  const st=ppShortTitle(w.title);
+  return `<article class="pp-wish-track-card" data-ext-wish-card="${escapeHTML(w.store)}|${escapeHTML(w.item_key)}">
+    <div class="pp-wish-status is-update"><strong>Saved</strong><small>${store}</small></div>
+    <button class="pp-wish-remove" data-ext-wish-remove="${escapeHTML(w.store)}|${escapeHTML(w.item_key)}" aria-label="Remove ${escapeHTML(w.title||'Product')} from wishlist" title="Remove from Wishlist">♥</button>
+    <a class="pp-wish-product-media pp-global-product-surface" href="${url}" target="_blank" rel="noopener" aria-label="Open ${escapeHTML(w.title||'Product')}">${img}</a>
+    <div class="pp-wish-product-main"><h3><a href="${url}" target="_blank" rel="noopener" title="${escapeHTML(st.full)}">${escapeHTML(st.name)}</a></h3>${st.sub?`<small class="pp-da-category">${escapeHTML(st.sub)}</small>`:''}</div>
+    <div class="pp-wish-stores"><small class="pp-da-meta-label">Saved from</small><span>${store}</span></div>
+    <div class="pp-wish-best-price"><span>Price when saved</span><div><strong>${price}</strong></div><small>Saved with the PricePulse extension</small></div>
+    <div class="pp-wish-card-actions">${ppWishlistAlertStateHTML(ppExtPid(w))}<a class="pp-wish-compare" href="${url}" target="_blank" rel="noopener">Open on ${store} →</a></div>
+  </article>`;
+}
+function ppExtWishHTML(){
+  const rows=ppExtWish.filter(w=>/^https:\/\//.test(w.url||'')).map(w=>{
+    const img=/^https:\/\//.test(w.image||'')
+      ?`<img src="${escapeHTML(w.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" style="width:52px;height:52px;object-fit:contain;background:#fff;border:1px solid #E1E9E4;border-radius:10px;padding:4px;box-sizing:border-box;flex:none">`
+      :'<span style="width:52px;height:52px;flex:none;border-radius:10px;background:#EEF3F0"></span>';
+    const price=Number(w.price)>0?` &middot; saved at ${money(Number(w.price))}`:'';
+    return `<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #E7EEE9">${img}
+      <div style="min-width:0;flex:1"><a href="${escapeHTML(w.url)}" target="_blank" rel="noopener" style="display:block;font-weight:700;color:inherit;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(w.title||'Product')}</a>
+      <small style="color:#5B6F66">${escapeHTML(w.store_name||w.store||'')}${price}</small></div>
+      <a href="${escapeHTML(w.url)}" target="_blank" rel="noopener" style="font-weight:700;font-size:12.5px;color:#0E6B47;text-decoration:none">Open</a>
+      <button type="button" data-ext-wish-remove="${escapeHTML(w.store)}|${escapeHTML(w.item_key)}" style="all:unset;cursor:pointer;font-size:12.5px;font-weight:700;color:#8A2A1E">Remove</button></div>`;
+  }).join('');
+  if(!rows)return '';
+  return `<section class="pp-ext-wish" style="margin:16px 0 6px"><h3 style="margin:0 0 2px;font-size:15px">Saved from other stores</h3><p style="margin:0 0 6px;font-size:12.5px;color:#5B6F66">Saved with the PricePulse extension. These products are not tracked on PricePulse yet.</p>${rows}</section>`;
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-ext-wish-remove]');
+  if(!b||!currentUser||!supabaseClient)return;
+  e.preventDefault();
+  const [st,k]=String(b.dataset.extWishRemove).split('|');
+  const {error}=await supabaseClient.from('pp_ext_wishlist').delete().eq('user_id',currentUser.id).eq('store',st).eq('item_key',k);
+  if(error){showToast('Could not remove this item');return}
+  ppExtWish=ppExtWish.filter(x=>!(x.store===st&&x.item_key===k));
+  ppExtCountSync();
+  ppRenderWishlistPanel();
+});
+function wishlistPanelHTML(){
+  return wishlistPanelHTMLBase();
+}
 function ppRenderWishlistPanel(){
   ppCloseWishlistDealAlertPopover();
   const overlay=ensureWishlistOverlay();
@@ -2621,7 +2703,13 @@ function openWishlistPanel(){
   closeCategoriesMenu();
   const overlay=ensureWishlistOverlay();
   for(const id of saved)ppFillWishlistBaselineIfMissing(id);
-  ppRenderWishlistPanel();
+  if(ppExtWishLoaded||!currentUser||!supabaseClient){ppRenderWishlistPanel();void ppLoadExtWishlist().then(()=>{if(ppWishlistIsOpen())ppRenderWishlistPanel();});}
+  else{
+    const body0=$('#wishlistPanelBody',overlay);
+    if(body0)body0.innerHTML='<p style="padding:40px 0;text-align:center;color:#5B6F66">Loading your wishlist…</p>';
+    let painted=false;const paint=()=>{if(painted)return;painted=true;if(ppWishlistIsOpen())ppRenderWishlistPanel()};
+    void ppLoadExtWishlist().then(paint);setTimeout(paint,2500);
+  }
   overlay.hidden=false;
   document.body.classList.add('pp-wishlist-open');
   $('#wishlistTop')?.classList.add('is-active');
@@ -2645,7 +2733,7 @@ function toggleWishlistPanel(){ppWishlistIsOpen()?closeWishlistPanel():openWishl
 $('#wishlistTop')?.setAttribute('aria-expanded','false');
 $('#wishlistTop')?.addEventListener('click',e=>{
   e.preventDefault();
-  if(!currentUser || !profileComplete(currentProfile)){
+  if(!currentUser){
     setPendingAuthAction({type:"wishlist-open"});
     if(currentUser) renderProfileForm(currentUser.email||"",currentProfile);
     else renderAuthStart();
@@ -2707,7 +2795,7 @@ document.addEventListener('click',async e=>{
   if(action==='view-deal'){
     const id=String(b.dataset.id||'');
     const product=getWishlistProduct(id);
-    if(!product)return;
+    if(!product){const ea=ppFindDealAlertForProduct(id);if(ea&&/^https:\/\//.test(ea.ext_url||''))window.open(ea.ext_url,'_blank','noopener');return}
     ppCloseWishlistDealAlertPopover();
     closeWishlistPanel();
     openModal(comparisonModalHTML(product.name,product.data));
@@ -2727,6 +2815,24 @@ document.addEventListener('click',async e=>{
 });
 
 /* ---------- Authentication ---------- */
+/* V284: profile is asked only when a feature needs it (alerts, rewards, Plus, more than 3 Wishlist items) */
+function ppPendingNeedsProfile(){
+  let a=null,after='';
+  try{a=JSON.parse(sessionStorage.getItem(AUTH_PENDING_ACTION_KEY)||'null');}catch(_){}
+  try{after=sessionStorage.getItem('ppx_after_auth')||'';}catch(_){}
+  if(a&&a.type){
+    if(a.type==='wishlist-open') return false;
+    if(a.type==='wishlist-toggle') return !ppWishAllowed(a.id);
+    return true;
+  }
+  return ['alerts','preferences','account'].includes(after);
+}
+const PP_FREE_WISH=3;
+function ppWishAllowed(id){
+  if(!currentUser) return false;
+  if(profileComplete(currentProfile)) return true;
+  return typeof saved!=='undefined' && (saved.has(id) || saved.size<PP_FREE_WISH);
+}
 function setPendingAuthAction(action){
   try{
     if(action) sessionStorage.setItem(AUTH_PENDING_ACTION_KEY,JSON.stringify(action));
@@ -2746,10 +2852,13 @@ function takePendingAuthAction(){
 }
 
 async function continuePendingAuthAction(){
-  if(!currentUser || !profileComplete(currentProfile)) return;
+  if(!currentUser) return;
   const action=takePendingAuthAction();
   if(!action?.type) return;
+  const wishAction=action.type==="wishlist-toggle"||action.type==="wishlist-open";
+  if(!profileComplete(currentProfile) && !wishAction){ setPendingAuthAction(action); return; }
   if(action.type==="wishlist-toggle" && action.id){
+    if(!ppWishAllowed(action.id)){ setPendingAuthAction(action); renderProfileForm(currentUser.email||"",currentProfile); return; }
     const btn=document.querySelector(`.heart[data-id="${CSS.escape(String(action.id))}"]`);
     if(btn) await toggleWishlistItem(btn);
     return;
@@ -2926,6 +3035,7 @@ async function ppLoadPlusMembership(){
     ppPlusMembership.status='expired';
     if(!backendAvailable&&!loaded)ppWriteLocalPlus(ppPlusMembership);
   }
+  await ppLoadMyPlan(); // V283: Pro state + which offer to show
   return ppPlusMembership;
 }
 
@@ -2967,6 +3077,10 @@ function ppFormatPlusDate(value){
 }
 function ppSyncPlusUI(){
   updateAccountHeader();
+  /* plan can load after the Deal Alerts page is drawn: redraw so footer + header show the same plan */
+  if(typeof ppDealAlertsIsOpen==='function'&&ppDealAlertsIsOpen()&&typeof ppRenderDealAlertsPanel==='function'){
+    ppRenderDealAlertsPanel();
+  }
   if(accountPopover&&!accountPopover.hidden)accountPopover.innerHTML=accountPopoverHTML();
   if(modal&&!modal.hidden&&modal.classList.contains('pp-plus-modal-active'))renderPlusPanel();
 }
@@ -3022,7 +3136,7 @@ function authFrame(inner){
     <div class="auth-shell">
       <div class="auth-heading">
         <img class="auth-brand-logo" src="logo-icon.png" alt="PricePulse logo">
-        <div><h2>Welcome to PricePulse</h2><p>Save wishlists, comparisons and future price alerts.</p></div>
+        <div><h2>Welcome to PricePulse</h2><p>Compare verified prices, track drops and never overpay.</p></div>
       </div>
       ${inner}
     </div>`;
@@ -3091,14 +3205,15 @@ function cleanOAuthUrl(){
 function renderAuthStart(prefill=""){
   clearOtpResendTimer();
   openModal(authFrame(`
-    <div class="auth-step-copy auth-start-copy"><h3>Continue to PricePulse</h3><p>Sign in or create your account to save wishlists, comparisons and future price alerts.</p></div>
+    <div class="auth-step-copy auth-start-copy"><h3>Sign in or create your account</h3></div>
+    <ul class="auth-perks"><li>Compare verified prices across top stores</li><li>Get a Deal Alert when your target price is hit</li><li>Save wishlists and track Wallet rewards</li></ul>
     <button class="auth-google" id="googleAuthBtn" type="button"><span class="google-mark" aria-hidden="true"><svg viewBox="0 0 18 18" focusable="false"><path fill="#4285F4" d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.716v2.258h2.909c1.703-1.568 2.684-3.88 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.468-.806 5.956-2.18l-2.91-2.258c-.806.54-1.835.86-3.046.86-2.344 0-4.328-1.584-5.037-3.712H.956v2.332A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.963 10.71A5.42 5.42 0 0 1 3.681 9c0-.593.102-1.17.282-1.71V4.958H.956A9 9 0 0 0 0 9c0 1.45.347 2.82.956 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.579c1.322 0 2.508.454 3.442 1.346l2.582-2.582C13.464.891 11.426 0 9 0A9 9 0 0 0 .956 4.958l3.007 2.332C4.672 5.162 6.656 3.579 9 3.579z"/></svg></span><span>Continue with Google</span></button>
     <div class="auth-divider"><span>or</span></div>
     <form class="auth-form" id="otpRequestForm">
-      <label class="auth-field"><span>Email address</span><input id="authEmail" type="email" autocomplete="email" placeholder="Enter your email address" value="${escapeHTML(prefill)}" required></label>
+      <label class="auth-field"><span>Email address</span><input id="authEmail" name="email" type="email" inputmode="email" autocapitalize="none" spellcheck="false" autocomplete="email" placeholder="Enter your email address" value="${escapeHTML(prefill)}" required></label>
       <button class="auth-primary" id="sendOtpBtn" type="submit">Continue</button>
     </form>
-    <p class="auth-fineprint">Existing accounts sign in automatically. New customers complete a short profile after verification.</p>
+    <p class="auth-fineprint">No password needed. We email you a one-time code. New customers complete a short profile after verification.</p>
     <p class="auth-fineprint">By continuing, you agree to the PricePulse Terms and Privacy notice.</p>
     <p class="auth-status" id="authStatus" aria-live="polite"></p>`));
 
@@ -3198,8 +3313,12 @@ function renderOtpStep(email){
       closeModal();
       showToast("Signed in successfully");
       await continuePendingAuthAction();
-    }else{
+    }else if(ppPendingNeedsProfile()){
       renderProfileForm(currentUser?.email||email,currentProfile);
+    }else{
+      closeModal();
+      showToast("Signed in successfully");
+      await continuePendingAuthAction();
     }
   });
 }
@@ -3224,25 +3343,51 @@ function localMobile(value=""){
 }
 
 function renderProfileForm(email,existing=null){
-  const p=existing||{};
+  const gm=(currentUser&&currentUser.user_metadata)||{};
+  const p=Object.assign({},existing||{});
+  const wasComplete=profileComplete(existing);
+  if(!p.country) p.country="India";
+  if(!p.full_name) p.full_name=String(gm.full_name||gm.name||"").trim();
+  if(!wasComplete) p.deal_alerts=true;
   openModal(authFrame(`
-    <div class="auth-step-copy"><h3>Complete your profile</h3><p>First-time setup for saved products and future price alerts.</p></div>
+    <div class="auth-step-copy"><h3>Complete your profile</h3><p>One-time setup so your wishlist and Deal Alerts work on every device.</p></div>
     <form class="profile-form" id="profileForm" autocomplete="on">
       <div class="profile-grid">
         <label class="auth-field profile-wide" for="profileFullName"><span>Full Name</span><input id="profileFullName" name="fullName" type="text" autocomplete="section-profile name" autocapitalize="words" spellcheck="false" value="${escapeHTML(p.full_name||"")}" placeholder="Your full name" required></label>
         <label class="auth-field profile-wide"><span>Email</span><input id="profileEmail" name="email" type="email" autocomplete="section-profile email" value="${escapeHTML(email)}" readonly></label>
         <label class="auth-field"><span>Mobile Number</span><div class="phone-field"><span class="phone-prefix">+91</span><input id="profileMobile" name="mobileLocal" type="tel" inputmode="numeric" autocomplete="section-profile tel-national" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="Enter mobile number" value="${escapeHTML(localMobile(p.mobile||""))}" required></div></label>
+        <label class="auth-field"><span>PIN Code</span><input id="profileZip" name="zip" inputmode="numeric" autocomplete="section-profile postal-code" maxlength="6" pattern="[1-9][0-9]{5}" placeholder="Enter PIN code" value="${escapeHTML(p.pin_code||"")}" required></label>
         <label class="auth-field"><span>City</span><input id="profileCity" name="city" autocomplete="section-profile address-level2" value="${escapeHTML(p.city||"")}" placeholder="City" required></label>
         <label class="auth-field"><span>State / UT</span><select id="profileState" name="state" autocomplete="section-profile address-level1" required>${stateOptions(p.state||"")}</select></label>
-        <label class="auth-field"><span>Country</span><select id="profileCountry" name="country" autocomplete="section-profile country-name" required>${countryOptions(p.country||"")}</select></label>
-        <label class="auth-field profile-wide"><span>PIN Code</span><input id="profileZip" name="zip" inputmode="numeric" autocomplete="section-profile postal-code" maxlength="6" pattern="[1-9][0-9]{5}" placeholder="Enter PIN code" value="${escapeHTML(p.pin_code||"")}" required></label>
+        <label class="auth-field profile-wide"><span>Country</span><select id="profileCountry" name="country" autocomplete="section-profile country-name" required>${countryOptions(p.country||"")}</select></label>
       </div>
-      <label class="consent-row"><input name="alerts" type="checkbox" ${p.deal_alerts?"checked":""}><span>Send me optional price-drop and deal alerts.</span></label>
+      <label class="consent-row"><input name="alerts" type="checkbox" ${p.deal_alerts===false?"":"checked"}><span>Send me optional price-drop and deal alerts.</span></label>
       <button class="auth-primary" id="saveProfileBtn" type="submit">Save Profile</button>
       <p class="auth-fineprint">Your profile is linked to your secure PricePulse account.</p>
       <p class="auth-status" id="authStatus" aria-live="polite"></p>
     </form>`),true);
 
+  const ppPinFill=async pin=>{
+    const norm=v=>String(v||"").toLowerCase().replace(/&/g,"and").replace(/\bnct of\b/g,"").replace(/[^a-z]/g,"");
+    let hit=null;
+    const get=async(url)=>{const c=new AbortController();const t=setTimeout(()=>c.abort(),5000);try{const r=await fetch(url,{signal:c.signal});return await r.json();}finally{clearTimeout(t);}};
+    try{const j=await get(`https://api.postalpincode.in/pincode/${pin}`);const po=j&&j[0]&&j[0].Status==="Success"&&j[0].PostOffice&&j[0].PostOffice[0];if(po)hit={city:po.District||po.Block||po.Name||"",state:po.State||""};}catch(_){}
+    if(!hit){try{const j=await get(`https://api.zippopotam.us/in/${pin}`);const pl=j&&j.places&&j.places[0];if(pl)hit={city:pl["place name"]||"",state:pl.state||""};}catch(_){}}
+    if(!hit||String($("#profileZip")?.value||"").replace(/\D/g,"")!==pin) return;
+    const city=$("#profileCity");
+    if(city&&(!city.value.trim()||city.dataset.auto==="1")){city.value=hit.city;city.dataset.auto="1";}
+    const st=$("#profileState");
+    if(st&&(!st.value||st.dataset.auto==="1")){const want=norm(hit.state);const o=[...st.options].find(x=>x.value&&(norm(x.value)===want||want.includes(norm(x.value))||norm(x.value).includes(want)));if(o){st.value=o.value;st.dataset.auto="1";}}
+    const co=$("#profileCountry");if(co&&!co.value){const o=[...co.options].find(x=>x.value==="India");if(o)co.value="India";}
+  };
+  $("#profileCity")?.addEventListener("input",e=>{e.target.dataset.auto="0";});
+  $("#profileState")?.addEventListener("change",e=>{e.target.dataset.auto="0";});
+  $("#profileZip")?.addEventListener("input",e=>{
+    const pin=String(e.target.value||"").replace(/\D/g,"");
+    if(!/^[1-9]\d{5}$/.test(pin)) return;
+    void ppPinFill(pin);
+  });
+  if(/^[1-9]\d{5}$/.test(String($("#profileZip")?.value||"")) && !$("#profileCity")?.value) void ppPinFill(String($("#profileZip").value));
   $("#profileForm")?.addEventListener("submit",async e=>{
     e.preventDefault();
     const form=e.currentTarget;
@@ -3303,7 +3448,7 @@ function renderAccountPanel(){
         <div><span>Mobile</span><strong>${escapeHTML(p.mobile)}</strong></div>
         <div><span>Location</span><strong>${escapeHTML([p.city,p.state,p.country].filter(Boolean).join(", "))}</strong></div>
         <div><span>PIN Code</span><strong>${escapeHTML(p.pin_code)}</strong></div>
-        <div><span>Deal alerts</span><strong>${p.deal_alerts?"On":"Off"}</strong></div>
+        <div><span>Deal alerts</span><strong>${p.deal_alerts===false?"Off":"On"}</strong></div>
       </div>
       <div class="account-actions"><button class="auth-primary" id="editProfileBtn" type="button">Edit Profile</button><button class="auth-secondary" id="signOutBtn" type="button">Sign Out</button></div>
     </div>`);
@@ -3459,17 +3604,67 @@ async function signOutFromAccountPopover(button){
    fallback so the final Wishlist UX can be tested before the SQL is run.
    ===================================================================== */
 const DEAL_ALERTS_TABLE='pp_deal_alerts';
-const DEAL_ALERT_FREE_LIMIT=1;
-const DEAL_ALERT_PLUS_LIMIT=3;
-function ppDealAlertLimit(){return ppPlusIsActive()?DEAL_ALERT_PLUS_LIMIT:DEAL_ALERT_FREE_LIMIT}
+const DEAL_ALERT_FREE_LIMIT=3;
+const DEAL_ALERT_PLUS_LIMIT=12;
+/* V283 plans: Free 3 active alerts, Plus 12, Pro unlimited (Pro needs Plus). Pro state + offer come from pp_get_my_plan()
+   (supabase-plans-v283.sql); the database also enforces the limits. */
+let ppPlan={plan:'free',pro_active:false,pro_expires_at:null,offer:'new',renewal_window:false};
+function ppProIsActive(){return Boolean(ppPlusIsActive()&&ppPlan&&ppPlan.pro_active)}
+function ppDealAlertLimit(){return ppProIsActive()?Infinity:(ppPlusIsActive()?DEAL_ALERT_PLUS_LIMIT:DEAL_ALERT_FREE_LIMIT)}
+function ppDealAlertLimitShow(){const l=ppDealAlertLimit();return Number.isFinite(l)?String(l):'Unlimited'}
 function ppDealAlertAtLimit(){return ppActiveDealAlertCount()>=ppDealAlertLimit()}
-function ppDealAlertLimitLabel(){return ppPlusIsActive()?`${DEAL_ALERT_PLUS_LIMIT} active Deal Alerts`:`${DEAL_ALERT_FREE_LIMIT} active Deal Alert`}
+function ppDealAlertLimitLabel(){return ppProIsActive()?'Unlimited active Deal Alerts':`${ppDealAlertLimit()} active Deal Alerts`}
+function ppDealAlertLimitMsg(){
+  if(ppPlusIsActive())return `You've reached your ${DEAL_ALERT_PLUS_LIMIT} active Deal Alerts limit. Pro gives unlimited alerts.`;
+  return `Free includes ${DEAL_ALERT_FREE_LIMIT} active Deal Alerts. PricePulse Plus gives ${DEAL_ALERT_PLUS_LIMIT}.`;
+}
+/* Offer this person sees (same as pp_get_my_plan().offer):
+   new = no Plus / Plus expired: Plus Rs 99, or Plus + Pro Rs 199 | upgrade = Plus active: Pro Rs 99 (1 month)
+   renew = last 90 days of Plus: renew Rs 99, or renew + Pro 3 months Rs 199 */
+function ppPlanOfferInfo(){
+  const o=(ppPlan&&ppPlan.offer)||(ppPlusIsActive()?'upgrade':'new');
+  if(o==='new')return {offer:'new',lines:[['Plus','₹99','12 months of Plus'],['Plus + Pro','₹199','12 months of Plus + 3 months of Pro']]};
+  if(o==='renew')return {offer:'renew',lines:[['Renew Plus','₹99','Plus for 12 more months'],['Renew + Pro','₹199','Plus for 12 more months + 3 months of Pro']]};
+  return {offer:'upgrade',lines:[['Pro','₹99','1 month of Pro']]};
+}
+function ppProUpgradePopup(reason){
+  try{
+    const old=document.getElementById('ppProPopup');if(old)old.remove();
+    const info=ppPlanOfferInfo();
+    const why=reason==='alerts'?`You've used all ${DEAL_ALERT_PLUS_LIMIT} Plus alerts.`:'This is a Pro feature.';
+    const rows=info.lines.map(l=>`<div class="pp-pro-row"><div><b>${l[0]}</b><small>${l[2]}</small></div><strong>${l[1]}</strong></div>`).join('');
+    const el=document.createElement('div');
+    el.id='ppProPopup';
+    el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+    el.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(16,33,27,.55);display:flex;align-items:center;justify-content:center;padding:16px';
+    el.innerHTML=`<div style="background:#fff;max-width:380px;width:100%;border-radius:18px;padding:22px 20px;color:#10211B;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+      <div style="font-size:12px;letter-spacing:.14em;font-weight:800;color:#B8860B">PRICEPULSE PRO</div>
+      <h3 style="margin:6px 0 6px;font-size:20px">Upgrade to Pro</h3>
+      <p style="margin:0 0 14px;font-size:14px;line-height:1.45;color:#364C44">${why} Pro gives unlimited Deal Alerts and the advanced features. AI features are coming soon.</p>
+      ${rows}
+      <p style="margin:12px 0 0;font-size:12px;color:#7E8C84">Online payment is being set up. To get a plan now, write to support@price-pulse.in.</p>
+      <button type="button" id="ppProClose" style="margin-top:14px;width:100%;border:0;border-radius:12px;padding:11px;font-weight:800;font-size:14px;background:#10211B;color:#fff;cursor:pointer">Close</button></div>
+      <style>.pp-pro-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #D2DAD5;border-radius:12px;padding:10px 12px;margin-bottom:8px}.pp-pro-row small{display:block;font-size:12px;color:#7E8C84;margin-top:2px}.pp-pro-row strong{font-size:18px}</style>`;
+    el.addEventListener('click',e=>{if(e.target===el||e.target.id==='ppProClose')el.remove()});
+    document.body.appendChild(el);
+  }catch(e){showToast(ppDealAlertLimitMsg())}
+}
 function ppDealAlertLimitUpsell(){
-  if(ppPlusIsActive()){showToast(`You've reached your ${DEAL_ALERT_PLUS_LIMIT} active Deal Alerts limit.`);return}
+  if(ppPlusIsActive()){ppProUpgradePopup('alerts');return}
   ppCloseWishlistDealAlertPopover();
   closeDealAlertsPanel({silent:true});
   renderPlusPanel();
-  showToast('Free includes 1 active Deal Alert. Upgrade to Plus for Deal Alerts+.');
+  showToast(ppDealAlertLimitMsg());
+}
+async function ppLoadMyPlan(){
+  ppPlan={plan:'free',pro_active:false,pro_expires_at:null,offer:'new',renewal_window:false};
+  try{
+    if(!supabaseClient||!currentUser)return ppPlan;
+    const q=await supabaseClient.rpc('pp_get_my_plan');
+    const row=Array.isArray(q.data)?q.data[0]:q.data;
+    if(!q.error&&row)ppPlan={...ppPlan,...row};
+  }catch(e){}
+  return ppPlan;
 }
 
 let ppDealAlerts=[];
@@ -3548,7 +3743,7 @@ async function ppLoadDealAlertsForUser(user=currentUser){
   if(!user||!supabaseClient){ppResetDealAlertsState();return []}
   const {data,error}=await supabaseClient
     .from(DEAL_ALERTS_TABLE)
-    .select('id,user_id,product_id,product_name,product_image,target_price,retailer_scope,status,last_seen_price,last_seen_retailer,last_checked_at,triggered_price,triggered_retailer,triggered_at,email_to,created_at,updated_at')
+    .select('id,user_id,product_id,product_name,product_image,target_price,retailer_scope,status,last_seen_price,last_seen_retailer,last_checked_at,triggered_price,triggered_retailer,triggered_at,email_to,created_at,updated_at,ext_url')
     .eq('user_id',user.id)
     .order('created_at',{ascending:false});
   if(error){
@@ -3569,7 +3764,7 @@ async function ppLoadDealAlertsForUser(user=currentUser){
     const migration=await supabaseClient.from(DEAL_ALERTS_TABLE).upsert(payloads,{onConflict:'user_id,product_id'});
     if(!migration.error){
       ppWriteLocalDealAlerts([],user.id);
-      const reread=await supabaseClient.from(DEAL_ALERTS_TABLE).select('id,user_id,product_id,product_name,product_image,target_price,retailer_scope,status,last_seen_price,last_seen_retailer,last_checked_at,triggered_price,triggered_retailer,triggered_at,email_to,created_at,updated_at').eq('user_id',user.id).order('created_at',{ascending:false});
+      const reread=await supabaseClient.from(DEAL_ALERTS_TABLE).select('id,user_id,product_id,product_name,product_image,target_price,retailer_scope,status,last_seen_price,last_seen_retailer,last_checked_at,triggered_price,triggered_retailer,triggered_at,email_to,created_at,updated_at,ext_url').eq('user_id',user.id).order('created_at',{ascending:false});
       if(!reread.error)rows=ppNormalizeDealAlertRows(reread.data||[]);
     }
   }
@@ -3579,7 +3774,7 @@ async function ppSaveDealAlertPayload(payload){
   const existing=ppFindDealAlertForProduct(payload.product_id);
   if(!existing&&ppDealAlertAtLimit()){
     const limit=ppDealAlertLimit();
-    const error=new Error(ppPlusIsActive()?`You've reached your ${limit} active Deal Alerts limit.`:'Free includes 1 active Deal Alert. PricePulse Plus unlocks Deal Alerts+.');
+    const error=new Error(ppDealAlertLimitMsg());
     error.code='PP_DEAL_ALERT_LIMIT';
     return {error};
   }
@@ -3587,6 +3782,7 @@ async function ppSaveDealAlertPayload(payload){
   if(!supabaseClient||!currentUser)return {error:new Error('Sign in required')};
   const {error}=await supabaseClient.from(DEAL_ALERTS_TABLE).upsert(payload,{onConflict:'user_id,product_id'});
   if(!error){await ppLoadDealAlertsForUser(currentUser);return {error:null,preview:false}}
+  if(String(error.message||'').includes('PP_ALERT_LIMIT')){const e=new Error(ppDealAlertLimitMsg());e.code='PP_DEAL_ALERT_LIMIT';return {error:e}}
   if(!ppIsDealAlertsTableMissing(error))return {error};
   const rows=ppReadLocalDealAlerts(currentUser.id);
   const index=rows.findIndex(a=>String(a.product_id)===String(payload.product_id));
@@ -3683,6 +3879,46 @@ function ppDealActionIcon(type){
   if(type==='remove')return `<svg class="pp-da-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V4h6v3"></path><path d="m6 7 1 13h10l1-13"></path><path d="M10 11v5M14 11v5"></path></svg>`;
   return '';
 }
+
+/* V286 helpers: heart icon, target progress, 30-day trend (real history only) */
+function ppHeartSVG(on){return on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7-4.6-9.3-9A5.2 5.2 0 0 1 12 6.3 5.2 5.2 0 0 1 21.3 12C19 16.4 12 21 12 21z"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 21s-7-4.6-9.3-9A5.2 5.2 0 0 1 12 6.3 5.2 5.2 0 0 1 21.3 12C19 16.4 12 21 12 21z"/></svg>'}
+function ppTargetProgress(targetPrice,currentNum){
+  const t=Number(targetPrice);
+  if(!Number.isFinite(currentNum)||currentNum<=0||!Number.isFinite(t)||t<=0)return {pct:0,text:'Waiting for a verified price',near:false,hit:false,has:false};
+  if(currentNum<=t)return {pct:100,text:currentNum<t?`<b>${money(t-currentNum)}</b> below your target`:'At your target',near:false,hit:true,has:true};
+  const gap=currentNum-t;
+  const near=gap/t<=0.05;
+  return {pct:Math.max(4,Math.min(100,Math.round(t/currentNum*100))),text:`<b>${money(gap)}</b> above your target${near?' · almost there':''}`,near,hit:false,has:true};
+}
+function ppTargetProgressHTML(pr){return (pr.has?`<div class="pp-da-prog${pr.muted?' is-muted':pr.near||pr.hit?' is-gold':''}" role="presentation"><i style="width:${pr.pct}%"></i></div>`:'')+`<div class="pp-da-gap">${pr.text}</div>`}
+let ppTrendSeq=0;
+function ppTrendHTML(productId,scope){
+  try{
+    const all=window.PRICEPULSE_PRICE_HISTORY&&window.PRICEPULSE_PRICE_HISTORY[productId];
+    const src=all&&scope&&scope!=='any'?all.filter(r=>r&&r.retailer===scope):all;
+    if(!src||src.length<2)return '';
+    const cutoff=Date.now()-30*86400000;
+    const byDay=new Map();
+    for(const r of src){
+      if(!r||r.availability!=='in_stock'||!(Number(r.price)>0))continue;
+      const t=Date.parse(r.checkedAt||'');
+      if(!Number.isFinite(t)||t<cutoff)continue;
+      const k=new Date(t).toISOString().slice(0,10);
+      const v=byDay.get(k);
+      if(v==null||Number(r.price)<v)byDay.set(k,Number(r.price));
+    }
+    const pts=[...byDay.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(e=>e[1]);
+    if(pts.length<2)return '';
+    const min=Math.min(...pts),max=Math.max(...pts);
+    if(max===min)return `<div class="pp-trend is-steady" aria-label="Price steady for 30 days"><span>Price steady for 30 days</span></div>`;
+    const W=300,H=44,top=5,bot=3,n=pts.length;
+    const xy=pts.map((v,i)=>[i*W/(n-1),top+(1-(v-min)/(max-min))*(H-top-bot)]);
+    const line=xy.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+    const last=xy[n-1];
+    const gid='ppTrG'+(++ppTrendSeq);
+    return `<div class="pp-trend" aria-label="30-day best price trend"><div class="pp-trend-plot"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16B07A" stop-opacity=".26"/><stop offset="1" stop-color="#16B07A" stop-opacity="0"/></linearGradient></defs><path class="a" d="${line} L${W} ${H} L0 ${H}Z" fill="url(#${gid})"/><path class="l" d="${line}"/></svg><i class="pp-trend-dot" style="top:${(last[1]/H*100).toFixed(1)}%"></i></div><div class="pp-trend-lab"><span>30 days ago</span><span>Today</span></div></div>`;
+  }catch(e){return ''}
+}
 function ppDealAlertCardHTML(alert){
   const product=ppDealAlertProduct(alert.product_id,alert);
   const current=ppDealAlertCurrentState(alert);
@@ -3698,17 +3934,35 @@ function ppDealAlertCardHTML(alert){
   const triggeredDetail=status.tone==='triggered'&&triggerStamp?`<small class="pp-da-trigger-meta ${isNewTrigger?'is-new':''}">${isNewTrigger?'<b>NEW</b>':''}<span>Triggered ${escapeHTML(ppRelativeTime(triggerStamp))}</span></small>`:'';
   const stores=ppDealAlertRetailersHTML(alert,product,current);
   const category=ppDealAlertCategoryLabel(alert.product_id);
-  return `<article class="pp-da-card" data-alert-id="${escapeHTML(alert.id)}">
-    <div class="pp-da-product-image pp-global-product-surface ${ppGlobalImageBgClass(imageState||{})}">${image}</div>
+  const inWish=saved.has(String(alert.product_id));
+  const curNum=Number.isFinite(current.price)?current.price:(Number.isFinite(Number(alert.last_seen_price))?Number(alert.last_seen_price):NaN);
+  const prog=ppTargetProgress(alert.target_price,curNum);
+  if(status.tone==='paused'&&prog.has){prog.near=false;prog.hit=false;prog.muted=true;prog.text=prog.text.replace(' · almost there','');}
+  const isHit=status.tone==='triggered'||prog.hit;
+  const isNear=!isHit&&status.tone==='watching'&&prog.near;
+  const stateLabel=isNear?'Close to target':status.label;
+  const stateCls=isNear?'near':status.tone;
+  const pid=encodeURIComponent(String(alert.product_id));
+  const extUrl=/^https:\/\//.test(alert.ext_url||'')?alert.ext_url:'';
+  const pHref=extUrl?escapeHTML(extUrl):`#/product/${pid}`;
+  const pAttr=extUrl?' target="_blank" rel="noopener"':'';
+  const extST=extUrl?ppShortTitle(alert.product_name):null; // V2.0.1 (short name for extension-saved products)
+  const pname=escapeHTML((extST?extST.name:product?.name)||alert.product_name||'Product');
+  return `<article class="pp-da-card${isHit?' is-hit':isNear?' is-near':''}" data-alert-id="${escapeHTML(alert.id)}">
+    <a class="pp-da-product-image pp-global-product-surface ${ppGlobalImageBgClass(imageState||{})}" href="${pHref}"${pAttr} aria-label="Open ${pname}">${image}</a>
     <div class="pp-da-product-copy">
-      <strong>${escapeHTML(product?.name||alert.product_name||'Product')}</strong>
-      ${category?`<small class="pp-da-category">${escapeHTML(category)}</small>`:''}
-      ${stores}
+      <strong><a href="${pHref}"${pAttr}${extST?` title="${escapeHTML(extST.full)}"`:''}>${pname}</a></strong>
+      ${extST&&extST.sub?`<small class="pp-da-category">${escapeHTML(extST.sub)}</small>`:category?`<small class="pp-da-category">${escapeHTML(category)}</small>`:''}
       <div class="pp-da-current-inline ${hasLivePrice?'':'is-pending'}"><small>Current Price</small><div class="pp-da-current-value"><strong>${currentPrice}</strong>${verified?'<b>Verified</b>':''}</div></div>
     </div>
-    <div class="pp-da-target-block"><small>Your Target</small><strong>${money(Number(alert.target_price))} or below</strong></div>
-    <div class="pp-da-state"><span class="is-${escapeHTML(status.tone)}"><i></i>${escapeHTML(status.label)}</span>${triggeredDetail}</div>
-    <div class="pp-da-actions">${status.tone==='triggered'?`<button class="is-view" data-deal-alert-action="view" data-id="${escapeHTML(alert.id)}">View Deal</button>`:''}<button data-deal-alert-action="edit" data-id="${escapeHTML(alert.id)}">${ppDealActionIcon('edit')}<span>Edit Alert</span></button><button class="is-remove" data-deal-alert-action="remove" data-id="${escapeHTML(alert.id)}">${ppDealActionIcon('remove')}<span>Remove</span></button></div>
+    <div class="pp-da-meta">
+      <small class="pp-da-meta-label">Tracking on</small>
+      ${stores}
+      ${hasLivePrice?ppTrendHTML(String(alert.product_id),alert.retailer_scope):''}
+    </div>
+    <div class="pp-da-target-block"><small>Your Target</small><strong>${money(Number(alert.target_price))} or below</strong>${ppTargetProgressHTML(prog)}</div>
+    <div class="pp-da-state"><span class="is-${escapeHTML(stateCls)}"><i></i>${escapeHTML(stateLabel)}</span>${triggeredDetail}</div>
+    <div class="pp-da-actions">${(()=>{const wl=extUrl?ppExtWish.some(x=>ppExtPid(x)===String(alert.product_id)):inWish;const act=extUrl?'ext-wl-toggle':'wl-toggle';return `<button type="button" class="pp-da-heart${wl?' is-on':''}" data-deal-alert-action="${act}" data-id="${escapeHTML(String(alert.product_id))}" aria-pressed="${wl}" aria-label="${wl?'Remove from Wishlist':'Add to Wishlist'}" title="${wl?'Remove from Wishlist':'Add to Wishlist'}">${ppHeartSVG(wl)}</button>`})()}${status.tone==='triggered'?`<button class="is-view" data-deal-alert-action="view" data-id="${escapeHTML(alert.id)}">View Deal</button>`:''}<button data-deal-alert-action="edit" data-id="${escapeHTML(alert.id)}">${ppDealActionIcon('edit')}<span>Edit Alert</span></button><button class="is-remove" data-deal-alert-action="remove" data-id="${escapeHTML(alert.id)}">${ppDealActionIcon('remove')}<span>Remove</span></button></div>
   </article>`;
 }
 function ppDealRemoveConfirmHTML(){
@@ -3728,14 +3982,14 @@ function ppDealAlertsDashboardHTML(){
     <div class="pp-da-head"><div class="pp-da-bell">${accountMenuIcon('alerts')}</div><div><p>SMART SHOPPING</p><h2>Deal Alerts</h2><span>We watch your saved products and notify when prices reach your target.</span></div><b>${active} Active</b></div>
     <div class="pp-da-toolbar">
       <div class="pp-da-tabs">
-        <button class="${ppDealAlertsFilter==='active'?'is-active':''}" data-deal-alert-action="filter" data-filter="active">Active <span>${active}</span></button>
-        <button class="${ppDealAlertsFilter==='triggered'?'is-active':''}" data-deal-alert-action="filter" data-filter="triggered">Triggered <span>${triggered}</span></button>
-        <button class="${ppDealAlertsFilter==='all'?'is-active':''}" data-deal-alert-action="filter" data-filter="all">All <span>${ppDealAlerts.length}</span></button>
+        <button class="${ppDealAlertsFilter==='active'?'is-active':''}" data-deal-alert-action="filter" data-filter="active"><i class="pp-da-tab-t">Active</i> <span>${active}</span></button>
+        <button class="${ppDealAlertsFilter==='triggered'?'is-active':''}" data-deal-alert-action="filter" data-filter="triggered"><i class="pp-da-tab-t">Triggered</i> <span>${triggered}</span></button>
+        <button class="${ppDealAlertsFilter==='all'?'is-active':''}" data-deal-alert-action="filter" data-filter="all"><i class="pp-da-tab-t">All</i> <span>${ppDealAlerts.length}</span></button>
       </div>
-      <div class="pp-da-toolbar-actions"><button data-deal-alert-action="refresh">↻ Refresh</button><button class="is-primary ${atLimit?'is-limit':''}" data-deal-alert-action="wishlist" title="${atLimit?(ppPlusIsActive()?`Maximum ${limit} active Deal Alerts reached`:'Free plan includes 1 active Deal Alert'):'Add from Wishlist'}">${atLimit?(ppPlusIsActive()?`${active}/${limit} Alerts`:'⭐ Get Deal Alerts+'):'＋ Add from Wishlist'}</button></div>
+      <div class="pp-da-toolbar-actions"><button data-deal-alert-action="refresh" aria-label="Refresh" title="Refresh"><i class="pp-da-ref-ic" aria-hidden="true">↻</i><span class="pp-da-ref-tx">Refresh</span></button><button class="is-primary ${atLimit?'is-limit':''}" data-deal-alert-action="new-alert" title="${atLimit?(ppPlusIsActive()?`Maximum ${ppDealAlertLimitShow()} active Deal Alerts reached`:`Free plan includes ${DEAL_ALERT_FREE_LIMIT} active Deal Alerts`):'Pick a saved product to set a target price'}">${atLimit?(ppPlusIsActive()?`${active}/${ppDealAlertLimitShow()} Alerts`:'Get Deal Alerts+'):'<i class="pp-da-new-ic" aria-hidden="true">＋</i><span class="pp-da-new-tx">New Deal Alert</span>'}</button></div>
     </div>
     <div class="pp-da-list">${list}</div>
-    <div class="pp-da-foot"><span>${ppPlusIsActive()?'⭐ Deal Alerts+ • up to 3 active alerts':'Free plan • 1 active alert. Your second active alert unlocks with PricePulse Plus.'}</span></div>
+    <div class="pp-da-foot"><span>${ppProIsActive()?'⭐ Pro • unlimited active alerts':(ppPlusIsActive()?`⭐ Deal Alerts+ • up to ${DEAL_ALERT_PLUS_LIMIT} active alerts. Pro gives unlimited.`:`Free plan • up to ${DEAL_ALERT_FREE_LIMIT} active alerts. PricePulse Plus unlocks ${DEAL_ALERT_PLUS_LIMIT}.`)}</span></div>
     ${ppDealRemoveConfirmHTML()}
   </div>`;
 }
@@ -3770,6 +4024,9 @@ function ppRenderDealAlertsPanel(){
   const overlay=ensureDealAlertsOverlay();
   const body=overlay.querySelector('#dealAlertsPanelBody');
   if(body)body.innerHTML=ppDealAlertsDashboardHTML();
+  /* keep the page-head strip (X active / Y alerts on your plan) in step with the tabs below */
+  const st=document.querySelector('.ppx-list-page .pp-onebar .pp-ob-stats');
+  if(st&&typeof window.alertStats==='function')st.innerHTML=window.alertStats();
 }
 async function renderDealAlertsDashboard(filter=ppDealAlertsFilter){
   if(!currentUser){
@@ -3803,7 +4060,7 @@ async function renderDealAlertsDashboard(filter=ppDealAlertsFilter){
   document.querySelector('#dealTop')?.setAttribute('aria-expanded','true');
   requestAnimationFrame(ppPositionDealAlertsPanel);
   void (async()=>{
-    await Promise.all([ppLoadDealAlertsForUser(currentUser),ppPreloadLivePrices(false)]);
+    await Promise.all([ppLoadDealAlertsForUser(currentUser),ppPreloadLivePrices(false),ppExtWishLoaded?Promise.resolve():ppLoadExtWishlist()]);
     if(ppDealAlertsIsOpen()){
       const lateUnread=ppUnreadDealAlertSignatures();
       lateUnread.forEach(sig=>ppDealNewThisOpen.add(sig));
@@ -3843,9 +4100,14 @@ async function ppHandleDealAlertsDashboardClick(e){
     ppRenderDealAlertsPanel();
     return;
   }
+  if(action==='new-alert'){
+    if(ppDealAlertAtLimit()){ppDealAlertLimitUpsell();return}
+    ppOpenNewAlertPicker();
+    return;
+  }
   if(action==='wishlist'){
     if(ppDealAlertAtLimit()){ppDealAlertLimitUpsell();return}
-    closeDealAlertsPanel({silent:true});
+    if(!/^#\/alerts/.test(location.hash))closeDealAlertsPanel({silent:true});
     openWishlistPanel();
     return;
   }
@@ -3858,8 +4120,9 @@ async function ppHandleDealAlertsDashboardClick(e){
   if(action==='view'){
     const alert=ppDealAlerts.find(a=>String(a.id)===String(b.dataset.id||''));
     const product=alert?getWishlistProduct(alert.product_id):null;
+    if(!product&&alert&&/^https:\/\//.test(alert.ext_url||'')){window.open(alert.ext_url,'_blank','noopener');return}
     if(product){
-      closeDealAlertsPanel({silent:true});
+      if(!/^#\/alerts/.test(location.hash))closeDealAlertsPanel({silent:true});
       openModal(comparisonModalHTML(product.name,product.data));
       if(window.PP_PRICE_PILOT_ENABLED===true)void ppFetchLivePrices(product.id);
     }
@@ -3868,9 +4131,37 @@ async function ppHandleDealAlertsDashboardClick(e){
   if(action==='edit'){
     const alert=ppDealAlerts.find(a=>String(a.id)===String(b.dataset.id||''));
     if(alert){
-      closeDealAlertsPanel({silent:true});
-      await renderDealAlertEditor(alert.product_id,'dashboard');
+      const onPage=/^#\/alerts/.test(location.hash);
+      if(onPage&&(getWishlistProduct(alert.product_id)||/^https:\/\//.test(alert.ext_url||''))){await ppOpenWishlistDealAlertPopover(alert.product_id,b);return}
+      if(!onPage)closeDealAlertsPanel({silent:true});
+      await renderDealAlertEditor(alert.product_id,onPage?'alerts-page':'dashboard');
     }
+    return;
+  }
+  if(action==='wl-toggle'){
+    if(b.dataset.id){await toggleWishlistItem(b);ppRenderDealAlertsPanel()}
+    return;
+  }
+  if(action==='ext-wl-toggle'){
+    const pid=String(b.dataset.id||'');const al=ppDealAlerts.find(a=>String(a.product_id)===pid);
+    if(!pid||!al||!currentUser||!supabaseClient)return;
+    const have=ppExtWish.find(x=>ppExtPid(x)===pid);
+    if(have){
+      const {error}=await supabaseClient.from('pp_ext_wishlist').delete().eq('user_id',currentUser.id).eq('store',have.store).eq('item_key',have.item_key);
+      if(error){showToast('Could not update your wishlist');return}
+      ppExtWish=ppExtWish.filter(x=>x!==have);ppExtCountSync();showToast('Removed from Wishlist');
+    }else{
+      const sl=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+      const rest=pid.replace(/^ext-/,'');const rs=sl(al.last_seen_retailer||'');
+      let store=rs&&rest.indexOf(rs+'-')===0?rs:rest.split('-')[0];
+      const key=rest.slice(store.length+1);
+      if(!store||!key){showToast('Could not add to Wishlist');return}
+      const row={user_id:currentUser.id,store,item_key:key,url:al.ext_url,title:al.product_name||'Product',image:al.product_image||'',store_name:al.last_seen_retailer||'',price:Number(al.last_seen_price)>0?Number(al.last_seen_price):null};
+      const {error}=await supabaseClient.from('pp_ext_wishlist').insert(row);
+      if(error){showToast('Could not add to Wishlist');return}
+      ppExtWish=[{...row,created_at:new Date().toISOString()},...ppExtWish];ppExtCountSync();showToast('Saved to Wishlist');
+    }
+    ppRenderDealAlertsPanel();
     return;
   }
   if(action==='remove'){
@@ -3930,7 +4221,10 @@ function ppPositionWishlistDealAlertPopover(){
   let left=Math.max(12,Math.min(window.innerWidth-width-12,r.right-width));
   let top=r.bottom+8;
   const estimated=330;
-  if(top+estimated>window.innerHeight-12)top=Math.max(12,r.top-estimated-8);
+  const hdr=document.querySelector('.site-header');
+  const minTop=Math.max(12,Math.round((hdr?hdr.getBoundingClientRect().bottom:0)+60));
+  if(top+estimated>window.innerHeight-12)top=Math.max(minTop,r.top-estimated-8);
+  top=Math.max(minTop,top);
   ppWishlistDealAlertPopover.style.width=`${width}px`;
   ppWishlistDealAlertPopover.style.left=`${Math.round(left)}px`;
   ppWishlistDealAlertPopover.style.top=`${Math.round(top)}px`;
@@ -3938,22 +4232,34 @@ function ppPositionWishlistDealAlertPopover(){
 async function ppOpenWishlistDealAlertPopover(productId,anchor){
   if(!currentUser){renderAuthStart();return}
   const id=String(productId||'');
-  const product=getWishlistProduct(id);
-  if(!product)return;
+  let product=getWishlistProduct(id),ext=null;
   const existing=ppFindDealAlertForProduct(id);
+  if(!product&&id.indexOf('ext-')===0){
+    const w=ppExtWish.find(x=>ppExtPid(x)===id);
+    if(w||existing){
+      const full=(w&&w.title)||existing.product_name||'Product';
+      const img=(w&&w.image)||(existing&&existing.product_image)||'';
+      const seen=existing&&Number(existing.last_seen_price)>0?Number(existing.last_seen_price):(w&&Number(w.price)>0?Number(w.price):NaN);
+      const sn=(w&&(w.store_name||w.store))||(existing&&existing.last_seen_retailer)||'';
+      ext={url:(w&&w.url)||existing.ext_url,full,img,price:seen,store:sn};
+      product=ppDealAlertProduct(id,{product_id:id,product_name:ppShortTitle(full).name,product_image:img});
+    }
+  }
+  if(!product)return;
   if(!existing&&ppDealAlertAtLimit()){ppDealAlertLimitUpsell();return}
-  const retailerNames=[...new Set(retailerOffers(product.data).map(o=>o.name).filter(Boolean))];
+  const retailerNames=ext?[]:[...new Set(retailerOffers(product.data).map(o=>o.name).filter(Boolean))];
   const preferredScope=ppReadLocalPreferences().preferred_retailer_scope||'any';
   const selectedScope=existing?.retailer_scope||(retailerNames.includes(preferredScope)?preferredScope:'any');
-  const current=ppDealAlertEditorCurrentPrice(id,selectedScope);
+  const current=ext?{price:ext.price,retailer:ext.store}:ppDealAlertEditorCurrentPrice(id,selectedScope);
   const target=existing?.target_price?Math.round(Number(existing.target_price)):'';
   const storeOptions=['<option value="any">Any verified store</option>',...retailerNames.map(name=>`<option value="${escapeHTML(name)}" ${name===selectedScope?'selected':''}>${escapeHTML(name)}</option>`)].join('');
   const pop=ppEnsureWishlistDealAlertPopover();
   ppWishlistDealAlertAnchor=anchor;
   const wapImageState=product.imageState||ppImageItem(product.image,{bg:'soft',fit:'contain',position:'center',scale:'100'});
-  pop.innerHTML=`<div class="pp-wap-head"><div class="pp-wap-brand"><img src="favicon-v18.png" alt="PricePulse"><div><strong>Set Deal Alert</strong><span>PricePulse</span></div></div><button type="button" data-wap-action="close" aria-label="Close">×</button></div><div class="pp-wap-product"><span class="pp-wap-product-image pp-global-product-surface ${ppGlobalImageBgClass(wapImageState||{})}"><img class="pp-global-product-image" src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}" ${ppGlobalImageDataAttrs(wapImageState||{})} style="${escapeHTML(ppGlobalImageStyle(wapImageState||{}))}"></span><div><strong>${escapeHTML(product.name)}</strong><span>${Number.isFinite(current.price)?`Current best ${money(current.price)}`:'Verified price checking'}</span></div></div><form id="wishlistDealAlertForm" data-product-id="${escapeHTML(id)}"><label><span>Alert me at or below</span><div class="pp-wap-money"><b>₹</b><input name="target" type="number" min="1" step="1" inputmode="numeric" placeholder="Target price" value="${escapeHTML(String(target))}" required></div></label><label><span>Track price on</span><select name="scope">${storeOptions}</select></label><div class="pp-wap-current"><span>Current verified price</span><strong id="wishlistDealAlertCurrent">${Number.isFinite(current.price)?money(current.price):'Checking…'}</strong><small id="wishlistDealAlertStore">${escapeHTML(current.retailer||ppDealAlertStoreLabel(selectedScope))}</small></div><div class="pp-wap-actions"><button type="button" data-wap-action="close">Cancel</button><button class="is-primary" type="submit">${existing?'Update Alert':'Set Alert'}</button></div><p id="wishlistDealAlertStatus" aria-live="polite"></p></form>`;
+  pop.innerHTML=`<div class="pp-wap-head"><div class="pp-wap-brand"><img src="favicon-v18.png" alt="PricePulse"><div><strong>Set Deal Alert</strong><span>PricePulse</span></div></div><button type="button" data-wap-action="close" aria-label="Close">×</button></div><div class="pp-wap-product"><span class="pp-wap-product-image pp-global-product-surface ${ppGlobalImageBgClass(wapImageState||{})}">${product.image?`<img class="pp-global-product-image" src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}" ${ppGlobalImageDataAttrs(wapImageState||{})} style="${escapeHTML(ppGlobalImageStyle(wapImageState||{}))}">`:'<i style="font-style:normal;font-size:22px;color:#07845F">&#8600;</i>'}</span><div><strong>${escapeHTML(product.name)}</strong><span>${Number.isFinite(current.price)?`Current best ${money(current.price)}`:'Verified price checking'}</span></div></div><form id="wishlistDealAlertForm" data-product-id="${escapeHTML(id)}"><label><span>Alert me at or below</span><div class="pp-wap-money"><b>₹</b><input name="target" type="number" min="1" step="1" inputmode="numeric" placeholder="Target price" value="${escapeHTML(String(target))}" required></div></label><label><span>Track price on</span><select name="scope">${storeOptions}</select></label><div class="pp-wap-current"><span>Current verified price</span><strong id="wishlistDealAlertCurrent">${Number.isFinite(current.price)?money(current.price):'Checking…'}</strong><small id="wishlistDealAlertStore">${escapeHTML(current.retailer||ppDealAlertStoreLabel(selectedScope))}</small></div><div class="pp-wap-actions"><button type="button" data-wap-action="close">Cancel</button><button class="is-primary" type="submit">${existing?'Update Alert':'Set Alert'}</button></div><p id="wishlistDealAlertStatus" aria-live="polite"></p></form>`;
+  if(ext){const sc=pop.querySelector('select[name=scope]');if(sc&&sc.closest('label'))sc.closest('label').hidden=true;const lb=pop.querySelector('.pp-wap-current>span');if(lb)lb.textContent='Last seen price';const sub=pop.querySelector('.pp-wap-product>div>span');if(sub)sub.textContent=Number.isFinite(ext.price)?'Last seen '+money(ext.price)+(ext.store?' on '+ext.store:''):'Saved with the extension';const st=pop.querySelector('#wishlistDealAlertStore');if(st)st.textContent=ext.store||'';}
   pop.hidden=false;ppPositionWishlistDealAlertPopover();
-  if(window.PP_PRICE_PILOT_ENABLED===true){void (async()=>{await ppFetchLivePrices(id);if(!ppWishlistDealAlertPopover||ppWishlistDealAlertPopover.hidden)return;const scopeEl=ppWishlistDealAlertPopover.querySelector('#wishlistDealAlertForm')?.elements?.scope;const now=ppDealAlertEditorCurrentPrice(id,scopeEl?.value||selectedScope);const pe=ppWishlistDealAlertPopover.querySelector('#wishlistDealAlertCurrent');const se=ppWishlistDealAlertPopover.querySelector('#wishlistDealAlertStore');if(pe)pe.textContent=Number.isFinite(now.price)?money(now.price):'Checking…';if(se)se.textContent=now.retailer||ppDealAlertStoreLabel(scopeEl?.value||selectedScope)})()}
+  if(!ext&&window.PP_PRICE_PILOT_ENABLED===true){void (async()=>{await ppFetchLivePrices(id);if(!ppWishlistDealAlertPopover||ppWishlistDealAlertPopover.hidden)return;const scopeEl=ppWishlistDealAlertPopover.querySelector('#wishlistDealAlertForm')?.elements?.scope;const now=ppDealAlertEditorCurrentPrice(id,scopeEl?.value||selectedScope);const pe=ppWishlistDealAlertPopover.querySelector('#wishlistDealAlertCurrent');const se=ppWishlistDealAlertPopover.querySelector('#wishlistDealAlertStore');if(pe)pe.textContent=Number.isFinite(now.price)?money(now.price):'Checking…';if(se)se.textContent=now.retailer||ppDealAlertStoreLabel(scopeEl?.value||selectedScope)})()}
   const form=pop.querySelector('#wishlistDealAlertForm');
   const select=form?.elements?.scope;
   select?.addEventListener('change',()=>{const now=ppDealAlertEditorCurrentPrice(id,select.value);const pe=pop.querySelector('#wishlistDealAlertCurrent');const se=pop.querySelector('#wishlistDealAlertStore');if(pe)pe.textContent=Number.isFinite(now.price)?money(now.price):'Checking…';if(se)se.textContent=now.retailer||ppDealAlertStoreLabel(select.value)});
@@ -3964,17 +4270,19 @@ async function ppOpenWishlistDealAlertPopover(productId,anchor){
     const statusEl=pop.querySelector('#wishlistDealAlertStatus');const submit=form.querySelector('button[type="submit"]');
     if(!Number.isFinite(targetPrice)||targetPrice<=0){statusEl.textContent='Enter a valid target price.';statusEl.className='is-error';return}
     setBusy(submit,true,'Saving…');
-    const now=ppDealAlertEditorCurrentPrice(id,scope);const reached=Number.isFinite(now.price)&&now.price<=targetPrice;
-    const payload={user_id:currentUser.id,product_id:id,product_name:product.name||'Product',product_image:product.image||'',target_price:targetPrice,retailer_scope:scope,status:reached?'triggered':'active',last_seen_price:Number.isFinite(now.price)?now.price:null,last_seen_retailer:now.retailer||null,last_checked_at:new Date().toISOString(),triggered_price:reached?now.price:null,triggered_retailer:reached?(now.retailer||null):null,triggered_at:reached?new Date().toISOString():null,email_to:currentProfile?.email||currentUser?.email||null,updated_at:new Date().toISOString()};
+    const now=ext?{price:ext.price,retailer:ext.store}:ppDealAlertEditorCurrentPrice(id,scope);const reached=ext?false:(Number.isFinite(now.price)&&now.price<=targetPrice);
+    const payload={user_id:currentUser.id,product_id:id,product_name:(ext?ext.full:product.name)||'Product',product_image:product.image||'',target_price:targetPrice,retailer_scope:scope,status:reached?'triggered':'active',last_seen_price:Number.isFinite(now.price)?now.price:null,last_seen_retailer:now.retailer||null,last_checked_at:new Date().toISOString(),triggered_price:reached?now.price:null,triggered_retailer:reached?(now.retailer||null):null,triggered_at:reached?new Date().toISOString():null,email_to:currentProfile?.email||currentUser?.email||null,updated_at:new Date().toISOString()};
+    if(ext)payload.ext_url=ext.url;
     const result=await ppSaveDealAlertPayload(payload);setBusy(submit,false);
     if(result.error){statusEl.textContent=result.error.message||'Could not save deal alert.';statusEl.className='is-error';return}
     showToast(reached?'Target reached — deal alert saved':existing?'Deal alert updated':'Deal alert created');
     ppCloseWishlistDealAlertPopover();ppRenderWishlistPanel();
+    if(typeof ppDealAlertsIsOpen==='function'&&ppDealAlertsIsOpen())ppRenderDealAlertsPanel();
   });
 }
 window.addEventListener('resize',ppPositionWishlistDealAlertPopover,{passive:true});
 window.addEventListener('scroll',ppPositionWishlistDealAlertPopover,{passive:true,capture:true});
-document.addEventListener('click',e=>{if(!ppWishlistDealAlertPopover||ppWishlistDealAlertPopover.hidden)return;if(e.target.closest('.pp-wish-alert-popover')||e.target.closest('[data-wishlist-action="set-alert"]'))return;ppCloseWishlistDealAlertPopover()});
+document.addEventListener('click',e=>{if(!ppWishlistDealAlertPopover||ppWishlistDealAlertPopover.hidden)return;if(e.target.closest('.pp-wish-alert-popover')||e.target.closest('[data-wishlist-action="set-alert"]')||e.target.closest('[data-deal-alert-action="edit"]'))return;ppCloseWishlistDealAlertPopover()});
 
 async function renderDealAlertEditor(productId,origin='wishlist'){
   if(!currentUser){renderAuthStart();return}
@@ -3988,17 +4296,18 @@ async function renderDealAlertEditor(productId,origin='wishlist'){
   const retailerNames=[...new Set((product?retailerOffers(product.data):[]).map(o=>o.name).filter(Boolean))];
   const preferredScope=ppReadLocalPreferences().preferred_retailer_scope||'any';
   const selectedScope=existing?.retailer_scope||(retailerNames.includes(preferredScope)?preferredScope:'any');
-  const current=ppDealAlertEditorCurrentPrice(id,selectedScope);
+  const isExt=Boolean(existing&&existing.ext_url);
+  const current=isExt?{price:Number(existing.last_seen_price),retailer:existing.last_seen_retailer||''}:ppDealAlertEditorCurrentPrice(id,selectedScope);
   const target=existing?.target_price?Math.round(Number(existing.target_price)):'';
   const storeOptions=['<option value="any">Any verified store</option>',...retailerNames.map(name=>`<option value="${escapeHTML(name)}" ${name===selectedScope?'selected':''}>${escapeHTML(name)}</option>`)].join('');
   openModal(`<div class="pp-alerts-shell pp-alert-editor" id="dealAlertEditor" data-origin="${escapeHTML(origin)}" data-product-id="${escapeHTML(id)}">
     <div class="pp-dae-brand"><img src="favicon-v18.png" alt="PricePulse"><span>PricePulse</span><b>${existing?'EDIT ALERT':'NEW ALERT'}</b></div>
-    <div class="pp-dae-product"><div class="pp-global-product-surface ${ppGlobalImageBgClass(p.imageState||{})}">${p.image?`<img class="pp-global-product-image" src="${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}" ${ppGlobalImageDataAttrs(p.imageState||{})} style="${escapeHTML(ppGlobalImageStyle(p.imageState||{}))}">`:'🔔'}</div><section><small>SET DEAL ALERT</small><h2>${escapeHTML(p.name)}</h2><p>Choose the price you want. PricePulse will keep watching verified prices for this saved product.</p></section></div>
+    <div class="pp-dae-product"><div class="pp-global-product-surface ${ppGlobalImageBgClass(p.imageState||{})}">${p.image?`<img class="pp-global-product-image" src="${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}" ${ppGlobalImageDataAttrs(p.imageState||{})} style="${escapeHTML(ppGlobalImageStyle(p.imageState||{}))}">`:'🔔'}</div><section><small>SET DEAL ALERT</small><h2>${escapeHTML(p.name)}</h2><p>Choose the price you want. PricePulse will keep watching verified prices for this product.</p></section></div>
     <form id="dealAlertForm">
       <label class="pp-dae-field"><span>Alert me at or below</span><div class="pp-dae-money"><b>₹</b><input name="target" type="number" min="1" step="1" inputmode="numeric" placeholder="Enter target price" value="${escapeHTML(String(target))}" required></div></label>
-      <label class="pp-dae-field"><span>Track price on</span><select name="scope">${storeOptions}</select></label>
-      <div class="pp-dae-now"><span>Current verified price</span><strong id="dealAlertCurrentPrice">${Number.isFinite(current.price)?money(current.price):'Waiting for verified price'}</strong><small id="dealAlertCurrentStore">${escapeHTML(current.retailer||ppDealAlertStoreLabel(selectedScope))}</small></div>
-      <div class="pp-dae-note"><i>✓</i><span>This alert is saved to your PricePulse account. The database is already prepared for future email delivery.</span></div>
+      <label class="pp-dae-field"${isExt?' hidden':''}><span>Track price on</span><select name="scope">${storeOptions}</select></label>
+      <div class="pp-dae-now"><span>${isExt?'Last seen price':'Current verified price'}</span><strong id="dealAlertCurrentPrice">${Number.isFinite(current.price)&&current.price>0?money(current.price):'Waiting for verified price'}</strong><small id="dealAlertCurrentStore">${escapeHTML(current.retailer||ppDealAlertStoreLabel(selectedScope))}</small></div>
+      <div class="pp-dae-note"><i>✓</i><span>This alert is saved to your PricePulse account. You can see it anytime under Deal alerts.</span></div>
       <div class="pp-dae-actions"><button type="button" data-dae-action="cancel">Cancel</button><button class="is-primary" type="submit">${existing?'Update Alert':'Create Alert'}</button></div>
       <p class="pp-dae-status" id="dealAlertEditorStatus" aria-live="polite"></p>
     </form>
@@ -4023,8 +4332,8 @@ async function renderDealAlertEditor(productId,origin='wishlist'){
     const submit=form.querySelector('button[type="submit"]');
     if(!Number.isFinite(targetPrice)||targetPrice<=0){if(statusEl){statusEl.textContent='Enter a valid target price.';statusEl.classList.add('is-error')}return}
     setBusy(submit,true,'Saving…');
-    const now=ppDealAlertEditorCurrentPrice(id,scope);
-    const reached=Number.isFinite(now.price)&&now.price<=targetPrice;
+    const now=isExt?{price:Number(existing.last_seen_price),retailer:existing.last_seen_retailer||''}:ppDealAlertEditorCurrentPrice(id,scope);
+    const reached=isExt?false:(Number.isFinite(now.price)&&now.price<=targetPrice);
     const payload={
       user_id:currentUser.id,
       product_id:id,
@@ -4033,7 +4342,7 @@ async function renderDealAlertEditor(productId,origin='wishlist'){
       target_price:targetPrice,
       retailer_scope:scope,
       status:reached?'triggered':'active',
-      last_seen_price:Number.isFinite(now.price)?now.price:null,
+      last_seen_price:Number.isFinite(now.price)&&now.price>0?now.price:null,
       last_seen_retailer:now.retailer||null,
       last_checked_at:new Date().toISOString(),
       triggered_price:reached?now.price:null,
@@ -4053,6 +4362,53 @@ function ppCloseDealAlertEditor(origin){
   closeModal();
   if(origin==='dashboard')void renderDealAlertsDashboard(ppDealAlertsFilter);
   else if(origin==='wishlist')openWishlistPanel();
+  else if(origin==='alerts-page'&&ppDealAlertsIsOpen())ppRenderDealAlertsPanel();
+}
+/* New Deal Alert: pick one saved product (that has no alert yet), then open the Set Deal Alert popup */
+function ppCloseNewAlertPicker(){
+  const el=document.getElementById('ppNewAlertPicker');
+  if(el)el.remove();
+  document.removeEventListener('keydown',ppNewAlertPickerKey);
+}
+function ppNewAlertPickerKey(e){if(e.key==='Escape')ppCloseNewAlertPicker()}
+function ppOpenNewAlertPicker(){
+  if(!currentUser){renderAuthStart();return}
+  const all=[...saved].map(getWishlistProduct).filter(Boolean);
+  const free=all.filter(p=>!ppFindDealAlertForProduct(p.id));
+  if(free.length===1){renderDealAlertEditor(String(free[0].id),'alerts-page');return}
+  ppCloseNewAlertPicker();
+  const napHave=all.length-free.length;
+  const napSub=napHave>0
+    ?`Showing ${free.length} of your ${all.length} wishlist products. ${napHave} already ${napHave===1?'has':'have'} an alert.`
+    :`These are the ${all.length} products saved in your wishlist.`;
+  let head=`<span class="pp-nap-kicker">NEW DEAL ALERT</span><h3 id="ppNapTitle">Choose from your wishlist</h3><p>${napSub}</p><span class="pp-nap-tag"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 5 6.4 5c2 0 3.6 1.1 4.4 2.6h.4C12 6.1 13.6 5 15.6 5 19 5 21.1 8.4 19.6 11.8 19.5 11.9 12 21 12 21z"/></svg>Wishlist · ${all.length} saved</span>`;
+  let body='';
+  if(!all.length){
+    head='<span class="pp-nap-kicker">NEW DEAL ALERT</span><h3 id="ppNapTitle">Your wishlist is empty</h3><p>Tap the heart on any product to save it, then set a target price here.</p>';
+    body='<div class="pp-nap-foot"><button type="button" class="pp-nap-main" data-nap-browse>Browse Deals →</button></div>';
+  }else if(!free.length){
+    head='<span class="pp-nap-kicker">NEW DEAL ALERT</span><h3 id="ppNapTitle">All set</h3><p>All your saved products already have alerts.</p>';
+    body='<div class="pp-nap-foot"><button type="button" class="pp-nap-ghost" data-nap-close>Close</button></div>';
+  }else{
+    body='<div class="pp-nap-list">'+free.map(p=>{
+      let cat='';try{cat=ppDealAlertCategoryLabel(p.id)||''}catch(e){}
+      const img=p.image?`<img src="${escapeHTML(p.image)}" alt="" loading="lazy">`:'<span aria-hidden="true">🔔</span>';
+      return `<button type="button" class="pp-nap-row" data-nap-id="${escapeHTML(String(p.id))}"><i class="pp-nap-img">${img}</i><span class="pp-nap-copy"><strong>${escapeHTML(p.name||'Product')}</strong>${cat?`<small>${escapeHTML(cat)}</small>`:''}</span><b aria-hidden="true">＋</b></button>`;
+    }).join('')+'</div>';
+  }
+  const el=document.createElement('div');
+  el.id='ppNewAlertPicker';
+  el.className='pp-nap-layer';
+  el.innerHTML=`<div class="pp-nap-card" role="dialog" aria-modal="true" aria-labelledby="ppNapTitle"><button type="button" class="pp-nap-x" data-nap-close aria-label="Close">×</button><div class="pp-nap-head">${head}</div>${body}</div>`;
+  el.addEventListener('click',e=>{
+    if(e.target===el||e.target.closest('[data-nap-close]')){ppCloseNewAlertPicker();return}
+    if(e.target.closest('[data-nap-browse]')){ppCloseNewAlertPicker();closeDealAlertsPanel({silent:true});go('#deals');return}
+    const row=e.target.closest('[data-nap-id]');
+    if(row){const id=row.dataset.napId;ppCloseNewAlertPicker();renderDealAlertEditor(id,'alerts-page')}
+  });
+  document.body.appendChild(el);
+  document.addEventListener('keydown',ppNewAlertPickerKey);
+  (el.querySelector('.pp-nap-row,.pp-nap-main,.pp-nap-ghost')||el).focus?.();
 }
 
 
@@ -4207,7 +4563,7 @@ function ppPlusCompareHTML(){
     <div class="pp-plus-compare-table">
       <div class="pp-plus-compare-row is-head"><b>Feature</b><b>Free</b><b>Plus</b></div>
       <div class="pp-plus-compare-row"><span>Price comparison</span><b>✓</b><b>✓</b></div>
-      <div class="pp-plus-compare-row"><span>Deal Alerts</span><b>1 active</b><b>Up to 3 + priority</b></div>
+      <div class="pp-plus-compare-row"><span>Deal Alerts</span><b>3 active</b><b>Up to 12 + priority</b></div>
       <div class="pp-plus-compare-row"><span>Wallet access</span><b>✓</b><b>✓</b></div>
       <div class="pp-plus-compare-row"><span>Referral ₹100 + ₹100</span><b>✓</b><b>✓</b></div>
       <div class="pp-plus-compare-row"><span>Normal rewards</span><b>✓</b><b>✓</b></div>
@@ -4271,7 +4627,7 @@ function ppPlusHTML(){
       <div class="pp-plus-benefits-title"><span>WHAT PLUS GIVES YOU</span><small>Real value, not just a feature badge.</small></div>
       <div class="pp-plus-benefits pp-plus-savings-benefits">
         <article><span class="pp-plus-benefit-icon" aria-hidden="true">₹</span><div><b>₹100 Welcome Reward</b><small>After your first eligible confirmed purchase.</small></div></article>
-        <article><span class="pp-plus-benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span><div><b>Deal Alerts+</b><small>Free gets 1 active alert. Plus unlocks up to 3 active alerts and priority alert experiences.</small></div></article>
+        <article><span class="pp-plus-benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span><div><b>Deal Alerts+</b><small>Free gets 3 active alerts. Plus unlocks up to 12 active alerts and priority alert experiences. Pro gives unlimited.</small></div></article>
         <article><span class="pp-plus-benefit-icon" aria-hidden="true">★</span><div><b>Plus Reward Boost</b><small>Extra eligible rewards, Plus-only campaigns and special vouchers while Wallet stays free for everyone.</small></div></article>
         <article><span class="pp-plus-benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 13 11 22l-9-9V4h9z"/><path d="M7 8h.01"/></svg></span><div><b>Member-Only Savings</b><small>Genuine exclusive offers, eligible coupons/bank offers and early-access campaigns.</small></div></article>
       </div>
@@ -4386,7 +4742,7 @@ async function syncAuthSession(session,{fromOAuth=false}={}){
   currentProfile=currentUser?await loadProfile(currentUser.id):null;
   if(currentUser&&profileComplete(currentProfile))await ppAttachPendingReferral();
   await ppLoadPlusMembership();
-  updateAccountHeader();
+  ppSyncPlusUI();
   ppHandlePlusDeepLink();
   if(currentUser){
     await syncWishlistForUser(currentUser);
@@ -4403,14 +4759,18 @@ async function syncAuthSession(session,{fromOAuth=false}={}){
       closeModal();
       showToast("Signed in with Google");
       await continuePendingAuthAction();
-    }else{
+    }else if(ppPendingNeedsProfile()){
       renderProfileForm(currentUser.email||"",currentProfile);
+    }else{
+      closeModal();
+      showToast("Signed in with Google");
+      await continuePendingAuthAction();
     }
   }
 }
 
 async function initAuth(){
-  if(!supabaseClient){updateAccountHeader();return;}
+  if(!supabaseClient){window.__ppAuthResolved=true;updateAccountHeader();document.dispatchEvent(new Event('pp-auth-resolved'));return;}
 
   const pendingGoogle=sessionStorage.getItem(OAUTH_PENDING_KEY)==="1";
   const oauthError=oauthErrorFromUrl();
@@ -4419,7 +4779,11 @@ async function initAuth(){
     const {data,error}=await supabaseClient.auth.getSession();
     if(error) throw error;
     await syncAuthSession(data?.session||null,{fromOAuth:pendingGoogle && Boolean(data?.session?.user)});
+    window.__ppAuthResolved=true;
+    document.dispatchEvent(new Event('pp-auth-resolved'));
   }catch(err){
+    window.__ppAuthResolved=true;
+    document.dispatchEvent(new Event('pp-auth-resolved'));
     console.error("Auth init failed",err);
     currentUser=null;
     currentProfile=null;
