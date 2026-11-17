@@ -34,7 +34,7 @@
     const q=card('ppExtQueue','Extension: price checks','<b>Due for check</b>: checked listings without a fresh verified price. <b>Price changed</b>: a shopper\'s extension saw a different price after your last check (these shopper prices are never shown as verified). Press <b>Open</b> with Admin mode on to save the current price.','⏱ CHECKS',
       `<div class="pp-growth-tabs" id="ppXqTabs"></div><div class="pp-dl-tools"><input id="ppXqSearch" type="search" placeholder="Search product or store…"><button type="button" id="ppXqReload" class="subtle">Refresh</button><span id="ppXqCount" class="muted"></span></div><p id="ppXqMsg" class="muted" role="status"></p><div id="ppXqList" class="pp-deals-list"></div>`);
     const an=card('ppExtAny','Extension: check any listing','Find any product and press <b>Check now</b>. Your extension opens that store page in a background tab, saves the current price (Admin mode must be on) and closes the tab. Works any time, not only when a listing is due. Tick several and use <b>Check selected</b> for a batch.','🔎 CHECK NOW',
-      `<div class="pp-dl-tools"><input id="ppXaSearch" type="search" placeholder="Type a product or store name…"><button type="button" id="ppXaBatch" class="subtle">Check selected</button><span id="ppXaCount" class="muted"></span></div><p id="ppXaMsg" class="muted" role="status"></p><div id="ppXaList" class="pp-deals-list"></div>`);
+      `<div class="pp-dl-tools"><input id="ppXaSearch" type="search" placeholder="Type a product or store name…"><button type="button" id="ppXaBatch" class="subtle">Check selected</button><button type="button" id="ppXaStop" class="subtle">Stop</button><span id="ppXaCount" class="muted"></span></div><div id="ppXaStores" class="pp-x-act" style="margin:8px 0"></div><p id="ppXaMsg" class="muted" role="status"></p><div id="ppXaList" class="pp-deals-list"></div>`);
     const s=card('ppExtStores','Extension: stores','Stores the extension reads. <b>Ready</b> = the store\'s website is in this extension version, so a store you add in the catalog starts working here without an update. <b>Needs extension update</b> = tell Claude the domain for the next version. The product-code pattern finds the product number in the store\'s product address; selectors are only needed when a store shows the wrong price.','🏬 STORES',
       `<p id="ppXsMsg" class="muted" role="status"></p><div id="ppXsList" class="pp-deals-list"></div>`);
     const dt=card('ppExtDetails','Extension: product details','Details the extension read from store pages (brand, model, RAM, colour, all spec rows). <b>Needs check</b>: a later visit saw a different value, or two places on a page disagreed. Nothing is overwritten automatically. A value you <b>Approve</b> always wins on the site; <b>Remove</b> deletes a wrong one.','Details',
@@ -52,6 +52,9 @@
     $('ppXqSearch').addEventListener('input',renderQueue);
     let anyT=null;$('ppXaSearch').addEventListener('input',()=>{clearTimeout(anyT);anyT=setTimeout(renderAny,200);});
     $('ppXaList').addEventListener('click',e=>{const b=e.target.closest('[data-xa-now]');if(b)startCheck([b.dataset.xaNow]);});
+    $('ppXaStop').addEventListener('click',()=>window.postMessage({pp:'site',type:'pp-bulk-stop'},'*'));
+    $('ppXaStores').addEventListener('click',e=>{const b=e.target.closest('[data-xa-store]');if(!b||!anyData)return;const k=b.dataset.xaStore;let u;if(k==='*'){const g={};anyData.forEach(r=>(g[r.slug]=g[r.slug]||[]).push(r.url));const L=Object.values(g);u=[];for(let i=0;L.some(x=>i<x.length);i++)L.forEach(x=>{if(i<x.length)u.push(x[i]);});}else u=anyData.filter(r=>r.slug===k).map(r=>r.url);if(u.length)startCheck(u);});
+    setTimeout(()=>{loadAny().then(renderStoreBtns);},1500);
     $('ppXaBatch').addEventListener('click',()=>{const u=[...document.querySelectorAll('#ppXaList [data-xa-pick]:checked')].map(c=>c.dataset.xaPick);if(!u.length){setMsg('ppXaMsg','Tick the listings to check first.',true);return;}startCheck(u);});
     window.addEventListener('message',e=>{if(e.source!==window||!e.data||e.data.pp!=='ext'||e.data.type!=='pp-bulk-progress')return;const s=e.data.s;if(!s)return;setMsg('ppXaMsg',s.error||((s.running?`Checking ${Math.min(s.done+1,s.total)}/${s.total}${s.cur?' · '+s.cur:''} · `:'Done · ')+`saved ${s.saved}, already fresh ${s.fresh}, sold out ${s.oos}, needs confirm ${s.confirm}, skipped ${s.other}`),!!s.error);if(!s.running&&anyWas){anyWas=false;try{loadQueue();}catch(_){}}});
     $('ppXqReload').addEventListener('click',loadQueue);
@@ -99,8 +102,12 @@
     if(pr.error||ls.error){setMsg('ppXaMsg',(pr.error||ls.error).message,true);return null;}
     const pn=new Map((pr.data||[]).map(p=>[p.product_id,p]));
     const sn=new Map(((typeof stores!=='undefined'&&Array.isArray(stores))?stores:[]).map(x=>[x.slug,x.name]));
-    anyData=(ls.data||[]).filter(l=>/^https:\/\//.test(l.direct_url||'')&&pn.has(l.product_id)).map(l=>({url:l.direct_url,name:pn.get(l.product_id).name,variant:pn.get(l.product_id).variant||'',store:sn.get(l.store_slug)||l.store_slug}));
+    anyData=(ls.data||[]).filter(l=>/^https:\/\//.test(l.direct_url||'')&&pn.has(l.product_id)).map(l=>({url:l.direct_url,slug:l.store_slug,name:pn.get(l.product_id).name,variant:pn.get(l.product_id).variant||'',store:sn.get(l.store_slug)||l.store_slug}));
     setMsg('ppXaMsg','');return anyData;
+  }
+  function renderStoreBtns(){
+    const el=$('ppXaStores');if(!el||!anyData)return;const c={};anyData.forEach(r=>{c[r.slug]=c[r.slug]||{n:0,name:r.store};c[r.slug].n++;});
+    el.innerHTML=Object.entries(c).sort((a,b)=>b[1].n-a[1].n).map(([k,v])=>`<button type="button" class="subtle" data-xa-store="${h(k)}">Check all ${h(v.name)} (${v.n})</button>`).join('')+`<button type="button" data-xa-store="*">Check everything (${anyData.length})</button>`;
   }
   async function renderAny(){
     const list=$('ppXaList');if(!list)return;const q=($('ppXaSearch').value||'').trim().toLowerCase();
