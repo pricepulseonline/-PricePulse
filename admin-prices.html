@@ -312,7 +312,7 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 <input type="hidden" name="editing_id">
 <div class="dialog-grid">
   <div class="wide"><label>Product name *</label><input name="name" required placeholder="OnePlus Nord 6"></div>
-  <div><label>Product ID</label><input name="product_id" placeholder="auto-generated"></div>
+  <div><label>Product ID</label><div style="position:relative"><input name="product_id" placeholder="auto-generated" style="padding-right:84px"><button type="button" id="ppIdEditBtn" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);border:1px solid #c9a227;background:#fff8dc;color:#7a5b00;font:800 11px/1 inherit;padding:6px 10px;border-radius:7px;cursor:pointer">Edit ID</button></div><small id="ppIdNote" style="display:none;margin-top:4px;color:#7a5b00;font-weight:600"></small><div id="ppIdEditRow" style="display:none;margin-top:8px;padding:10px 12px;border:1px solid #e3b4b0;background:#fff4f3;border-radius:10px"><div style="font:600 12.5px/1.5 inherit;color:#8a1c1c">Careful: this ID links prices, price history, alerts and listings. Saving updates all of them and old links with the old ID stop working.</div><div style="display:flex;gap:8px;margin-top:9px"><button type="button" id="ppIdSaveBtn" style="border:0;background:#08734d;color:#fff;font:800 12px/1 inherit;padding:8px 13px;border-radius:8px;cursor:pointer">Save ID</button><button type="button" id="ppIdCancelBtn" style="border:1px solid #cfd8d3;background:#fff;color:#222;font:800 12px/1 inherit;padding:8px 13px;border-radius:8px;cursor:pointer">Cancel</button></div></div></div>
   <div><label>Brand *</label><select name="brand_slug" required></select></div>
   <div><label>Category *</label><select name="category" required aria-label="Product category"></select></div>
   <div><label>Identity key *</label><input name="identity_key" required placeholder="Nord 6 / PA0056 / 50g"></div>
@@ -437,18 +437,18 @@ body[data-admin-view="tools"] #helperBox{margin-top:10px}.tools-only#adminAccoun
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="brand-logo-normalizer.js?v=78.8.20" defer></script>
-<script src="admin-prices.js?v=261" defer></script>
+<script src="admin-prices.js?v=265" defer></script>
 <script src="plus-member-deals-admin.js?v=78.8.145" defer></script>
 <script src="admin-growth-v211.js?v=278" defer></script>
 <script src="admin-links-v212.js?v=230" defer></script>
 <script src="admin-linkfix-v223.js?v=223" defer></script>
 <script src="admin-review-v224.js?v=224" defer></script>
 <script src="admin-fullurl-v248.js?v=250" defer></script>
-<script src="admin-extension-v250.js?v=268" defer></script>
+<script src="admin-extension-v250.js?v=269" defer></script>
 <script src="admin-offers-v268.js?v=270" defer></script>
 <script src="admin-cards-v270.js?v=270" defer></script>
 <script src="admin-deals-v219.js?v=220" defer></script>
-<script src="admin-ai-v1.js?v=5" defer></script>
+<script src="admin-ai-v1.js?v=6" defer></script>
 </body></html>
 
 <style>
