@@ -31,10 +31,8 @@
     const a=card('ppExtAdmin','Extension: Admin mode','Turn your PricePulse extension into a price checker. Create a key, open the extension menu, open <b>Admin mode</b> and paste it. Then every time you open a product page that is an exact, checked listing, its price, MRP and stock are saved as <b>verified</b> (fresh for 24 hours), the same as Publish. Prices that moved 30% or more wait for your click.','🧩 ADMIN MODE',
       `<div class="pp-dl-tools"><input id="ppXkLabel" type="text" maxlength="60" placeholder="Name for this browser (e.g. MacBook Chrome)"><button type="button" id="ppXkNew">Create key</button></div>
        <div id="ppXkShow" hidden class="pp-deals-guidance"></div><p id="ppXkMsg" class="muted" role="status"></p><div id="ppXkList" class="pp-deals-list"></div>`);
-    const q=card('ppExtQueue','Extension: price checks','<b>Due for check</b>: checked listings without a fresh verified price. <b>Price changed</b>: a shopper\'s extension saw a different price after your last check (these shopper prices are never shown as verified). Press <b>Open</b> with Admin mode on to save the current price.','⏱ CHECKS',
-      `<div class="pp-growth-tabs" id="ppXqTabs"></div><div class="pp-dl-tools"><input id="ppXqSearch" type="search" placeholder="Search product or store…"><button type="button" id="ppXqReload" class="subtle">Refresh</button><span id="ppXqCount" class="muted"></span></div><p id="ppXqMsg" class="muted" role="status"></p><div id="ppXqList" class="pp-deals-list"></div>`);
-    const an=card('ppExtAny','Extension: check any listing','Find any product and press <b>Check now</b>. Your extension opens that store page in a background tab, saves the current price (Admin mode must be on) and closes the tab. Works any time, not only when a listing is due. Tick several and use <b>Check selected</b> for a batch.','🔎 CHECK NOW',
-      `<div class="pp-dl-tools"><input id="ppXaSearch" type="search" placeholder="Type a product or store name…"><button type="button" id="ppXaBatch" class="subtle">Check selected</button><button type="button" id="ppXaStop" class="subtle">Stop</button><span id="ppXaCount" class="muted"></span></div><div id="ppXaStores" class="pp-x-act" style="margin:8px 0"></div><p id="ppXaMsg" class="muted" role="status"></p><div id="ppXaList" class="pp-deals-list"></div>`);
+    const q=card('ppExtQueue','Extension: price checks','Check prices with your extension (Admin mode must be on). <b>Due</b>: no fresh verified price. <b>Price changed</b>: shoppers saw another price after your last check. <b>Out of stock</b>: sold out when last checked. <b>All listings</b>: every active listing, checkable any time. The extension opens each page in a background tab, saves the price and closes the tab.','⏱ CHECKS',
+      `<div class="pp-growth-tabs" id="ppXqTabs"></div><div class="pp-dl-tools"><input id="ppXqSearch" type="search" placeholder="Search product or store…"><button type="button" id="ppXqReload" class="subtle">Refresh</button><button type="button" id="ppXqGo">Check all shown</button><span id="ppXqCount" class="muted"></span></div><div id="ppXqProg" hidden style="margin:10px 0;padding:10px 12px;background:#f3f7f5;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px"><span id="ppXqProgT"></span><button type="button" id="ppXqStop" class="subtle">Stop</button></div><div style="height:6px;border-radius:3px;background:#dce9e4;margin:8px 0 6px;overflow:hidden"><div id="ppXqBar" style="width:0;height:100%;background:#13805A"></div></div><div id="ppXqProgS" class="muted" style="font-size:12px"></div></div><p class="muted" style="margin:10px 0 4px;font-size:12.5px">Check a whole store</p><div id="ppXqStores" class="pp-x-act"></div><p id="ppXqMsg" class="muted" role="status"></p><div id="ppXqList" class="pp-deals-list"></div>`);
     const s=card('ppExtStores','Extension: stores','Stores the extension reads. <b>Ready</b> = the store\'s website is in this extension version, so a store you add in the catalog starts working here without an update. <b>Needs extension update</b> = tell Claude the domain for the next version. The product-code pattern finds the product number in the store\'s product address; selectors are only needed when a store shows the wrong price.','🏬 STORES',
       `<p id="ppXsMsg" class="muted" role="status"></p><div id="ppXsList" class="pp-deals-list"></div>`);
     const dt=card('ppExtDetails','Extension: product details','Details the extension read from store pages (brand, model, RAM, colour, all spec rows). <b>Needs check</b>: a later visit saw a different value, or two places on a page disagreed. Nothing is overwritten automatically. A value you <b>Approve</b> always wins on the site; <b>Remove</b> deletes a wrong one.','Details',
@@ -43,20 +41,25 @@
     const ev=card('ppExtEvents','Extension: usage','How shoppers use the extension: <b>Buy clicks</b> (store links in Compare), <b>Alerts set</b> and <b>Sign-ins</b>. Counts come from the extension itself, so treat them as a guide.','📊 USAGE',
       `<div class="pp-dl-tools"><button type="button" id="ppXeReload" class="subtle">Refresh</button><span id="ppXeTime" class="muted"></span></div><p id="ppXeMsg" class="muted" role="status"></p><div id="ppXeList"></div>`);
     const anchor=$('ppFullUrlAdmin');
-    if(anchor&&anchor.parentNode===host){anchor.after(ev);ev.after(a);a.after(q);q.after(an);an.after(s);s.after(dt);}else{host.prepend(dt);host.prepend(s);host.prepend(an);host.prepend(q);host.prepend(a);host.prepend(ev);}
+    if(anchor&&anchor.parentNode===host){anchor.after(ev);ev.after(a);a.after(q);q.after(s);s.after(dt);}else{host.prepend(dt);host.prepend(s);host.prepend(q);host.prepend(a);host.prepend(ev);}
     if(!$('ppXStyle')){const st=document.createElement('style');st.id='ppXStyle';st.textContent=`.pp-x-row{flex-wrap:wrap;gap:10px}.pp-x-row h3{font-size:15px}.pp-x-sub{font-size:12.5px;color:#64756e}.pp-x-chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:800;margin-left:6px;background:#e3f5ec;color:#13805A}.pp-x-chip.warn{background:#fff3d6;color:#7a5a12}.pp-x-chip.off{background:#fde8e8;color:#9b1c1c}.pp-x-key{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all;background:#fff;border:1px dashed #d7c38a;border-radius:8px;padding:8px;margin:6px 0;display:block}.pp-xd-fs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.pp-xd-f{font-size:12.5px;border:1px solid #dce9e4;border-radius:999px;padding:3px 8px;background:#fff}.pp-xd-f i{font-style:normal;font-size:10.5px;color:#64756e;margin-left:6px}.pp-xd-f button,.pp-xd-c button{border:0;background:none;cursor:pointer;font-weight:800;margin-left:4px}.pp-xd-c{font-size:13px;margin:4px 0}.pp-xd-c button{border:1px solid #dce9e4;border-radius:8px;padding:2px 8px;background:#fff}.pp-x-chk{flex-direction:row!important;align-items:center;gap:6px!important}.pp-x-grid{flex:1 1 100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}.pp-x-grid label{font-size:11.5px;color:#64756e;display:flex;flex-direction:column;gap:3px}.pp-x-grid input{height:34px;padding:0 9px;border:1px solid #dce9e4;border-radius:9px;font-size:12.5px}.pp-x-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pp-x-act a{font-weight:700;color:#13805A;text-decoration:none}`;document.head.appendChild(st);}
     $('ppXeReload').addEventListener('click',loadEvents);
     $('ppXkNew').addEventListener('click',createKey);
     $('ppXkList').addEventListener('click',onKeyClick);
     $('ppXqTabs').addEventListener('click',e=>{const b=e.target.closest('[data-xq]');if(b){qTab=b.dataset.xq;renderQueue();}});
     $('ppXqSearch').addEventListener('input',renderQueue);
-    let anyT=null;$('ppXaSearch').addEventListener('input',()=>{clearTimeout(anyT);anyT=setTimeout(renderAny,200);});
-    $('ppXaList').addEventListener('click',e=>{const b=e.target.closest('[data-xa-now]');if(b)startCheck([b.dataset.xaNow]);});
-    $('ppXaStop').addEventListener('click',()=>window.postMessage({pp:'site',type:'pp-bulk-stop'},'*'));
-    $('ppXaStores').addEventListener('click',e=>{const b=e.target.closest('[data-xa-store]');if(!b||!anyData)return;const k=b.dataset.xaStore;let u;if(k==='*'){const g={};anyData.forEach(r=>(g[r.slug]=g[r.slug]||[]).push(r.url));const L=Object.values(g);u=[];for(let i=0;L.some(x=>i<x.length);i++)L.forEach(x=>{if(i<x.length)u.push(x[i]);});}else u=anyData.filter(r=>r.slug===k).map(r=>r.url);if(u.length)startCheck(u);});
+    $('ppXqList').addEventListener('click',e=>{const b=e.target.closest('[data-xq-now]');if(b)startCheck([b.dataset.xqNow]);});
+    $('ppXqGo').addEventListener('click',()=>checkMany(shownRows().map(r=>r.url).filter(Boolean),'These listings'));
+    $('ppXqStop').addEventListener('click',()=>window.postMessage({pp:'site',type:'pp-bulk-stop'},'*'));
+    $('ppXqStores').addEventListener('click',e=>{const b=e.target.closest('[data-xq-store]');if(!b||!anyData)return;const k=b.dataset.xqStore;let u;
+      if(k==='*'){const g={};anyData.forEach(r=>(g[r.store_slug]=g[r.store_slug]||[]).push(r.url));const Ls=Object.values(g);u=[];for(let i=0;Ls.some(x=>i<x.length);i++)Ls.forEach(x=>{if(i<x.length)u.push(x[i]);});}
+      else u=anyData.filter(r=>r.store_slug===k).map(r=>r.url);
+      checkMany(u,k==='*'?'Everything':'This store');});
+    window.addEventListener('message',e=>{if(e.source!==window||!e.data||e.data.pp!=='ext')return;
+      if(e.data.type==='pp-chk-log-result'){chkLog=e.data.log||{};renderQueue();return;}
+      if(e.data.type==='pp-bulk-progress'&&e.data.s){showProgress(e.data.s);askLog();if(e.data.s.running===false&&ranNow){ranNow=false;loadQueue();}}});
+    loadAny().then(()=>{renderStoreBtns();renderQueue();});setTimeout(askLog,1200);setInterval(()=>{if(!document.hidden)askLog();},60000);
     setTimeout(()=>{loadAny().then(renderStoreBtns);},1500);
-    $('ppXaBatch').addEventListener('click',()=>{const u=[...document.querySelectorAll('#ppXaList [data-xa-pick]:checked')].map(c=>c.dataset.xaPick);if(!u.length){setMsg('ppXaMsg','Tick the listings to check first.',true);return;}startCheck(u);});
-    window.addEventListener('message',e=>{if(e.source!==window||!e.data||e.data.pp!=='ext'||e.data.type!=='pp-bulk-progress')return;const s=e.data.s;if(!s)return;setMsg('ppXaMsg',s.error||((s.running?`Checking ${Math.min(s.done+1,s.total)}/${s.total}${s.cur?' · '+s.cur:''} · `:'Done · ')+`saved ${s.saved}, already fresh ${s.fresh}, sold out ${s.oos}, needs confirm ${s.confirm}, skipped ${s.other}`),!!s.error);if(!s.running&&anyWas){anyWas=false;try{loadQueue();}catch(_){}}});
     $('ppXqReload').addEventListener('click',loadQueue);
     $('ppXsList').addEventListener('click',onStoreClick);
     $('ppXdTabs').addEventListener('click',e=>{const b=e.target.closest('[data-xd]');if(b){dTab=b.dataset.xd;renderDetails();}});
@@ -93,34 +96,51 @@
     list.innerHTML=keys.length?keys.map(k=>`<article class="pp-deals-row pp-x-row" data-xk="${h(k.id)}"><div style="flex:1 1 260px"><h3>${h(k.label||'Extension key')}</h3><p class="pp-x-sub">Created ${h(when(k.created_at))} · last used ${h(when(k.last_used_at))}</p></div><div class="pp-x-act"><button type="button" class="subtle" data-xk-del>Remove</button></div></article>`).join('')
       :'<div class="pp-deals-row"><div><h3>No active key</h3><p>Create one for each browser where you check prices.</p></div></div>';
   }
-  /* ---- 2b) check any listing now (extension opens it in a background tab) ---- */
-  let anyData=null,anyWas=false;
+  /* ---- 2b) all listings, checks on demand, "checked X ago" tags ---- */
+  let anyData=null,chkLog={},ranNow=false;
+  const normU=u=>{try{const x=new URL(u);return (x.hostname.replace(/^www\./,'')+x.pathname.replace(/\/+$/,'')).toLowerCase();}catch(_){return '';}};
+  const ago=t=>{const m=Math.round((Date.now()-t)/60000);if(m<1)return 'just now';if(m<60)return m+' min ago';const hr=Math.round(m/60);return hr<24?hr+' h ago':when(t);};
+  const RECENT=60*60*1000;
   async function loadAny(){
     if(anyData||!ready())return anyData;
-    setMsg('ppXaMsg','Loading listings…');
     const [pr,ls]=await Promise.all([api.from('pp_catalog_products').select('product_id,name,variant').limit(2000),api.from('pp_product_store_listings').select('product_id,store_slug,direct_url,active').eq('active',true).limit(5000)]);
-    if(pr.error||ls.error){setMsg('ppXaMsg',(pr.error||ls.error).message,true);return null;}
+    if(pr.error||ls.error){setMsg('ppXqMsg',(pr.error||ls.error).message,true);return null;}
     const pn=new Map((pr.data||[]).map(p=>[p.product_id,p]));
     const sn=new Map(((typeof stores!=='undefined'&&Array.isArray(stores))?stores:[]).map(x=>[x.slug,x.name]));
-    anyData=(ls.data||[]).filter(l=>/^https:\/\//.test(l.direct_url||'')&&pn.has(l.product_id)).map(l=>({url:l.direct_url,slug:l.store_slug,name:pn.get(l.product_id).name,variant:pn.get(l.product_id).variant||'',store:sn.get(l.store_slug)||l.store_slug}));
-    setMsg('ppXaMsg','');return anyData;
+    anyData=(ls.data||[]).filter(l=>/^https:\/\//.test(l.direct_url||'')&&pn.has(l.product_id)).map(l=>({url:l.direct_url,store_slug:l.store_slug,product_name:pn.get(l.product_id).name,variant:pn.get(l.product_id).variant||'',store_name:sn.get(l.store_slug)||l.store_slug}));
+    queue.all=anyData;return anyData;
   }
+  function askLog(){window.postMessage({pp:'site',type:'pp-chk-log'},'*');}
   function renderStoreBtns(){
-    const el=$('ppXaStores');if(!el||!anyData)return;const c={};anyData.forEach(r=>{c[r.slug]=c[r.slug]||{n:0,name:r.store};c[r.slug].n++;});
-    el.innerHTML=Object.entries(c).sort((a,b)=>b[1].n-a[1].n).map(([k,v])=>`<button type="button" class="subtle" data-xa-store="${h(k)}">Check all ${h(v.name)} (${v.n})</button>`).join('')+`<button type="button" data-xa-store="*">Check everything (${anyData.length})</button>`;
+    const el=$('ppXqStores');if(!el)return;if(!anyData){el.innerHTML='<span class="muted">Loading…</span>';return;}
+    const c={};anyData.forEach(r=>{c[r.store_slug]=c[r.store_slug]||{n:0,name:r.store_name};c[r.store_slug].n++;});
+    el.innerHTML=Object.entries(c).sort((a,b)=>b[1].n-a[1].n).map(([k,v])=>`<button type="button" class="subtle" data-xq-store="${h(k)}">${h(v.name)} ${v.n}</button>`).join('')+`<button type="button" data-xq-store="*">Everything ${anyData.length}</button>`;
   }
-  async function renderAny(){
-    const list=$('ppXaList');if(!list)return;const q=($('ppXaSearch').value||'').trim().toLowerCase();
-    if(q.length<2){list.innerHTML='';$('ppXaCount').textContent='';return;}
-    const d=await loadAny();if(!d)return;
-    const words=q.split(/\s+/);
-    const rows=d.filter(r=>{const t=`${r.name} ${r.variant} ${r.store}`.toLowerCase();return words.every(w=>t.includes(w));});
-    $('ppXaCount').textContent=`${rows.length} found`+(rows.length>40?' (showing 40)':'');
-    list.innerHTML=rows.length?rows.slice(0,40).map(r=>`<article class="pp-deals-row pp-x-row"><div style="flex:1 1 300px;min-width:0"><h3><label class="pp-x-chk"><input type="checkbox" data-xa-pick="${h(r.url)}"> ${h(r.name)} · ${h(r.store)}</label></h3><p>${h(r.variant)}</p></div><div class="pp-x-act"><button type="button" data-xa-now="${h(r.url)}">Check now</button></div></article>`).join(''):'<div class="pp-deals-row"><div><h3>No listing found</h3><p>Only active listings with a full store link can be checked.</p></div></div>';
+  function shownRows(){
+    const q=($('ppXqSearch').value||'').trim().toLowerCase();const words=q.split(/\s+/).filter(Boolean);
+    return (queue[qTab]||[]).filter(r=>!words.length||words.every(w=>`${r.product_name} ${r.variant||''} ${r.store_name}`.toLowerCase().includes(w)));
   }
   function startCheck(urls){
-    if(!document.documentElement.getAttribute('data-pp-ext')){setMsg('ppXaMsg','PricePulse extension not found in this browser. Install / reload it, then refresh this page.',true);return;}
-    anyWas=true;setMsg('ppXaMsg','Starting…');window.postMessage({pp:'site',type:'pp-bulk-start',urls},'*');
+    urls=[...new Set((urls||[]).filter(u=>/^https:\/\//.test(u||'')&&!/price-pulse\.in/.test(u)))];
+    if(!urls.length){setMsg('ppXqMsg','Nothing to check here.');return;}
+    if(!document.documentElement.getAttribute('data-pp-ext')){setMsg('ppXqMsg','PricePulse extension not found in this browser. Install / reload it, then refresh this page.',true);return;}
+    ranNow=true;setMsg('ppXqMsg','Starting…');window.postMessage({pp:'site',type:'pp-bulk-start',urls},'*');
+  }
+  function checkMany(urls,label){
+    const now=Date.now();const todo=[],skip=[];
+    [...new Set(urls)].forEach(u=>{const l=chkLog[normU(u)];(l&&now-l.t<RECENT?skip:todo).push(u);});
+    if(!todo.length){setMsg('ppXqMsg',`${label}: all ${skip.length} were already checked in the last hour. Use Check now on a row to check one again.`);return;}
+    startCheck(todo);if(skip.length)setTimeout(()=>setMsg('ppXqMsg',`Skipping ${skip.length} checked in the last hour.`),1200);
+  }
+  function showProgress(s){
+    const box=$('ppXqProg');if(!box)return;
+    if(s.error){setMsg('ppXqMsg',s.error,true);return;}
+    box.hidden=false;const pct=s.total?Math.round(100*s.done/s.total):0;
+    $('ppXqBar').style.width=pct+'%';
+    $('ppXqProgT').textContent=s.running?`Checking ${Math.min(s.done+1,s.total)} of ${s.total}${s.cur?' · '+s.cur:''}`:`Done · ${s.done} of ${s.total} checked`;
+    $('ppXqProgS').textContent=`Saved ${s.saved} · already fresh ${s.fresh} · sold out ${s.oos} · needs confirm ${s.confirm} · skipped ${s.other}`;
+    $('ppXqStop').hidden=!s.running;$('ppXqGo').disabled=!!s.running;
+    if(s.running)setMsg('ppXqMsg','');
   }
   async function createKey(){
     if(!ready())return;const label=$('ppXkLabel').value.trim();
@@ -146,23 +166,27 @@
     let allDue=(data&&data.due)||[],oosRows=[];
     try{const {data:oo}=await api.rpc('pp_ext_oos_list');oosRows=Array.isArray(oo)?oo:[];}catch(e){oosRows=[];}  /* V7: sold-out checks from the extension (24 h) */
     const isOos=r=>r.url&&oosRows.some(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()));
-    queue={due:allDue.filter(r=>!isOos(r)),changed:(data&&data.changed)||[],oos:allDue.filter(isOos).map(r=>{const o=oosRows.find(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()))||{};return {...r,oos_seen_at:o.seen_at};})};
-    setMsg('ppXqMsg','');renderQueue();
+    await loadAny();
+    queue={all:anyData||[],due:allDue.filter(r=>!isOos(r)),changed:(data&&data.changed)||[],oos:allDue.filter(isOos).map(r=>{const o=oosRows.find(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()))||{};return {...r,oos_seen_at:o.seen_at};})};
+    setMsg('ppXqMsg','');renderStoreBtns();renderQueue();
   }
   function renderQueue(){
     const list=$('ppXqList');if(!list)return;
-    $('ppXqTabs').innerHTML=[['due','Due for check'],['oos','Out of stock'],['changed','Price changed']].map(([k,l])=>`<button type="button" data-xq="${k}" class="${qTab===k?'is-on':''}">${l} <b class="pp-dem-n">${(queue[k]||[]).length}</b></button>`).join('');
-    const q=($('ppXqSearch').value||'').trim().toLowerCase();
-    const rows=(queue[qTab]||[]).filter(r=>!q||`${r.product_name} ${r.variant||''} ${r.store_name}`.toLowerCase().includes(q));
-    $('ppXqCount').textContent=`${rows.length} shown`;
+    const TABS=[['due','Due'],['changed','Price changed'],['oos','Out of stock'],['all','All listings']];
+    $('ppXqTabs').innerHTML=TABS.map(([k,l])=>`<button type="button" data-xq="${k}" class="${qTab===k?'is-on':''}">${l} <b class="pp-dem-n">${k==='all'&&!anyData?'…':(queue[k]||[]).length}</b></button>`).join('');
+    const rows=shownRows();
+    $('ppXqCount').textContent=`${rows.length} shown`;$('ppXqGo').textContent=`Check all shown (${rows.length})`;
+    if(qTab==='all'&&!anyData){list.innerHTML='<div class="pp-deals-row"><div><h3>Loading listings…</h3></div></div>';return;}
     list.innerHTML=rows.length?rows.slice(0,300).map(r=>{
       const dom=r.domain||((typeof stores!=='undefined'&&Array.isArray(stores)&&stores.find(x=>x.slug===r.store_slug))||{}).domain||'';const ready=extReady(dom)||BUILTIN[r.store_slug];
-      const info=qTab==='oos'?`Checked as out of stock · ${h(when(r.oos_seen_at))} · no price to save (counts as checked for 24 h)`:qTab==='due'
+      const info=qTab==='all'?(r.url?'':'No link'):qTab==='oos'?`Checked as out of stock · ${h(when(r.oos_seen_at))} · no price to save (counts as checked for 24 h)`:qTab==='due'
         ?(r.last_checked?`Last verified ${inr(r.last_price)} · ${h(when(r.last_checked))}${r.expires_at&&new Date(r.expires_at)>new Date()?' · expires '+h(when(r.expires_at)):' · expired'}`:'Never verified')
         :`Verified ${inr(r.verified_price)} (${h(when(r.verified_at))}) → shoppers saw <b>${inr(r.seen_price)}</b> (${h(when(r.seen_at))})${r.seen_in_stock===false?' · out of stock':''}`;
-      return `<article class="pp-deals-row pp-x-row"><div style="flex:1 1 300px;min-width:0"><h3>${h(r.product_name)} · ${h(r.store_name)}${ready?'':'<span class="pp-x-chip warn">Extension cannot read this store yet</span>'}</h3><p>${h(r.variant||'')}</p><p class="pp-x-sub">${info}</p></div>
-        <div class="pp-x-act">${r.url?`<a href="${h(r.url)}" target="_blank" rel="noopener noreferrer">Open ↗</a>`:'<span class="muted">No link</span>'}</div></article>`;}).join('')
-      :`<div class="pp-deals-row"><div><h3>${qTab==='due'?'Nothing due':qTab==='oos'?'No out-of-stock checks yet':'No price changes seen'}</h3><p>${qTab==='due'?'Every checked listing has a fresh verified price or an out-of-stock check.':qTab==='oos'?'Open a sold-out listing with the extension in Admin mode and it shows here.':'Shoppers saw the same prices as your last checks (last 7 days).'}</p></div></div>`;
+      const lg=r.url?chkLog[normU(r.url)]:null;
+      const tag=lg?`<span class="pp-x-chip${Date.now()-lg.t<RECENT?'':' off'}" style="${Date.now()-lg.t<RECENT?'':'background:#eef2f0;color:#4d5f58'}">Checked ${h(ago(lg.t))} · ${lg.s==='saved'?'saved'+(lg.p?' '+inr(lg.p):''):lg.s==='fresh'?'already fresh':lg.s==='oos'?'sold out':'needs your confirm'}</span>`:'';
+      return `<article class="pp-deals-row pp-x-row"><div style="flex:1 1 300px;min-width:0"><h3>${h(r.product_name)} · ${h(r.store_name)}${ready?'':'<span class="pp-x-chip warn">Extension cannot read this store yet</span>'}${tag}</h3><p>${h(r.variant||'')}</p>${info?`<p class="pp-x-sub">${info}</p>`:''}</div>
+        <div class="pp-x-act">${r.url?`<button type="button" data-xq-now="${h(r.url)}">Check now</button> <a href="${h(r.url)}" target="_blank" rel="noopener noreferrer">Open ↗</a>`:'<span class="muted">No link</span>'}</div></article>`;}).join('')
+      :`<div class="pp-deals-row"><div><h3>${qTab==='due'?'Nothing due':qTab==='oos'?'No out-of-stock checks yet':qTab==='all'?'No listing found':'No price changes seen'}</h3><p>${qTab==='due'?'Every checked listing has a fresh verified price or an out-of-stock check.':qTab==='oos'?'Open a sold-out listing with the extension in Admin mode and it shows here.':qTab==='all'?'Only active listings with a full store link can be checked.':'Shoppers saw the same prices as your last checks (last 7 days).'}</p></div></div>`;
   }
 
   /* ---- 3) stores ---- */
