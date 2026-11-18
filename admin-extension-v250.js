@@ -19,7 +19,7 @@
   const sqlMissing=e=>e&&(/function .* does not exist|Could not find the function|pp_ext_store_rules/i.test(e.message||'')||['PGRST202','42883','42P01','PGRST205'].includes(e.code));
   const NEED_SQL='Run the extension SQL files (v2, v3, v4 in the extension zip) in Supabase first.';
 
-  let dTab='check',details=[],qTab='due',queue={due:[],changed:[],oos:[]},rules=new Map(),keys=[];
+  let dTab='check',details=[],qTab='due',queue={due:[],confirm:[],changed:[],oos:[]},rules=new Map(),keys=[];
 
   function card(id,title,text,badge,body){
     const w=document.createElement('section');w.id=id;w.className='pp-deals-admin-card pp-growth-card';
@@ -31,8 +31,8 @@
     const a=card('ppExtAdmin','Extension: Admin mode','Turn your PricePulse extension into a price checker. Create a key, open the extension menu, open <b>Admin mode</b> and paste it. Then every time you open a product page that is an exact, checked listing, its price, MRP and stock are saved as <b>verified</b> (fresh for 24 hours), the same as Publish. Prices that moved 30% or more wait for your click.','🧩 ADMIN MODE',
       `<div class="pp-dl-tools"><input id="ppXkLabel" type="text" maxlength="60" placeholder="Name for this browser (e.g. MacBook Chrome)"><button type="button" id="ppXkNew">Create key</button></div>
        <div id="ppXkShow" hidden class="pp-deals-guidance"></div><p id="ppXkMsg" class="muted" role="status"></p><div id="ppXkList" class="pp-deals-list"></div>`);
-    const q=card('ppExtQueue','Extension: price checks','Check prices with your extension (Admin mode must be on). <b>Due</b>: no fresh verified price. <b>Price changed</b>: shoppers saw another price after your last check. <b>Out of stock</b>: sold out when last checked. <b>All listings</b>: every active listing, checkable any time. The extension opens each page in a background tab, saves the price and closes the tab.','⏱ CHECKS',
-      `<div class="pp-growth-tabs" id="ppXqTabs"></div><div class="pp-dl-tools"><input id="ppXqSearch" type="search" placeholder="Search product or store…"><button type="button" id="ppXqReload" class="subtle">Refresh</button><button type="button" id="ppXqGo">Check all shown</button><span id="ppXqCount" class="muted"></span></div><div id="ppXqProg" hidden style="margin:10px 0;padding:10px 12px;background:#f3f7f5;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px"><span id="ppXqProgT"></span><button type="button" id="ppXqStop" class="subtle">Stop</button></div><div style="height:6px;border-radius:3px;background:#dce9e4;margin:8px 0 6px;overflow:hidden"><div id="ppXqBar" style="width:0;height:100%;background:#13805A"></div></div><div id="ppXqProgS" class="muted" style="font-size:12px"></div></div><p class="muted" style="margin:10px 0 4px;font-size:12.5px">Check a whole store</p><div id="ppXqStores" class="pp-x-act"></div><p id="ppXqMsg" class="muted" role="status"></p><div id="ppXqList" class="pp-deals-list"></div>`);
+    const q=card('ppExtQueue','Extension: price checks','Check prices with your extension (Admin mode must be on). <b>Due</b>: no fresh verified price. <b>Price changed</b>: shoppers saw another price after your last check. <b>Out of stock</b>: sold out when last checked. <b>To confirm</b>: listings not confirmed yet; the extension reads the store title and photo, we score the match and you confirm. <b>All listings</b>: every active listing, checkable any time. The extension opens each page in a background tab, saves the price and closes the tab.','⏱ CHECKS',
+      `<div class="pp-growth-tabs" id="ppXqTabs"></div><div class="pp-dl-tools"><input id="ppXqSearch" type="search" placeholder="Search product or store…"><button type="button" id="ppXqReload" class="subtle">Refresh</button><button type="button" id="ppXqGo">Check all shown</button><span id="ppXqCount" class="muted"></span></div><div id="ppXqConf" hidden class="pp-dl-tools"><button type="button" id="ppXqCapAll" class="subtle"></button><button type="button" id="ppXqOkAll"></button><span class="muted" style="font-size:12px">Nothing is confirmed without your click.</span></div><div id="ppXqProg" hidden style="margin:10px 0;padding:10px 12px;background:#f3f7f5;border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px"><span id="ppXqProgT"></span><button type="button" id="ppXqStop" class="subtle">Stop</button></div><div style="height:6px;border-radius:3px;background:#dce9e4;margin:8px 0 6px;overflow:hidden"><div id="ppXqBar" style="width:0;height:100%;background:#13805A"></div></div><div id="ppXqProgS" class="muted" style="font-size:12px"></div></div><p class="muted" style="margin:10px 0 4px;font-size:12.5px">Check a whole store</p><div id="ppXqStores" class="pp-x-act"></div><p id="ppXqMsg" class="muted" role="status"></p><div id="ppXqList" class="pp-deals-list"></div>`);
     const s=card('ppExtStores','Extension: stores','Stores the extension reads. <b>Ready</b> = the store\'s website is in this extension version, so a store you add in the catalog starts working here without an update. <b>Needs extension update</b> = tell Claude the domain for the next version. The product-code pattern finds the product number in the store\'s product address; selectors are only needed when a store shows the wrong price.','🏬 STORES',
       `<p id="ppXsMsg" class="muted" role="status"></p><div id="ppXsList" class="pp-deals-list"></div>`);
     const dt=card('ppExtDetails','Extension: product details','Details the extension read from store pages (brand, model, RAM, colour, all spec rows). <b>Needs check</b>: a later visit saw a different value, or two places on a page disagreed. Nothing is overwritten automatically. A value you <b>Approve</b> always wins on the site; <b>Remove</b> deletes a wrong one.','Details',
@@ -48,7 +48,9 @@
     $('ppXkList').addEventListener('click',onKeyClick);
     $('ppXqTabs').addEventListener('click',e=>{const b=e.target.closest('[data-xq]');if(b){qTab=b.dataset.xq;renderQueue();}});
     $('ppXqSearch').addEventListener('input',renderQueue);
-    $('ppXqList').addEventListener('click',e=>{const b=e.target.closest('[data-xq-now]');if(b)startCheck([b.dataset.xqNow]);});
+    $('ppXqList').addEventListener('click',e=>{const b=e.target.closest('[data-xq-now]');if(b){startCheck([b.dataset.xqNow]);return;}const o=e.target.closest('[data-xq-ok]');if(o){const r=(queue.confirm||[]).find(x=>x.product_id+'|'+x.store_slug===o.dataset.xqOk);if(r)confirmRows([r]);}});
+    $('ppXqOkAll').addEventListener('click',()=>{const hi=shownRows().filter(r=>r.level==='high');if(!hi.length){setMsg('ppXqMsg','No high matches yet. Press Capture first.');return;}if(window.confirm(`Confirm ${hi.length} listings as the same product? Their prices are then saved.`))confirmRows(hi);});
+    $('ppXqCapAll').addEventListener('click',()=>{const nc=shownRows().filter(r=>!r.ctitle).map(r=>r.url);if(!nc.length){setMsg('ppXqMsg','Every listing here is already captured.');return;}startCheck(nc);});
     $('ppXqGo').addEventListener('click',()=>checkMany(shownRows().map(r=>r.url).filter(Boolean),'These listings'));
     $('ppXqStop').addEventListener('click',()=>window.postMessage({pp:'site',type:'pp-bulk-stop'},'*'));
     $('ppXqStores').addEventListener('click',e=>{const b=e.target.closest('[data-xq-store]');if(!b||!anyData)return;const k=b.dataset.xqStore;let u;
@@ -103,12 +105,48 @@
   const RECENT=60*60*1000;
   async function loadAny(){
     if(anyData||!ready())return anyData;
-    const [pr,ls]=await Promise.all([api.from('pp_catalog_products').select('product_id,name,variant').limit(2000),api.from('pp_product_store_listings').select('product_id,store_slug,direct_url,active').eq('active',true).limit(5000)]);
+    const [pr,ls]=await Promise.all([api.from('pp_catalog_products').select('product_id,name,variant,model_code').limit(2000),api.from('pp_product_store_listings').select('product_id,store_slug,direct_url,active,match_status,match_score,captured_title,captured_image_url,last_captured_at').eq('active',true).limit(5000)]);
     if(pr.error||ls.error){setMsg('ppXqMsg',(pr.error||ls.error).message,true);return null;}
     const pn=new Map((pr.data||[]).map(p=>[p.product_id,p]));
     const sn=new Map(((typeof stores!=='undefined'&&Array.isArray(stores))?stores:[]).map(x=>[x.slug,x.name]));
-    anyData=(ls.data||[]).filter(l=>/^https:\/\//.test(l.direct_url||'')&&pn.has(l.product_id)).map(l=>({url:l.direct_url,store_slug:l.store_slug,product_name:pn.get(l.product_id).name,variant:pn.get(l.product_id).variant||'',store_name:sn.get(l.store_slug)||l.store_slug}));
-    queue.all=anyData;return anyData;
+    anyData=(ls.data||[]).filter(l=>/^https:\/\//.test(l.direct_url||'')&&pn.has(l.product_id)).map(l=>({url:l.direct_url,store_slug:l.store_slug,product_id:l.product_id,product_name:pn.get(l.product_id).name,variant:pn.get(l.product_id).variant||'',model:pn.get(l.product_id).model_code||'',store_name:sn.get(l.store_slug)||l.store_slug,match_status:l.match_status,ctitle:l.captured_title||'',cimg:l.captured_image_url||'',cat:l.last_captured_at||null}));
+    anyData.forEach(r=>{if(r.match_status!=='match'&&r.ctitle){const m=scoreMatch(r);r.score=m.score;r.level=m.level;r.why=m.why;}});
+    queue.all=anyData;queue.confirm=anyData.filter(r=>r.match_status!=='match');return anyData;
+  }
+  /* match score: store page title vs our catalog product (never confirms anything by itself) */
+  const STOP=new Set(['and','with','the','for','of','in','a','an','new','latest','buy','online','at','price','india','by','from','to','on','is']);
+  const TIER=new Set(['pro','plus','max','ultra','lite','se','fe','mini','air','neo','gt','fold','flip','prime','turbo','edge','note','power']);
+  const UNIT=/^(\d+(?:\.\d+)?)(gb|tb|mb|mah|inch|in|mp|w|hz|ml|l|kg|g|cm|mm)$/;
+  const normT=x=>String(x||'').toLowerCase().replace(/(\d)\s*(gb|tb|mb|mah|inch|in|mp|w|hz|ml|l|kg|g|cm|mm)\b/g,'$1$2').replace(/["”]/g,'inch').replace(/[^a-z0-9.]+/g,' ').trim();
+  const toksT=x=>normT(x).split(' ').filter(t=>t&&!STOP.has(t));
+  function scoreMatch(r){
+    const C=[...new Set(toksT(`${r.product_name} ${r.variant} ${r.model}`))],T=new Set(toksT(r.ctitle));
+    if(!C.length||!T.size)return {score:0,level:'none',why:'No store title yet'};
+    const has=c=>T.has(c)||[...T].some(t=>t.length>3&&c.length>3&&(t.includes(c)||c.includes(t)));
+    const miss=C.filter(c=>!has(c));const cov=(C.length-miss.length)/C.length;
+    const why=[];let level='high';let score=Math.round(cov*100);
+    const hard=miss.filter(c=>/\d/.test(c));if(hard.length){level='review';score=Math.min(score,70);why.push('missing: '+hard.join(', '));}
+    const units={};C.forEach(c=>{const m=c.match(UNIT);if(m)(units[m[2]]=units[m[2]]||{c:[],t:[]}).c.push(c);});
+    [...T].forEach(t=>{const m=t.match(UNIT);if(m&&units[m[2]])units[m[2]].t.push(t);});
+    Object.entries(units).forEach(([u,v])=>{if(v.t.length&&v.c.some(c=>!v.t.includes(c))){level='review';score=Math.min(score,60);why.push(`${u} differs: store ${v.t.join('/')} vs ours ${v.c.join('/')}`);}});
+    const cs=new Set(C);const tier=[...T].filter(t=>TIER.has(t)&&!cs.has(t)).concat(C.filter(c=>TIER.has(c)&&!T.has(c)));
+    if(tier.length){level='review';score=Math.min(score,65);why.push('model tier differs: '+[...new Set(tier)].join(', '));}
+    const brand=C[0];if(brand&&!has(brand)){level='review';score=Math.min(score,50);why.push('brand not in store title');}
+    if(level==='high'&&cov<0.8){level='review';why.push('only '+Math.round(cov*100)+'% of our words found');}
+    return {score,level,why:why.join(' · ')};
+  }
+  async function confirmRows(rows){
+    if(!rows.length){setMsg('ppXqMsg','Nothing to confirm.');return;}
+    let uid=null;try{const g=await api.auth.getUser();uid=g&&g.data&&g.data.user&&g.data.user.id;}catch(_){}
+    if(!uid){try{const g=await api.auth.getSession();uid=g&&g.data&&g.data.session&&g.data.session.user&&g.data.session.user.id;}catch(_){}}
+    if(!uid){setMsg('ppXqMsg','Could not read your admin login. Refresh the page.',true);return;}
+    let ok=0,bad=0;
+    for(let i=0;i<rows.length;i++){const r=rows[i];setMsg('ppXqMsg',`Confirming ${i+1} of ${rows.length}…`);
+      const {error}=await api.from('pp_product_store_listings').update({match_status:'match',match_score:Math.max(0,Math.min(100,r.score||0)),updated_by:uid,updated_at:new Date().toISOString()}).eq('product_id',r.product_id).eq('store_slug',r.store_slug).eq('active',true);
+      if(error){bad++;}else{ok++;r.match_status='match';}}
+    anyData=null;await loadAny();renderStoreBtns();renderQueue();
+    setMsg('ppXqMsg',`Confirmed ${ok}${bad?`, failed ${bad}`:''}. Now checking their prices…`,!!bad&&!ok);
+    if(ok)startCheck(rows.filter(r=>r.match_status==='match').map(r=>r.url));
   }
   function askLog(){window.postMessage({pp:'site',type:'pp-chk-log'},'*');}
   function renderStoreBtns(){
@@ -138,7 +176,7 @@
     box.hidden=false;const pct=s.total?Math.round(100*s.done/s.total):0;
     $('ppXqBar').style.width=pct+'%';
     $('ppXqProgT').textContent=s.running?`Checking ${Math.min(s.done+1,s.total)} of ${s.total}${s.cur?' · '+s.cur:''}`:`Done · ${s.done} of ${s.total} checked`;
-    $('ppXqProgS').textContent=`Saved ${s.saved} · already fresh ${s.fresh} · sold out ${s.oos} · needs confirm ${s.confirm} · skipped ${s.other}`;
+    $('ppXqProgS').textContent=`Saved ${s.saved} · captured ${s.cap||0} · already fresh ${s.fresh} · sold out ${s.oos} · needs confirm ${s.confirm} · skipped ${s.other}`;
     $('ppXqStop').hidden=!s.running;$('ppXqGo').disabled=!!s.running;
     if(s.running)setMsg('ppXqMsg','');
   }
@@ -167,26 +205,27 @@
     try{const {data:oo}=await api.rpc('pp_ext_oos_list');oosRows=Array.isArray(oo)?oo:[];}catch(e){oosRows=[];}  /* V7: sold-out checks from the extension (24 h) */
     const isOos=r=>r.url&&oosRows.some(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()));
     await loadAny();
-    queue={all:anyData||[],due:allDue.filter(r=>!isOos(r)),changed:(data&&data.changed)||[],oos:allDue.filter(isOos).map(r=>{const o=oosRows.find(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()))||{};return {...r,oos_seen_at:o.seen_at};})};
+    queue={all:anyData||[],confirm:(anyData||[]).filter(r=>r.match_status!=='match'),due:allDue.filter(r=>!isOos(r)),changed:(data&&data.changed)||[],oos:allDue.filter(isOos).map(r=>{const o=oosRows.find(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()))||{};return {...r,oos_seen_at:o.seen_at};})};
     setMsg('ppXqMsg','');renderStoreBtns();renderQueue();
   }
   function renderQueue(){
     const list=$('ppXqList');if(!list)return;
-    const TABS=[['due','Due'],['changed','Price changed'],['oos','Out of stock'],['all','All listings']];
+    const TABS=[['due','Due'],['confirm','To confirm'],['changed','Price changed'],['oos','Out of stock'],['all','All listings']];
     $('ppXqTabs').innerHTML=TABS.map(([k,l])=>`<button type="button" data-xq="${k}" class="${qTab===k?'is-on':''}">${l} <b class="pp-dem-n">${k==='all'&&!anyData?'…':(queue[k]||[]).length}</b></button>`).join('');
     const rows=shownRows();
+    const cf=$('ppXqConf');if(cf){cf.hidden=qTab!=='confirm';if(qTab==='confirm'){const hi=rows.filter(r=>r.level==='high'),nc=rows.filter(r=>!r.ctitle);$('ppXqOkAll').textContent=`Confirm all high matches (${hi.length})`;$('ppXqCapAll').textContent=`Capture ${nc.length} not read yet`;}}
     $('ppXqCount').textContent=`${rows.length} shown`;$('ppXqGo').textContent=`Check all shown (${rows.length})`;
     if(qTab==='all'&&!anyData){list.innerHTML='<div class="pp-deals-row"><div><h3>Loading listings…</h3></div></div>';return;}
     list.innerHTML=rows.length?rows.slice(0,300).map(r=>{
       const dom=r.domain||((typeof stores!=='undefined'&&Array.isArray(stores)&&stores.find(x=>x.slug===r.store_slug))||{}).domain||'';const ready=extReady(dom)||BUILTIN[r.store_slug];
-      const info=qTab==='all'?(r.url?'':'No link'):qTab==='oos'?`Checked as out of stock · ${h(when(r.oos_seen_at))} · no price to save (counts as checked for 24 h)`:qTab==='due'
+      const info=qTab==='confirm'?(r.ctitle?`Store page says: <b>${h(r.ctitle.slice(0,140))}</b>${r.why?'<br><span style="color:#7a5a12">'+h(r.why)+'</span>':''}`:'Not captured yet. Press Check now (extension reads the page title and photo).'):qTab==='all'?(r.url?'':'No link'):qTab==='oos'?`Checked as out of stock · ${h(when(r.oos_seen_at))} · no price to save (counts as checked for 24 h)`:qTab==='due'
         ?(r.last_checked?`Last verified ${inr(r.last_price)} · ${h(when(r.last_checked))}${r.expires_at&&new Date(r.expires_at)>new Date()?' · expires '+h(when(r.expires_at)):' · expired'}`:'Never verified')
         :`Verified ${inr(r.verified_price)} (${h(when(r.verified_at))}) → shoppers saw <b>${inr(r.seen_price)}</b> (${h(when(r.seen_at))})${r.seen_in_stock===false?' · out of stock':''}`;
-      const lg=r.url?chkLog[normU(r.url)]:null;
+      const lg=r.url?chkLog[normU(r.url)]:null;const mt=qTab==='confirm'&&r.ctitle?`<span class="pp-x-chip${r.level==='high'?'':' warn'}">Match ${r.score}% · ${r.level==='high'?'high':'check'}</span>`:'';
       const tag=lg?`<span class="pp-x-chip${Date.now()-lg.t<RECENT?'':' off'}" style="${Date.now()-lg.t<RECENT?'':'background:#eef2f0;color:#4d5f58'}">Checked ${h(ago(lg.t))} · ${lg.s==='saved'?'saved'+(lg.p?' '+inr(lg.p):''):lg.s==='fresh'?'already fresh':lg.s==='oos'?'sold out':'needs your confirm'}</span>`:'';
-      return `<article class="pp-deals-row pp-x-row"><div style="flex:1 1 300px;min-width:0"><h3>${h(r.product_name)} · ${h(r.store_name)}${ready?'':'<span class="pp-x-chip warn">Extension cannot read this store yet</span>'}${tag}</h3><p>${h(r.variant||'')}</p>${info?`<p class="pp-x-sub">${info}</p>`:''}</div>
-        <div class="pp-x-act">${r.url?`<button type="button" data-xq-now="${h(r.url)}">Check now</button> <a href="${h(r.url)}" target="_blank" rel="noopener noreferrer">Open ↗</a>`:'<span class="muted">No link</span>'}</div></article>`;}).join('')
-      :`<div class="pp-deals-row"><div><h3>${qTab==='due'?'Nothing due':qTab==='oos'?'No out-of-stock checks yet':qTab==='all'?'No listing found':'No price changes seen'}</h3><p>${qTab==='due'?'Every checked listing has a fresh verified price or an out-of-stock check.':qTab==='oos'?'Open a sold-out listing with the extension in Admin mode and it shows here.':qTab==='all'?'Only active listings with a full store link can be checked.':'Shoppers saw the same prices as your last checks (last 7 days).'}</p></div></div>`;
+      return `<article class="pp-deals-row pp-x-row"><div style="flex:1 1 300px;min-width:0"><h3>${h(r.product_name)} · ${h(r.store_name)}${ready?'':'<span class="pp-x-chip warn">Extension cannot read this store yet</span>'}${mt}${tag}</h3><p>${h(r.variant||'')}</p>${info?`<p class="pp-x-sub">${info}</p>`:''}</div>
+        <div class="pp-x-act">${qTab==='confirm'&&r.cimg?`<img src="${h(r.cimg)}" alt="" style="width:44px;height:44px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid #dce9e4" loading="lazy" referrerpolicy="no-referrer">`:''}${qTab==='confirm'&&r.ctitle?`<button type="button" data-xq-ok="${h(r.product_id+'|'+r.store_slug)}">Confirm</button> `:''}${r.url?`<button type="button" data-xq-now="${h(r.url)}">Check now</button> <a href="${h(r.url)}" target="_blank" rel="noopener noreferrer">Open ↗</a>`:'<span class="muted">No link</span>'}</div></article>`;}).join('')
+      :`<div class="pp-deals-row"><div><h3>${qTab==='due'?'Nothing due':qTab==='oos'?'No out-of-stock checks yet':qTab==='all'?'No listing found':qTab==='confirm'?'Nothing to confirm':'No price changes seen'}</h3><p>${qTab==='due'?'Every checked listing has a fresh verified price or an out-of-stock check.':qTab==='oos'?'Open a sold-out listing with the extension in Admin mode and it shows here.':qTab==='all'?'Only active listings with a full store link can be checked.':qTab==='confirm'?'Every active listing is confirmed.':'Shoppers saw the same prices as your last checks (last 7 days).'}</p></div></div>`;
   }
 
   /* ---- 3) stores ---- */
