@@ -11,7 +11,7 @@ const hasExt=()=>!!document.documentElement.dataset.ppExt;
 const chromeFamily=()=>!!window.chrome&&!/Mobi|Android|iPhone|iPad|Firefox/i.test(navigator.userAgent);
 const desktop=()=>matchMedia('(min-width:1024px)').matches&&chromeFamily();
 
-const CHROME='<svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#fff"/><path fill="#ea4335" d="M24 2a22 22 0 0 1 19 11H24a11 11 0 0 0-9.5 5.5L5 13A22 22 0 0 1 24 2z"/><path fill="#34a853" d="M5 13l9.5 16.5A11 11 0 0 0 24 35l-9.5 16.5A22 22 0 0 1 5 13z" transform="translate(0 -3)"/><path fill="#fbbc05" d="M43 13a22 22 0 0 1-19 33l9.5-16.5A11 11 0 0 0 35 24c0-3.8-1.1-7.3-3-11z"/><circle cx="24" cy="24" r="8.5" fill="#4285f4" stroke="#fff" stroke-width="3"/></svg>';
+const CHROME='<svg width="38" height="38" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M4.94 13A22 22 0 0 1 43.06 13H24A11 11 0 0 0 14.47 29.5Z"/><path fill="#FBBC05" d="M43.06 13A22 22 0 0 1 24 46L33.53 29.5A11 11 0 0 0 24 13Z"/><path fill="#34A853" d="M24 46A22 22 0 0 1 4.94 13L14.47 29.5A11 11 0 0 0 33.53 29.5Z"/><circle cx="24" cy="24" r="10.5" fill="#fff"/><circle cx="24" cy="24" r="8" fill="#4285F4"/></svg>';
 const PHONE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>';
 
 let toastT=0;
@@ -23,24 +23,24 @@ function toast(msg){
 
 /* ---------- Add to Chrome, beside the search bar ---------- */
 function chromeBtn(){
-  const row=document.getElementById('ppOneBoxRow');
-  const box=row&&row.querySelector('.pp-onebox');
+  /* the one search bar (#siteSearch) moves between places: home row, the floating search panel, the Price check page. The button follows it. */
+  const box=document.getElementById('siteSearch');
   const wrap=document.getElementById('pp84Chrome');
-  const show=!!box&&desktop()&&!hasExt();
+  const vis=!!box&&box.getBoundingClientRect().width>200;
+  const show=vis&&desktop()&&!hasExt();
   if(!show){
-    if(wrap)wrap.remove();
-    if(row){const c=row.querySelector('.container');c&&c.classList.remove('pp84-has');}
+    if(wrap){wrap.parentElement&&wrap.parentElement.classList.remove('pp84-has');wrap.remove();}
     document.documentElement.classList.remove('pp84-bar');
     return;
   }
   const cont=box.parentElement;
-  if(wrap&&cont.contains(wrap)){document.documentElement.classList.add('pp84-bar');return;}
-  wrap&&wrap.remove();
+  if(wrap&&wrap.parentElement===cont){document.documentElement.classList.add('pp84-bar');return;}
+  if(wrap){wrap.parentElement&&wrap.parentElement.classList.remove('pp84-has');wrap.remove();}
   const a=okUrl(apps.extension_url)
     ?`<a class="pp84-chrome-btn" href="${H(apps.extension_url)}" target="_blank" rel="noopener">${CHROME}<span>Add to Chrome</span></a>`
     :`<button type="button" class="pp84-chrome-btn" data-pp84-soon="ext">${CHROME}<span>Add to Chrome</span></button>`;
   cont.classList.add('pp84-has');
-  cont.insertAdjacentHTML('beforeend',`<div class="pp84-chrome" id="pp84Chrome"><span class="pp84-ring" aria-hidden="true"></span>${a}</div>`);
+  cont.insertAdjacentHTML('beforeend',`<div class="pp84-chrome" id="pp84Chrome">${a}</div>`);
   document.documentElement.classList.add('pp84-bar');
 }
 
