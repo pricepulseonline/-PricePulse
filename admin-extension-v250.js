@@ -117,19 +117,21 @@
   const STOP=new Set(['and','with','the','for','of','in','a','an','new','latest','buy','online','at','price','india','by','from','to','on','is']);
   const TIER=new Set(['pro','plus','max','ultra','lite','se','fe','mini','air','neo','gt','fold','flip','prime','turbo','edge','note','power']);
   const UNIT=/^(\d+(?:\.\d+)?)(gb|tb|mb|mah|inch|in|mp|w|hz|ml|l|kg|g|cm|mm)$/;
-  const normT=x=>String(x||'').toLowerCase().replace(/(\d)\s*(gb|tb|mb|mah|inch|in|mp|w|hz|ml|l|kg|g|cm|mm)\b/g,'$1$2').replace(/["”]/g,'inch').replace(/[^a-z0-9.]+/g,' ').trim();
+  const normT=x=>String(x||'').toLowerCase().replace(/(\d)\s*(gb|tb|mb|mah|inch|in|mp|w|hz|ml|l|kg|g|cm|mm)\b/g,'$1$2').replace(/(\d)\s*watts?\b/g,'$1w').replace(/(\d)\s*(litres?|liters?|ltr)\b/g,'$1l').replace(/["”]/g,'inch').replace(/[^a-z0-9.]+/g,' ').trim();
   const toksT=x=>normT(x).split(' ').filter(t=>t&&!STOP.has(t));
   function scoreMatch(r){
-    const C=[...new Set(toksT(`${r.product_name} ${r.variant} ${r.model}`))],T=new Set(toksT(r.ctitle));
+    const TL=toksT(r.ctitle),T=new Set(TL),NM=new Set(toksT(r.product_name)),C=[...new Set(toksT(`${r.product_name} ${r.variant}`))];
+    const need=c=>NM.has(c)||/^\d+(gb|tb)$/.test(c);
     if(!C.length||!T.size)return {score:0,level:'none',why:'No store title yet'};
     const has=c=>T.has(c)||[...T].some(t=>t.length>3&&c.length>3&&(t.includes(c)||c.includes(t)));
-    const miss=C.filter(c=>!has(c));const cov=(C.length-miss.length)/C.length;
+    const C2=C.filter(need),miss=C2.filter(c=>!has(c));const cov=C2.length?(C2.length-miss.length)/C2.length:0;
     const why=[];let level='high';let score=Math.round(cov*100);
-    const hard=miss.filter(c=>/\d/.test(c));if(hard.length){level='review';score=Math.min(score,70);why.push('missing: '+hard.join(', '));}
+    const hard=miss.filter(c=>/\d/.test(c)&&need(c));if(hard.length){level='review';score=Math.min(score,70);why.push('missing: '+hard.join(', '));}
     const units={};C.forEach(c=>{const m=c.match(UNIT);if(m)(units[m[2]]=units[m[2]]||{c:[],t:[]}).c.push(c);});
     [...T].forEach(t=>{const m=t.match(UNIT);if(m&&units[m[2]])units[m[2]].t.push(t);});
     Object.entries(units).forEach(([u,v])=>{if(v.t.length&&v.c.some(c=>!v.t.includes(c))){level='review';score=Math.min(score,60);why.push(`${u} differs: store ${v.t.join('/')} vs ours ${v.c.join('/')}`);}});
-    const cs=new Set(C);const tier=[...T].filter(t=>TIER.has(t)&&!cs.has(t)).concat(C.filter(c=>TIER.has(c)&&!T.has(c)));
+    const cs=new Set(C);const last=Math.max(-1,...C.filter(c=>NM.has(c)).map(c=>TL.findIndex(t=>t===c||(t.length>3&&c.length>3&&t.includes(c)))));
+    const tier=TL.filter((t,i)=>TIER.has(t)&&!cs.has(t)&&i>last&&i<=last+3&&!['hd','sound','series'].includes(TL[i+1])).concat(C.filter(c=>TIER.has(c)&&NM.has(c)&&!T.has(c)));
     if(tier.length){level='review';score=Math.min(score,65);why.push('model tier differs: '+[...new Set(tier)].join(', '));}
     const brand=C[0];if(brand&&!has(brand)){level='review';score=Math.min(score,50);why.push('brand not in store title');}
     if(level==='high'&&cov<0.8){level='review';why.push('only '+Math.round(cov*100)+'% of our words found');}
@@ -204,7 +206,7 @@
     let allDue=(data&&data.due)||[],oosRows=[];
     try{const {data:oo}=await api.rpc('pp_ext_oos_list');oosRows=Array.isArray(oo)?oo:[];}catch(e){oosRows=[];}  /* V7: sold-out checks from the extension (24 h) */
     const isOos=r=>r.url&&oosRows.some(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()));
-    await loadAny();
+    anyData=null;await loadAny();
     queue={all:anyData||[],confirm:(anyData||[]).filter(r=>r.match_status!=='match'),due:allDue.filter(r=>!isOos(r)),changed:(data&&data.changed)||[],oos:allDue.filter(isOos).map(r=>{const o=oosRows.find(o=>o.store===r.store_slug&&String(r.url).toUpperCase().includes(String(o.code).toUpperCase()))||{};return {...r,oos_seen_at:o.seen_at};})};
     setMsg('ppXqMsg','');renderStoreBtns();renderQueue();
   }
