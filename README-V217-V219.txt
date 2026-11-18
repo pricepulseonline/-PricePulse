@@ -174,3 +174,5 @@ V235 — Local logos for 24 brands + Adidas and 5 stores (Vijay Sales, Nykaa, Pu
 V236: Shop by Brand tiles - photo, name, price, discount badge now all come from the same product (the brand cheapest priced one). premium-v200.js (dxBrandList), index.html ?v=236.
 
 V237: Atomberg logo replaced with the new trimmed SVG (logos/brands/atomberg.svg), size rules + slug map updated. premium-v200.js/css ?v=237.
+
+V284: Add to Chrome button beside the search bar (desktop Chrome-family only, hidden once the extension is on the page via <html data-pp-ext>; 3 shine passes then still) + Get app item in menu row 2 next to Live deals (same look as Coupons / Price check). Links come from Admin > Growth > Chrome Web Store link / Android app link; empty = Soon tag + short note. The header 'Get extension' link is hidden while the button is on screen. New: polish-v284.js, polish-v284.css. index.html loads them (?v=284). Extension: 2.1.51 (global product-key fallback).

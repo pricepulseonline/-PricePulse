@@ -1,0 +1,23 @@
+/* PricePulse V284 - Add to Chrome beside the search bar + Get app in menu row 2 (18 Nov 2026) */
+.pp84-has{display:flex!important;align-items:center;gap:12px}
+.pp84-has>.pp-onebox{flex:1 1 auto;min-width:0}
+.pp84-chrome{position:relative;flex:none;display:flex;align-items:center}
+.pp84-chrome-btn{position:relative;z-index:1;overflow:hidden;display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 20px 0 14px;border-radius:14px;background:#0F2A21;color:#fff;border:1px solid #E6C36A;font:700 14.5px Manrope,sans-serif;white-space:nowrap;text-decoration:none;cursor:pointer;box-shadow:0 6px 18px rgba(15,42,33,.22)}
+.pp84-chrome-btn:hover{background:#143528;color:#fff}
+.pp84-chrome-btn:focus-visible{outline:3px solid var(--pp-green-b,#3DDC97);outline-offset:2px}
+.pp84-chrome-btn svg{flex:none;border-radius:50%}
+.pp84-chrome-btn::after{content:"";position:absolute;top:0;bottom:0;width:40px;left:-60px;background:linear-gradient(100deg,transparent,rgba(230,195,106,.45),transparent);transform:skewX(-20deg);animation:pp84Shine 2.8s ease-in-out 3}
+.pp84-ring{position:absolute;inset:0;border-radius:14px;border:1.5px solid #E6C36A;opacity:0;pointer-events:none;animation:pp84Ring 2.8s ease-out 3}
+@keyframes pp84Shine{0%{left:-60px}55%,100%{left:calc(100% + 20px)}}
+@keyframes pp84Ring{0%{transform:scale(1);opacity:.7}60%,100%{transform:scale(1.08,1.3);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pp84-chrome-btn::after,.pp84-ring{animation:none}}
+/* the header "Get extension" link is the same offer: hide it while the button beside the search bar is on screen */
+html.pp84-bar #pp78ExtTop{display:none!important}
+/* search panel mode: the bar floats, keep it clean */
+body.pp-search-open .pp84-chrome{display:none}
+body.pp-search-open .pp84-has{display:block!important}
+/* Get app: reuses .pp-mnav; a <button> needs the reset */
+.pp-v276 button.pp-mnav{background:none;border:0;cursor:pointer;font-family:Manrope,sans-serif}
+.pp-v276 button.pp-mnav:hover{background:var(--pp-green-soft)}
+.pp84-toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,16px);z-index:9999;background:#0F1F1A;color:#fff;font:600 14px Manrope,sans-serif;padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100vw - 32px)}
+.pp84-toast.is-on{opacity:1;transform:translate(-50%,0)}
